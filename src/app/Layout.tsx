@@ -54,18 +54,18 @@ function LienNav({
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex items-center justify-between gap-2 rounded px-3 py-2 text-sm ${
+        `group relative flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
           isActive
-            ? 'bg-[var(--couleur-primaire)]/10 font-medium text-[var(--couleur-primaire)]'
-            : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+            ? 'bg-[var(--primaire-doux)] font-semibold text-[var(--couleur-primaire)] before:absolute before:inset-y-1.5 before:-left-3 before:w-1 before:rounded-r-full before:bg-[var(--couleur-primaire)]'
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
         }`
       }
     >
-      <span className="flex items-center gap-2">
-        {icone} {libelle}
+      <span className="flex items-center gap-2.5">
+        <span className="opacity-80 group-hover:opacity-100">{icone}</span> {libelle}
       </span>
       {!!badge && (
-        <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">{badge}</span>
+        <span className="min-w-5 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-semibold text-white shadow-sm shadow-red-500/30">{badge}</span>
       )}
     </NavLink>
   );
@@ -159,7 +159,7 @@ export function Layout(): React.JSX.Element {
 
   return (
     <div className="flex h-screen flex-col">
-      <header className="flex items-center gap-2 border-b border-slate-200 bg-white px-2 py-2 sm:gap-4 sm:px-4 dark:border-slate-800 dark:bg-slate-900">
+      <header className="relative z-20 flex items-center gap-2 border-b border-[var(--bordure)] bg-[var(--surface)]/80 px-2 py-2.5 backdrop-blur-md sm:gap-4 sm:px-5">
         <button
           type="button"
           onClick={() => setMenuOuvert((v) => !v)}
@@ -169,9 +169,18 @@ export function Layout(): React.JSX.Element {
         >
           {menuOuvert ? <X size={20} /> : <Menu size={20} />}
         </button>
-        <div className="flex shrink-0 items-center gap-2 font-semibold text-[var(--couleur-primaire)]">
-          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-8 w-8 rounded" />}
-          <span className="hidden sm:inline">{parametres?.nomOrganisation ?? t('app.titre')}</span>
+        <div className="flex shrink-0 items-center gap-2.5 md:w-52">
+          {parametres?.logoPng ? (
+            <img src={parametres.logoPng} alt="" className="h-9 w-9 rounded-xl shadow-sm" />
+          ) : (
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--couleur-primaire)] text-white shadow-sm">
+              <Mail size={18} />
+            </span>
+          )}
+          <span className="hidden min-w-0 flex-col leading-tight sm:flex">
+            <span className="max-w-[10.5rem] truncate text-sm font-semibold text-slate-900 dark:text-slate-50" title={parametres?.nomOrganisation}>{parametres?.nomOrganisation ?? t('app.titre')}</span>
+            <span className="text-[11px] font-medium text-slate-400">{t('app.titre')}</span>
+          </span>
         </div>
 
         {/* Sur téléphone, la recherche passe par l'icône qui mène à /recherche. */}
@@ -183,11 +192,14 @@ export function Layout(): React.JSX.Element {
             onChange={(e) => surRecherche(e.target.value)}
             onFocus={() => setRechercheOuverte(true)}
             onBlur={() => setTimeout(() => setRechercheOuverte(false), 150)}
-            placeholder={`${t('recherche.placeholder')} (Ctrl+K)`}
-            className="champ pl-9 text-sm"
+            placeholder={t('recherche.placeholder') ?? undefined}
+            className="champ rounded-full bg-slate-50 pl-9 pr-14 text-sm dark:bg-slate-800/60"
           />
+          <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-[var(--bordure)] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-medium text-slate-400 lg:block">
+            Ctrl K
+          </kbd>
           {rechercheOuverte && resultatsRecherche.length > 0 && (
-            <div className="absolute z-30 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+            <div className="anim-apparition absolute z-30 mt-2 w-full overflow-hidden rounded-xl border border-[var(--bordure)] bg-[var(--surface)] p-1 shadow-[var(--ombre-flottante)]">
               {resultatsRecherche.map((r) => (
                 <button
                   key={r.type === 'courrier' ? r.courrier.id : r.correspondant.id}
@@ -195,7 +207,7 @@ export function Layout(): React.JSX.Element {
                   onClick={() =>
                     navigate(r.type === 'courrier' ? (r.courrier.codeSuivi ? `/suivi/${r.courrier.codeSuivi}` : `/courriers/${r.courrier.id}`) : `/correspondants/${r.correspondant.id}`)
                   }
-                  className="block w-full truncate px-3 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                  className="block w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--primaire-doux)]"
                 >
                   {r.type === 'courrier'
                     ? `${r.courrier.numero ?? r.courrier.codeSuivi} — ${r.objetAffiche}`
@@ -237,7 +249,7 @@ export function Layout(): React.JSX.Element {
               )}
             </button>
             {notifsOuvertes && (
-              <div className="fixed inset-x-2 top-14 z-30 max-h-96 overflow-y-auto sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-1 sm:w-80 rounded-md border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
+              <div className="anim-apparition fixed inset-x-2 top-14 z-30 max-h-96 overflow-y-auto sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 rounded-xl border border-[var(--bordure)] bg-[var(--surface)] shadow-[var(--ombre-flottante)]">
                 <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2 dark:border-slate-700">
                   <span className="text-xs font-semibold uppercase text-slate-400">Notifications</span>
                   {notificationsNonLues.length > 0 && (
@@ -271,7 +283,7 @@ export function Layout(): React.JSX.Element {
 
           <select
             aria-label={t('enTete.langue') ?? undefined}
-            className="rounded border border-slate-300 bg-white px-2 py-1 dark:border-slate-600 dark:bg-slate-800"
+            className="rounded-lg border border-[var(--bordure)] bg-[var(--surface)] px-2 py-1.5 text-xs font-medium"
             value={i18n.language}
             onChange={(e) => definirLangue(e.target.value as 'fr' | 'en')}
           >
@@ -282,7 +294,7 @@ export function Layout(): React.JSX.Element {
           {postesPossibles.length > 1 ? (
             <select
               aria-label={t('enTete.changerPoste') ?? undefined}
-              className="max-w-[7rem] truncate rounded border sm:max-w-none border-slate-300 bg-white px-2 py-1 dark:border-slate-600 dark:bg-slate-800"
+              className="max-w-[7rem] truncate rounded-lg border border-[var(--bordure)] bg-[var(--surface)] px-2 py-1.5 text-xs font-medium sm:max-w-none"
               value={acteur.poste.id}
               onChange={(e) => changerPoste(e.target.value)}
             >
@@ -297,8 +309,14 @@ export function Layout(): React.JSX.Element {
             <span className="hidden text-slate-600 md:inline dark:text-slate-300">{acteur.poste.libelle}</span>
           )}
 
-          <span className="hidden font-medium md:inline">
-            {acteur.personne.prenom} {acteur.personne.nom}
+          <span className="hidden items-center gap-2 md:flex">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--couleur-primaire)] to-indigo-400 text-xs font-semibold text-white">
+              {acteur.personne.prenom.charAt(0)}
+              {acteur.personne.nom.charAt(0)}
+            </span>
+            <span className="font-medium">
+              {acteur.personne.prenom} {acteur.personne.nom}
+            </span>
           </span>
 
           <button
@@ -323,7 +341,7 @@ export function Layout(): React.JSX.Element {
         <nav
           className={`${
             menuOuvert ? 'absolute inset-y-0 left-0 z-40 w-64 shadow-xl' : 'hidden'
-          } shrink-0 space-y-1 overflow-y-auto border-r border-slate-200 bg-white p-3 md:static md:block md:w-56 md:shadow-none dark:border-slate-800 dark:bg-slate-900`}
+          } shrink-0 space-y-0.5 overflow-y-auto border-r border-[var(--bordure)] bg-[var(--surface)] px-3 py-4 md:static md:block md:w-60 md:shadow-none`}
         >
           <LienNav to="/" icone={<LayoutDashboard size={16} />} libelle={t('nav.tableauDeBord')} end />
           <LienNav to="/corbeille" icone={<Inbox size={16} />} libelle={t('nav.corbeille')} badge={taches?.corbeille} />
@@ -338,7 +356,7 @@ export function Layout(): React.JSX.Element {
 
           {estAdmin && (
             <>
-              <div className="mt-3 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <div className="mb-1 mt-5 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {t('nav.administration')}
               </div>
               <LienNav to="/admin/organigramme" icone={<Network size={16} />} libelle="Organigramme" />
@@ -351,8 +369,10 @@ export function Layout(): React.JSX.Element {
           )}
         </nav>
 
-        <main className="min-w-0 flex-1 overflow-y-auto p-4 md:p-6">
-          <Outlet />
+        <main className="min-w-0 flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="mx-auto max-w-[1400px]">
+            <Outlet />
+          </div>
         </main>
       </div>
 

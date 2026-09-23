@@ -7,11 +7,12 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const classesParVariante: Record<Variante, string> = {
-  primaire: 'bg-[var(--couleur-primaire)] text-white hover:brightness-110 disabled:opacity-50',
+  primaire:
+    'bg-[var(--couleur-primaire)] text-white shadow-sm shadow-[var(--primaire-anneau)] hover:brightness-110 hover:shadow-md disabled:opacity-50 disabled:shadow-none',
   secondaire:
-    'bg-white text-slate-800 border border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700',
-  discret: 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
-  danger: 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50',
+    'bg-[var(--surface)] text-slate-700 border border-[var(--bordure)] shadow-sm hover:border-slate-300 hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-slate-800',
+  discret: 'text-slate-600 hover:bg-[var(--primaire-doux)] hover:text-[var(--couleur-primaire)] dark:text-slate-300',
+  danger: 'bg-red-600 text-white shadow-sm hover:bg-red-700 disabled:opacity-50',
 };
 
 export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
@@ -21,7 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   return (
     <button
       ref={ref}
-      className={`inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--couleur-primaire)] disabled:cursor-not-allowed ${classesParVariante[variante]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-150 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--couleur-primaire)] disabled:cursor-not-allowed ${classesParVariante[variante]} ${className}`}
       {...props}
     />
   );

@@ -2,15 +2,33 @@
 
 :root {
   --couleur-primaire: #1d4ed8;
+  /* Teinte douce de la couleur primaire (fonds actifs, anneaux de focus). */
+  --primaire-doux: color-mix(in srgb, var(--couleur-primaire) 10%, transparent);
+  --primaire-anneau: color-mix(in srgb, var(--couleur-primaire) 22%, transparent);
+  --fond-app: #f5f7fb;
+  --surface: #ffffff;
+  --bordure: #e6e9f0;
+  --ombre-carte: 0 1px 2px rgb(16 24 40 / 0.04), 0 1px 3px rgb(16 24 40 / 0.06);
+  --ombre-flottante: 0 12px 32px -8px rgb(16 24 40 / 0.18), 0 4px 8px -4px rgb(16 24 40 / 0.08);
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
+  --fond-app: #0b1020;
+  --surface: #121a2e;
+  --bordure: #222c44;
+  --ombre-carte: 0 1px 2px rgb(0 0 0 / 0.3);
+  --ombre-flottante: 0 12px 32px -8px rgb(0 0 0 / 0.6);
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
+    --fond-app: #0b1020;
+    --surface: #121a2e;
+    --bordure: #222c44;
+    --ombre-carte: 0 1px 2px rgb(0 0 0 / 0.3);
+    --ombre-flottante: 0 12px 32px -8px rgb(0 0 0 / 0.6);
     color-scheme: dark;
   }
 }
@@ -22,16 +40,110 @@ body,
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+  @apply text-slate-900 antialiased dark:text-slate-100;
+  background: var(--fond-app);
   font-family:
+    'Inter',
     ui-sans-serif,
     system-ui,
     -apple-system,
     Segoe UI,
     Roboto,
     sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
 }
 
-.champ {
-  @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[var(--couleur-primaire)] focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100;
+::selection {
+  background: var(--primaire-anneau);
+}
+
+/* Barres de défilement discrètes */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(148 163 184 / 0.45) transparent;
+}
+
+/* En couche « components » pour que les utilitaires (pl-9…) puissent le surcharger. */
+@layer components {
+  .champ {
+    @apply w-full rounded-lg border px-3 py-2 text-sm text-slate-900 transition-shadow placeholder:text-slate-400 focus:outline-none dark:text-slate-100;
+    background: var(--surface);
+    border-color: var(--bordure);
+    box-shadow: 0 1px 2px rgb(16 24 40 / 0.04);
+  }
+  .champ:focus {
+    border-color: var(--couleur-primaire);
+    box-shadow: 0 0 0 4px var(--primaire-anneau);
+  }
+}
+
+/*
+ * Cartes : les écrans utilisent tous le motif « rounded-lg border » pour leurs
+ * blocs. Ces règles, hors couche Tailwind, leur donnent un fond de surface,
+ * des coins plus doux et une ombre légère sans toucher chaque page. Les cartes
+ * déjà colorées (alertes, rejets : classe bg-*) gardent leur teinte.
+ */
+main .rounded-lg.border:not([class*='bg-']),
+main .rounded-md.border.p-3:not([class*='bg-']) {
+  background: var(--surface);
+  border-color: var(--bordure);
+}
+main .rounded-lg.border,
+main .rounded-md.border.p-3 {
+  border-radius: 0.875rem;
+  box-shadow: var(--ombre-carte);
+}
+
+/* Tableaux */
+main table thead {
+  background: color-mix(in srgb, var(--couleur-primaire) 4%, var(--surface));
+}
+main table thead th {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgb(100 116 139);
+}
+main table tbody tr {
+  transition: background-color 120ms ease;
+}
+main table tbody tr:hover {
+  background: var(--primaire-doux);
+}
+main table tbody tr,
+main table tbody tr td {
+  border-color: var(--bordure);
+}
+
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fondu {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.anim-apparition {
+  animation: apparition 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.anim-fondu {
+  animation: fondu 150ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-apparition,
+  .anim-fondu {
+    animation: none;
+  }
 }

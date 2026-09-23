@@ -1,1 +1,1 @@
-{"root":["./e2e/accueil.spec.ts","./e2e/circulation.spec.ts","./e2e/delais-escalade.spec.ts","./playwright.config.ts"],"version":"5.9.3"}
+{"root":["./e2e/accueil.spec.ts","./e2e/cachet-signature.spec.ts","./e2e/circulation.spec.ts","./e2e/delais-escalade.spec.ts","./e2e/reinitialisation.spec.ts","./e2e/reponse-tardive.spec.ts","./playwright.config.ts"],"version":"5.9.3"}

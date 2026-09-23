@@ -20,17 +20,17 @@ export function Modal({ titre, onFermer, children }: PropsWithChildren<Props>): 
   }, [onFermer]);
 
   return createPortal(
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
+    <div className="anim-fondu fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
       <div
         ref={ref}
         role="dialog"
         aria-modal="true"
         aria-label={titre}
-        className="w-full max-w-lg rounded-lg bg-white p-5 shadow-xl dark:bg-slate-900"
+        className="anim-apparition w-full max-w-lg rounded-2xl border border-[var(--bordure)] bg-[var(--surface)] p-6 shadow-[var(--ombre-flottante)]"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">{titre}</h2>
-          <button type="button" onClick={onFermer} className="rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{titre}</h2>
+          <button type="button" onClick={onFermer} className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800">
             <X size={18} />
           </button>
         </div>

@@ -45,12 +45,16 @@ export function Connexion(): React.JSX.Element {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-10 dark:bg-slate-950">
-      <div className="w-full max-w-2xl rounded-lg bg-white p-8 shadow-sm dark:bg-slate-900">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60rem_40rem_at_10%_-10%,var(--primaire-anneau),transparent),radial-gradient(50rem_30rem_at_110%_110%,rgb(129_140_248/0.18),transparent)]"
+      />
+      <div className="anim-apparition relative w-full max-w-2xl rounded-2xl border border-[var(--bordure)] bg-[var(--surface)]/90 p-8 shadow-[var(--ombre-flottante)] backdrop-blur sm:p-10">
         <div className="mb-6 flex items-center gap-3">
-          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-10 w-10 rounded" />}
+          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-12 w-12 rounded-xl shadow-sm" />}
           <div>
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
               {parametres?.nomOrganisation ?? t('app.titre')}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400">{t('connexion.sousTitre')}</p>
