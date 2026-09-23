@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import type { StatutClair } from '@/services/suivi';
+import { texteStatut, type StatutClair } from '@/services/suivi';
 import type { Priorite } from '@/types/models';
 
 const couleurStatut: Record<string, string> = {
@@ -18,11 +18,12 @@ const couleurStatut: Record<string, string> = {
 };
 
 export function BadgeStatut({ statut }: { statut: StatutClair }): React.JSX.Element {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const classes = couleurStatut[statut.cle] ?? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200';
   return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${classes}`}>
-      {t(statut.cle, statut.params)}
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ring-current/15 ${classes}`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" aria-hidden="true" />
+      {texteStatut(statut, t, i18n.language)}
     </span>
   );
 }
@@ -32,7 +33,7 @@ export function BadgePriorite({ priorite }: { priorite: Priorite }): React.JSX.E
   if (priorite === 'NORMALE') return null;
   const classes =
     priorite === 'TRES_URGENTE'
-      ? 'bg-red-600 text-white'
+      ? 'bg-red-600 text-white shadow-sm shadow-red-600/30'
       : 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300';
   return (
     <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${classes}`}>

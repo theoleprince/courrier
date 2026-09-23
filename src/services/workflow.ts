@@ -544,7 +544,8 @@ export async function validerEtape(circuitId: ID, acteur: Acteur, options: Optio
 }
 
 /**
- * Visa : appose le paraphe et la mention « Lu et approuvé » sur chaque page
+ * Visa ou validation du directeur : appose le paraphe et la mention « Lu et approuvé »
+ * (« Validé » pour une validation) sur chaque page
  * du document de travail PDF (dernier brouillon, à défaut dernier scan),
  * en nouvelle version, puis valide l'étape. Le
  * brouillon visé est celui qui sera ensuite signé, les visas restent donc
@@ -558,7 +559,9 @@ export async function viser(
   const circuit = await db.circuits.get(circuitId);
   if (!circuit || circuit.statut !== 'EN_COURS') throw new ErreurWorkflow('erreurs.circuitIntrouvable');
   const etape = circuit.etapes[circuit.indexCourant];
-  if (!etape || etape.type !== 'VISA' || etape.statut !== 'EN_COURS') throw new ErreurWorkflow('erreurs.etapeIntrouvable');
+  if (!etape || (etape.type !== 'VISA' && etape.type !== 'VALIDATION') || etape.statut !== 'EN_COURS') {
+    throw new ErreurWorkflow('erreurs.etapeIntrouvable');
+  }
   if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
 
   const piece = await documentDeTravail(circuit.courrierId);
@@ -568,13 +571,16 @@ export async function viser(
   if (piece && piece.mime === 'application/pdf') {
     if ((await sha256(piece.contenu)) !== piece.empreinteSha256) throw new ErreurWorkflow('erreurs.documentAltere');
     const [poste, personne] = await Promise.all([db.postes.get(acteur.posteId), db.personnes.get(acteur.personneId)]);
-    const rang = circuit.etapes.slice(0, circuit.indexCourant).filter((e) => e.type === 'VISA' && e.statut === 'VALIDEE').length;
+    const rang = circuit.etapes
+      .slice(0, circuit.indexCourant)
+      .filter((e) => (e.type === 'VISA' || e.type === 'VALIDATION') && e.statut === 'VALIDEE').length;
     const contenu = await apposerVisa(piece.contenu, {
       nomViseur: personne ? `${personne.prenom} ${personne.nom}` : '',
       posteViseur: poste?.libelle ?? '',
       dateAffichee: maintenant().toLocaleString('fr-FR'),
       paraphePngDataUrl: options.paraphePngDataUrl,
       rang,
+      mention: etape.type === 'VALIDATION' ? 'VALIDÉ' : undefined,
     });
     pieceVisee = {
       ...piece,
@@ -670,6 +676,8 @@ export async function rejeterEtape(circuitId: ID, acteur: Acteur, motif: string)
 export interface ContexteSignature {
   imagePngDataUrl: string;
   origineUrl: string; // ex. window.location.origin
+  /** Apposer le cachet de l'organisation (paramètres) à côté de la signature. */
+  avecCachet?: boolean;
 }
 
 async function preparerSignature(
@@ -707,6 +715,7 @@ async function preparerSignature(
   if (empreinteActuelle !== piece.empreinteSha256) throw new ErreurWorkflow('erreurs.documentAltere');
 
   const signatureId = uid();
+  const cachetPngDataUrl = contexte.avecCachet ? (await db.parametres.get('global'))?.cachetPng : undefined;
   const resultat = await apposerSignature(piece.contenu, {
     signatureId,
     nomSignataire: personne ? `${personne.prenom} ${personne.nom}` : '',
@@ -715,6 +724,7 @@ async function preparerSignature(
     empreinteAbregee: piece.empreinteSha256.slice(0, 24),
     imagePngDataUrl: contexte.imagePngDataUrl,
     urlVerification: `${contexte.origineUrl}/verifier/${signatureId}`,
+    cachetPngDataUrl,
   });
 
   return { circuit, courrier: courrier as CourrierSortant, piece, resultat, signatureId };
@@ -774,7 +784,7 @@ export async function signer(circuitId: ID, acteur: Acteur, contexte: ContexteSi
       action: 'SIGNATURE',
       acteurId: acteur.personneId,
       posteId: acteur.posteId,
-      details: { signatureId },
+      details: { signatureId, avecCachet: !!contexte.avecCachet },
     });
 
     const personne = await db.personnes.get(acteur.personneId);

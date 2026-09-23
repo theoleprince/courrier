@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
-import { ShieldCheck } from 'lucide-react';
+import { Inbox, Send, ShieldCheck } from 'lucide-react';
 import { useCourrier } from '@/hooks/useCourrier';
 import { useVisibilite } from '@/hooks/useVisibilite';
 import { useActeur } from '@/hooks/useActeur';
@@ -80,12 +80,19 @@ export function Detail(): React.JSX.Element {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-            {courrier.numero ?? courrier.codeSuivi}
-            {' · '}
-            {courrier.codeSuivi}
+      <header className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flex flex-wrap items-center gap-x-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+            {courrier.sens === 'ENTRANT' ? <Inbox size={14} /> : <Send size={14} />}
+            <span>{t(courrier.sens === 'ENTRANT' ? 'courrier.recu' : 'courrier.envoye')}</span>
+            <span>·</span>
+            <span>{courrier.numero ?? courrier.codeSuivi}</span>
+            {/* Le code de suivi ne s'affiche à part que s'il diffère du numéro (sinon doublon). */}
+            {courrier.numero && (
+              <span className="normal-case tracking-normal">
+                · {t('courrier.codeSuivi')} {courrier.codeSuivi}
+              </span>
+            )}
           </p>
           <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">{objet}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">{niveau === 'MINIMAL' ? '—' : correspondant?.nom}</p>
@@ -94,10 +101,11 @@ export function Detail(): React.JSX.Element {
           {statut && <BadgeStatut statut={statut} />}
           <BadgePriorite priorite={courrier.priorite} />
         </div>
-      </div>
+      </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-2">
+        {/* Sur mobile, l'action et le suivi passent avant le document. */}
+        <div className="order-2 lg:order-1 lg:col-span-2">
           {pieces.length > 1 && (
             <select
               className="champ mb-2"
@@ -108,7 +116,7 @@ export function Detail(): React.JSX.Element {
                 .sort((a, b) => b.version - a.version)
                 .map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.nom} (v{p.version}, {p.nature})
+                    {t(`courrier.naturePiece.${p.nature}`)} — v{p.version} ({p.nom})
                   </option>
                 ))}
             </select>
@@ -116,7 +124,9 @@ export function Detail(): React.JSX.Element {
           <ApercuDocument blob={pieceActive?.contenu} />
         </div>
 
-        <div className="space-y-4 lg:col-span-3">
+        {/* Ordre de lecture : ce que je dois faire, où en est le courrier, le courrier lié, puis le détail. */}
+        <div className="order-1 space-y-3 lg:order-2 lg:col-span-3">
+          {(niveau === 'COMPLET' || etapeAssigneeAMoi) && <PanneauActions courrier={courrier} circuit={donnees.circuit} acteur={acteur} />}
           <VerdictFinal
             courrier={courrier}
             circuit={donnees.circuit}
@@ -124,9 +134,8 @@ export function Detail(): React.JSX.Element {
             avecPersonnes={niveau !== 'MINIMAL'}
           />
           <DossierLie courrier={courrier} />
-          {(niveau === 'COMPLET' || etapeAssigneeAMoi) && <PanneauActions courrier={courrier} circuit={donnees.circuit} acteur={acteur} />}
 
-          <div>
+          <div className="pt-2">
             <Tabs onglets={onglets} actif={onglet} onChange={setOnglet} />
             <div className="pt-4">
               {onglet === 'parcours' && <ParcoursDossier courrier={courrier} parcours={parcours} />}

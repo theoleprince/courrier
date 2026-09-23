@@ -1,3 +1,6 @@
+import type { TFunction } from 'i18next';
+import { format } from 'date-fns';
+import { fr, enUS } from 'date-fns/locale';
 import { db } from '@/db/db';
 import { maintenant, maintenantISO, ajouterJours } from '@/services/horloge';
 import { niveauAcces, objetAffiche, sortantReponseDe, type NiveauAcces } from '@/services/requetes';
@@ -244,4 +247,12 @@ export async function rechercherSuiviPublic(
     dateReponseEstimee:
       courrier.sens === 'ENTRANT' ? await dateReponseEstimee(courrier as CourrierEntrant) : undefined,
   };
+}
+
+/** Libellé d'un statut, avec la date au format local et le mode d'envoi traduit (jamais d'ISO brut). */
+export function texteStatut(statut: StatutClair, t: TFunction, langue: string): string {
+  const params: Record<string, string> = { ...statut.params };
+  if (params.date) params.date = format(new Date(params.date), 'P', { locale: langue === 'en' ? enUS : fr });
+  if (params.mode) params.mode = t(`modeEnvoi.${params.mode}`);
+  return t(statut.cle, params);
 }

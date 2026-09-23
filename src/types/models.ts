@@ -325,6 +325,8 @@ export interface Parametres {
   telephone?: string;
   email?: string;
   logoPng?: string; // data URL
+  /** Cachet numérique de l'organisation (PNG à fond transparent), apposé à la signature si demandé. */
+  cachetPng?: string;
   couleurPrimaire: string; // hex, appliquée en variable CSS
   langue: 'fr' | 'en';
   delaiEscaladeJours: number; // retard avant escalade (défaut 2)

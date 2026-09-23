@@ -49,65 +49,40 @@ function useDossier(courrier: Courrier): Dossier | null | undefined {
   }, [courrier.id, courrier.statut, courrier.misAJourLe, reponseAId, acteur?.poste.id]);
 }
 
-function LigneDossier({
-  element,
-  role,
-  estCourant,
-}: {
-  element: ElementDossier;
-  role: 'initial' | 'reponse';
-  estCourant: boolean;
-}): React.JSX.Element {
-  const { t } = useTranslation();
-  const { courrier, niveau, statut } = element;
-  const restreint = niveau === 'AUCUN';
-  const Icone = role === 'initial' ? Inbox : Send;
-
-  return (
-    <li
-      className={`flex flex-wrap items-center justify-between gap-2 rounded border p-3 ${
-        estCourant
-          ? 'border-[var(--couleur-primaire)] bg-slate-50 dark:bg-slate-800'
-          : 'border-slate-200 dark:border-slate-700'
-      }`}
-    >
-      <div className="flex min-w-0 items-start gap-2">
-        <Icone size={16} className="mt-0.5 shrink-0 text-slate-400" />
-        <div className="min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-            {t(`dossier.${role}`)} · {courrier.numero ?? courrier.codeSuivi}
-            {estCourant && <> · {t('dossier.ceCourrier')}</>}
-          </p>
-          <p className="truncate text-sm font-medium text-slate-700 dark:text-slate-200">
-            {restreint ? t('dossier.accesRestreint') : objetAffiche(courrier, niveau)}
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        {!restreint && <BadgeStatut statut={statut} />}
-        {!estCourant && !restreint && (
-          <Link to={`/courriers/${courrier.id}`} className="text-sm font-medium text-[var(--couleur-primaire)] underline">
-            {t('dossier.ouvrir')}
-          </Link>
-        )}
-      </div>
-    </li>
-  );
-}
-
-/** Encart en tête de fiche : le courrier initial et sa réponse, avec lien de l'un vers l'autre. */
+/**
+ * Lien compact vers le courrier lié (la réponse depuis l'entrant, l'entrant depuis la
+ * réponse), sur une ligne ; le parcours complet du dossier est dans l'onglet Parcours.
+ */
 export function DossierLie({ courrier }: { courrier: Courrier }): React.JSX.Element | null {
   const { t } = useTranslation();
   const dossier = useDossier(courrier);
   if (!dossier?.initial || !dossier.reponse) return null;
 
+  const role = courrier.sens === 'ENTRANT' ? 'reponse' : 'initial';
+  const autre = role === 'reponse' ? dossier.reponse : dossier.initial;
+  const restreint = autre.niveau === 'AUCUN';
+  const Icone = role === 'initial' ? Inbox : Send;
+
   return (
-    <section className="rounded-lg border border-slate-200 p-4 dark:border-slate-700" aria-label={t('dossier.titre')}>
-      <h3 className="mb-2 font-medium text-slate-800 dark:text-slate-100">{t('dossier.titre')}</h3>
-      <ul className="space-y-2">
-        <LigneDossier element={dossier.initial} role="initial" estCourant={courrier.sens === 'ENTRANT'} />
-        <LigneDossier element={dossier.reponse} role="reponse" estCourant={courrier.sens === 'SORTANT'} />
-      </ul>
+    <section
+      aria-label={t('dossier.titre')}
+      className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-slate-200 px-4 py-2.5 text-sm dark:border-slate-700"
+    >
+      <Icone size={16} className="shrink-0 text-slate-400" />
+      <span className="text-slate-500 dark:text-slate-400">{t(`dossier.${role}`)} :</span>
+      {restreint ? (
+        <span className="text-slate-500">{t('dossier.accesRestreint')}</span>
+      ) : (
+        <>
+          <Link to={`/courriers/${autre.courrier.id}`} className="font-medium text-[var(--couleur-primaire)] hover:underline">
+            {autre.courrier.numero ?? autre.courrier.codeSuivi}
+          </Link>
+          <span className="min-w-0 flex-1 truncate text-slate-600 dark:text-slate-300">
+            {objetAffiche(autre.courrier, autre.niveau)}
+          </span>
+          <BadgeStatut statut={autre.statut} />
+        </>
+      )}
     </section>
   );
 }

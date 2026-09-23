@@ -19,6 +19,8 @@ export interface InfosApposition {
   empreinteAbregee: string;
   imagePngDataUrl: string;
   urlVerification: string;
+  /** Cachet de l'organisation à apposer à côté de la signature (absent = pas de cachet). */
+  cachetPngDataUrl?: string;
 }
 
 export interface ResultatApposition {
@@ -60,6 +62,12 @@ export async function apposerSignature(pdfOriginal: Blob, infos: InfosApposition
   });
   derniere.drawImage(signatureImage, { x: 44, y: margeBas + 22, width: 150, height: 60 });
   derniere.drawImage(qrImage, { x: 36 + largeurBloc - 86, y: margeBas + 8, width: 78, height: 78 });
+  if (infos.cachetPngDataUrl) {
+    // Cachet entre la signature et le QR, dans un carré de 72 pt, proportions conservées.
+    const cachet = await pdf.embedPng(dataUrlEnBytes(infos.cachetPngDataUrl));
+    const { width: l, height: h } = cachet.scaleToFit(72, 72);
+    derniere.drawImage(cachet, { x: 210 + (72 - l) / 2, y: margeBas + 12 + (72 - h) / 2, width: l, height: h, opacity: 0.9 });
+  }
   derniere.drawText(
     `Signe electroniquement par ${infos.nomSignataire} / ${infos.posteSignataire}, le ${infos.dateAffichee}`,
     { x: 44, y: margeBas + 94, size: 9, font: police, color: rgb(0.15, 0.15, 0.15) },
@@ -97,6 +105,8 @@ export interface InfosVisa {
   paraphePngDataUrl: string;
   /** Rang du visa dans le circuit (0 = premier), pour ne pas superposer les cachets. */
   rang: number;
+  /** Mention en tête du cachet (défaut « LU ET APPROUVÉ » ; « VALIDÉ » pour la validation du directeur). */
+  mention?: string;
 }
 
 /** Remplace les caractères que la police standard (WinAnsi) ne sait pas encoder. */
@@ -132,7 +142,7 @@ export async function apposerVisa(pdfOriginal: Blob, infos: InfosVisa): Promise<
   for (const page of pdf.getPages()) {
     const x = page.getSize().width - 36 - (infos.rang + 1) * (largeur + 6);
     page.drawRectangle({ x, y, width: largeur, height: hauteur, color: rgb(1, 1, 1), opacity: 0.9, borderColor: couleur, borderWidth: 0.8 });
-    page.drawText('LU ET APPROUVÉ', { x: x + 4, y: y + hauteur - 10, size: 7, font: policeGrasse, color: couleur });
+    page.drawText(infos.mention ?? 'LU ET APPROUVÉ', { x: x + 4, y: y + hauteur - 10, size: 7, font: policeGrasse, color: couleur });
     page.drawImage(paraphe, { x: x + largeur - 52, y: y + 4, width: 48, height: 30 });
     page.drawText(nom, { x: x + 4, y: y + 26, size: 6.5, font: police, color: couleur });
     page.drawText(poste, { x: x + 4, y: y + 16, size: 5.5, font: police, color: couleur });

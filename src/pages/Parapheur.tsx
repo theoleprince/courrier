@@ -8,7 +8,8 @@ import { signer, signerEnLot } from '@/services/workflow';
 import { messageErreur } from '@/services/traduireErreur';
 import { toastErreur, toastSucces } from '@/store/toasts';
 import { ApercuDocument } from '@/components/courrier/ApercuDocument';
-import { PadSignature } from '@/components/courrier/PadSignature';
+import { PadSignature, type OptionsSignature } from '@/components/courrier/PadSignature';
+import { useParametres } from '@/hooks/useParametres';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { origineApp } from '@/services/urls';
@@ -16,6 +17,7 @@ import { origineApp } from '@/services/urls';
 export function Parapheur(): React.JSX.Element {
   const { t } = useTranslation();
   const acteur = useActeur();
+  const parametres = useParametres();
   const taches = useLiveQuery(() => (acteur ? parapheur(acteur.poste.id) : []), [acteur?.poste.id]) ?? [];
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const [ouvrirSignature, setOuvrirSignature] = useState(false);
@@ -37,12 +39,12 @@ export function Parapheur(): React.JSX.Element {
     });
   }
 
-  async function surSigner(imagePngDataUrl: string) {
+  async function surSigner(imagePngDataUrl: string, { avecCachet }: OptionsSignature) {
     if (!acteur || selection.size === 0) return;
     setEnCours(true);
     try {
       const acteurCourant = { personneId: acteur.personne.id, posteId: acteur.poste.id };
-      const contexte = { imagePngDataUrl, origineUrl: origineApp() };
+      const contexte = { imagePngDataUrl, origineUrl: origineApp(), avecCachet };
       if (selection.size === 1) {
         await signer([...selection][0], acteurCourant, contexte);
         toastSucces(t('parapheur.signer'));
@@ -109,6 +111,7 @@ export function Parapheur(): React.JSX.Element {
         <Modal titre={t('signature.titre')} onFermer={() => setOuvrirSignature(false)}>
           <PadSignature
             signatureExistante={acteur?.personne.derniereSignaturePng}
+            cachet={parametres?.cachetPng}
             onValider={surSigner}
             onAnnuler={() => setOuvrirSignature(false)}
             enCours={enCours}

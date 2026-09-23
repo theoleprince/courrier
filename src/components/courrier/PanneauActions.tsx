@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { Archive, MessageSquare, Share2 } from 'lucide-react';
 import { db } from '@/db/db';
 import type { ActeurCourant } from '@/hooks/useActeur';
 import {
@@ -27,9 +28,11 @@ import { ouvrirPdf } from '@/services/impression';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { SelecteurEntite } from '@/components/organisation/SelecteurEntite';
-import { PadSignature } from '@/components/courrier/PadSignature';
+import { PadSignature, type OptionsSignature } from '@/components/courrier/PadSignature';
+import { useParametres } from '@/hooks/useParametres';
 import type { CircuitInstance, Courrier, ModeEnvoi } from '@/types/models';
 import { origineApp } from '@/services/urls';
+import { sortantReponseDe } from '@/services/requetes';
 
 interface Props {
   courrier: Courrier;
@@ -38,6 +41,11 @@ interface Props {
 }
 
 const modesEnvoi: ModeEnvoi[] = ['MAIN_PROPRE', 'POSTE', 'EMAIL', 'COURSIER'];
+
+/** Carte de l'action attendue de l'utilisateur : mise en avant, c'est la première chose à voir sur la fiche. */
+const CADRE_TACHE =
+  'space-y-3 rounded-lg border-2 border-[var(--couleur-primaire)] bg-white p-4 shadow-sm dark:bg-slate-900';
+const ETIQUETTE_TACHE = 'text-xs font-semibold uppercase tracking-wide text-[var(--couleur-primaire)]';
 
 export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.Element | null {
   const { t } = useTranslation();
@@ -50,15 +58,32 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
   const [ouvrirSignature, setOuvrirSignature] = useState(false);
   const [ouvrirVisa, setOuvrirVisa] = useState(false);
   const [ouvrirDiffusion, setOuvrirDiffusion] = useState(false);
+  const [ouvrirCommentaire, setOuvrirCommentaire] = useState(false);
   const [posteDiffusion, setPosteDiffusion] = useState<string>();
   const [modeEnvoi, setModeEnvoi] = useState<ModeEnvoi>('POSTE');
   const [accuseReception, setAccuseReception] = useState(false);
   const [enCours, setEnCours] = useState(false);
 
   const postes = useLiveQuery(() => db.postes.toArray()) ?? [];
+  const parametres = useParametres();
 
   const etape = circuit && circuit.statut === 'EN_COURS' ? circuit.etapes[circuit.indexCourant] : undefined;
   const assigneAMoi = etape?.posteAssigneId === acteur.poste.id;
+
+  // Entrant traité mais dont la réponse attendue n'a jamais été rédigée : l'entité traitante
+  // (ou sa hiérarchie, ou celui qui a traité, ou le DG) peut encore la rédiger.
+  const peutRedigerReponseTardive = useLiveQuery(async () => {
+    if (courrier.sens !== 'ENTRANT' || courrier.statut !== 'EN_ATTENTE_REPONSE') return false;
+    if (await sortantReponseDe(courrier.id)) return false;
+    if (acteur.poste.role === 'DG') return true;
+    if (circuit?.etapes.some((e) => e.type === 'TRAITEMENT' && e.posteAssigneId === acteur.poste.id)) return true;
+    let entite = courrier.entiteTraitanteId ? await db.entites.get(courrier.entiteTraitanteId) : undefined;
+    for (let niveau = 0; entite && niveau < 20; niveau += 1) {
+      if (entite.id === acteur.poste.entiteId && (niveau === 0 || acteur.poste.estResponsable)) return true;
+      entite = entite.parentId ? await db.entites.get(entite.parentId) : undefined;
+    }
+    return false;
+  }, [courrier.id, courrier.statut, courrier.entiteTraitanteId, circuit?.id, acteur.poste.id]);
 
   async function chargerSuggestions() {
     setSuggestions(await suggererImputation(courrier.id));
@@ -101,7 +126,7 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
     setEnCours(true);
     try {
       await viser(circuit.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { commentaire: commentaire || undefined, paraphePngDataUrl });
-      toastSucces(t('courrier.visaAppose'));
+      toastSucces(t(etape?.type === 'VALIDATION' ? 'courrier.validationApposee' : 'courrier.visaAppose'));
       setCommentaire('');
       setOuvrirVisa(false);
     } catch (e) {
@@ -126,11 +151,11 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
     }
   }
 
-  async function surSigner(imagePngDataUrl: string) {
+  async function surSigner(imagePngDataUrl: string, { avecCachet }: OptionsSignature) {
     if (!circuit) return;
     setEnCours(true);
     try {
-      await signer(circuit.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { imagePngDataUrl, origineUrl: origineApp() });
+      await signer(circuit.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { imagePngDataUrl, origineUrl: origineApp(), avecCachet });
       toastSucces(t('signature.confirmer'));
       setOuvrirSignature(false);
     } catch (e) {
@@ -315,7 +340,8 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
   if (assigneAMoi && etape) {
     if (etape.type === 'IMPUTATION') {
       return (
-        <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+        <div className={CADRE_TACHE}>
+          <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
           <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.imputer')}</h3>
           <Button variante="discret" type="button" onClick={chargerSuggestions} className="text-xs">
             {t('courrier.suggestions')}
@@ -354,7 +380,8 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
     if (etape.type === 'TRAITEMENT') {
       const entrantReponseAttendue = courrier.sens === 'ENTRANT' && courrier.reponseAttendue;
       return (
-        <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+        <div className={CADRE_TACHE}>
+          <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
           <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.marquerTraite')}</h3>
           {boiteCommentaire}
           <div className="flex flex-wrap gap-2">
@@ -377,13 +404,15 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
 
     if (etape.type === 'VISA' || etape.type === 'VALIDATION') {
       return (
-        <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+        <div className={CADRE_TACHE}>
+          <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
           <h3 className="font-medium text-slate-800 dark:text-slate-100">
             {t(etape.type === 'VISA' ? 'courrier.viser' : 'courrier.valider')}
           </h3>
           {boiteCommentaire}
           <div className="flex gap-2">
-            <Button variante="primaire" disabled={enCours} onClick={etape.type === 'VISA' ? () => setOuvrirVisa(true) : surValider}>
+            {/* Visa comme validation : le paraphe est apposé sur le document. */}
+            <Button variante="primaire" disabled={enCours} onClick={() => setOuvrirVisa(true)}>
               {t(etape.type === 'VISA' ? 'courrier.viser' : 'courrier.valider')}
             </Button>
             <Button variante="danger" onClick={() => setOuvrirRejet(true)}>
@@ -392,8 +421,10 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
           </div>
           {blocManuscrit}
           {ouvrirVisa && (
-            <Modal titre={t('courrier.viser')} onFermer={() => setOuvrirVisa(false)}>
-              <p className="mb-3 text-sm text-slate-600 dark:text-slate-300">{t('courrier.visaExplication')}</p>
+            <Modal titre={t(etape.type === 'VISA' ? 'courrier.viser' : 'courrier.valider')} onFermer={() => setOuvrirVisa(false)}>
+              <p className="mb-3 text-sm text-slate-600 dark:text-slate-300">
+                {t(etape.type === 'VISA' ? 'courrier.visaExplication' : 'courrier.validationExplication')}
+              </p>
               <PadSignature signatureExistante={acteur.personne.derniereSignaturePng} onValider={surViser} onAnnuler={() => setOuvrirVisa(false)} enCours={enCours} />
             </Modal>
           )}
@@ -418,7 +449,8 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
 
     if (etape.type === 'SIGNATURE') {
       return (
-        <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+        <div className={CADRE_TACHE}>
+          <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
           <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('parapheur.signer')}</h3>
           <div className="flex gap-2">
             <Button variante="primaire" onClick={() => setOuvrirSignature(true)}>
@@ -431,7 +463,7 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
           {blocManuscrit}
           {ouvrirSignature && (
             <Modal titre={t('signature.titre')} onFermer={() => setOuvrirSignature(false)}>
-              <PadSignature signatureExistante={acteur.personne.derniereSignaturePng} onValider={surSigner} onAnnuler={() => setOuvrirSignature(false)} enCours={enCours} />
+              <PadSignature signatureExistante={acteur.personne.derniereSignaturePng} cachet={parametres?.cachetPng} onValider={surSigner} onAnnuler={() => setOuvrirSignature(false)} enCours={enCours} />
             </Modal>
           )}
           {ouvrirRejet && (
@@ -455,7 +487,8 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
 
     if (etape.type === 'EXPEDITION') {
       return (
-        <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+        <div className={CADRE_TACHE}>
+          <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
           <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.expedier')}</h3>
           <select className="champ" value={modeEnvoi} onChange={(e) => setModeEnvoi(e.target.value as ModeEnvoi)}>
             {modesEnvoi.map((m) => (
@@ -487,30 +520,56 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
     );
   }
 
+  const redactionTardive = peutRedigerReponseTardive && (
+    <div className={CADRE_TACHE}>
+      <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
+      <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.reponseARediger.titre')}</h3>
+      <p className="text-sm text-slate-600 dark:text-slate-300">{t('courrier.reponseARediger.explication')}</p>
+      <Button variante="primaire" onClick={() => navigate(`/courriers/sortants/nouveau?enReponseA=${courrier.id}`)}>
+        {t('courrier.reponseARediger.bouton')}
+      </Button>
+    </div>
+  );
+
   const posteEstBureauOrdre = acteur.poste.role === 'BUREAU_ORDRE';
   const peutArchiver = posteEstBureauOrdre && (courrier.statut === 'CLOTURE' || courrier.statut === 'EXPEDIE');
 
   return (
-    <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-      <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.commentaire')}</h3>
-      {boiteCommentaire}
+    <>
+      {redactionTardive}
+      {/* Pas de tâche en cours : actions secondaires, discrètes, chacune dans sa fenêtre. */}
       <div className="flex flex-wrap gap-2">
-        <Button variante="secondaire" disabled={enCours} onClick={surCommenter}>
-          {t('courrier.commentaire')}
+        <Button variante="secondaire" className="text-xs" onClick={() => setOuvrirCommentaire(true)}>
+          <MessageSquare size={14} /> {t('courrier.commenter')}
         </Button>
         {(posteEstBureauOrdre || acteur.poste.estResponsable) && (
-          <Button variante="secondaire" onClick={() => setOuvrirDiffusion(true)}>
-            {t('courrier.diffuserPourInformation')}
+          <Button variante="secondaire" className="text-xs" onClick={() => setOuvrirDiffusion(true)}>
+            <Share2 size={14} /> {t('courrier.diffuserPourInformation')}
           </Button>
         )}
         {peutArchiver && (
-          <Button variante="secondaire" disabled={enCours} onClick={surArchiver}>
-            {t('courrier.archiver')}
+          <Button variante="secondaire" className="text-xs" disabled={enCours} onClick={surArchiver}>
+            <Archive size={14} /> {t('courrier.archiver')}
           </Button>
         )}
       </div>
+      {ouvrirCommentaire && (
+        <Modal titre={t('courrier.commenter')} onFermer={() => setOuvrirCommentaire(false)}>
+          {boiteCommentaire}
+          <Button
+            variante="primaire"
+            disabled={!commentaire.trim() || enCours}
+            onClick={async () => {
+              await surCommenter();
+              setOuvrirCommentaire(false);
+            }}
+          >
+            {t('courrier.commenter')}
+          </Button>
+        </Modal>
+      )}
       {modaleDiffusion}
-    </div>
+    </>
   );
 }
 

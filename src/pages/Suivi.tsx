@@ -6,7 +6,7 @@ import { fr, enUS } from 'date-fns/locale';
 import { db } from '@/db/db';
 import { useActeur } from '@/hooks/useActeur';
 import { useParametres } from '@/hooks/useParametres';
-import { obtenirFicheSuivi } from '@/services/suivi';
+import { obtenirFicheSuivi, texteStatut } from '@/services/suivi';
 import { genererRecepisse } from '@/services/documents';
 import { ouvrirPdf } from '@/services/impression';
 import { toastSucces } from '@/store/toasts';
@@ -37,7 +37,7 @@ export function Suivi(): React.JSX.Element {
   const joursRetard = echeanceActuelle ? Math.ceil((Date.now() - new Date(echeanceActuelle).getTime()) / 86_400_000) : 0;
 
   async function copierMessage() {
-    const texte = `Votre courrier ${courrier.numero ?? courrier.codeSuivi} est ${t(statut.cle, statut.params).toLowerCase()}${
+    const texte = `Votre courrier ${courrier.numero ?? courrier.codeSuivi} est ${texteStatut(statut, t, i18n.language).toLowerCase()}${
       dateReponseEstimee ? `. Réponse estimée avant le ${format(new Date(dateReponseEstimee), 'P', { locale })}` : ''
     }.`;
     await navigator.clipboard.writeText(texte);

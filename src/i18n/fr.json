@@ -72,7 +72,10 @@
       "delaiEscalade": "Délai avant escalade (jours)",
       "modeDemo": "Mode démonstration",
       "apercu": "Aperçu",
-      "enregistre": "Personnalisation enregistrée"
+      "enregistre": "Personnalisation enregistrée",
+      "cachet": "Cachet numérique",
+      "retirerCachet": "Retirer",
+      "cachetAide": "PNG ou JPEG. Le fond blanc est rendu transparent automatiquement : un cachet scanné ou photographié convient. Proposé à chaque signature."
     }
   },
   "tableauDeBord": {
@@ -168,7 +171,9 @@
     "reutiliser": "Réutiliser ma dernière signature",
     "mentionSimulee": "Signature simulée, sans valeur légale dans ce POC.",
     "empreinte": "Empreinte du document",
-    "confirmer": "Signer"
+    "confirmer": "Signer",
+    "importerImage": "Importer une image",
+    "apposerCachet": "Apposer le cachet de l’organisation"
   },
   "verification": {
     "titre": "Vérification d'un document signé",
@@ -230,7 +235,25 @@
       "historique": "Historique",
       "signatures": "Signatures",
       "pieces": "Pièces"
-    }
+    },
+    "reponseARediger": {
+      "titre": "Réponse attendue, non rédigée",
+      "explication": "Ce courrier a été marqué traité sans que la réponse attendue ait été rédigée.",
+      "bouton": "Rédiger la réponse"
+    },
+    "recu": "Reçu",
+    "envoye": "Envoyé",
+    "codeSuivi": "code de suivi",
+    "commenter": "Commenter",
+    "aFaire": "À faire",
+    "naturePiece": {
+      "SCAN": "Courrier scanné",
+      "BROUILLON": "Brouillon",
+      "VERSION_SIGNEE": "Version signée",
+      "ANNEXE": "Annexe"
+    },
+    "validationExplication": "Tracez ou importez votre paraphe : il sera apposé avec la mention « Validé », votre nom et la date sur chaque page du document.",
+    "validationApposee": "Validation apposée sur le document"
   },
   "statutEntrant": {
     "ENREGISTRE": "Enregistré",
@@ -336,7 +359,8 @@
       "reponse": "Réponse {{numero}} :",
       "actuellementChez": "actuellement chez",
       "aEnvoyerAvant": "À envoyer avant le {{date}}"
-    }
+    },
+    "voirDetail": "Voir le détail"
   },
   "manuscrit": {
     "titreVisa": "Ou viser à la main",

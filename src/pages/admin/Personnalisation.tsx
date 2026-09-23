@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
 import { useParametres } from '@/hooks/useParametres';
-import { mettreAJourParametres, lireFichierEnDataUrl } from '@/services/parametres';
+import { mettreAJourParametres, lireFichierEnDataUrl, imageEnPng } from '@/services/parametres';
 import { Button } from '@/components/ui/Button';
 import { Tabs, type Onglet } from '@/components/ui/Tabs';
 
@@ -74,6 +74,11 @@ export function Personnalisation(): React.JSX.Element {
     await mettreAJourParametres({ logoPng: dataUrl });
   }
 
+  async function surChangementCachet(fichier: File | undefined) {
+    if (!fichier) return;
+    await mettreAJourParametres({ cachetPng: await imageEnPng(fichier, 600, true) });
+  }
+
   if (!parametres) return <p>{t('commun.chargement')}</p>;
 
   return (
@@ -122,6 +127,33 @@ export function Personnalisation(): React.JSX.Element {
                 className="text-sm"
               />
             </div>
+          </Champ>
+
+          <Champ label={t('admin.personnalisation.cachet')}>
+            <div className="flex items-center gap-3">
+              {parametres.cachetPng && (
+                <img
+                  src={parametres.cachetPng}
+                  alt=""
+                  className="h-20 w-20 rounded border border-slate-200 bg-white object-contain dark:border-slate-700"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={(e) => {
+                  void surChangementCachet(e.target.files?.[0]);
+                  e.target.value = '';
+                }}
+                className="text-sm"
+              />
+              {parametres.cachetPng && (
+                <Button variante="discret" type="button" onClick={() => void mettreAJourParametres({ cachetPng: undefined })}>
+                  {t('admin.personnalisation.retirerCachet')}
+                </Button>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-slate-400">{t('admin.personnalisation.cachetAide')}</p>
           </Champ>
 
           <Champ label={t('admin.personnalisation.couleurPrimaire')}>

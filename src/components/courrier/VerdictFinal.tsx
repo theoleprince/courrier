@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { differenceInCalendarDays, format } from 'date-fns';
@@ -164,7 +163,7 @@ export function VerdictFinal({
         : reponseAId
           ? await db.courriers.get(reponseAId)
           : undefined;
-    return { personne, poste, lie, attente: courrier.statut === 'EN_ATTENTE_REPONSE' ? await detailsAttente(courrier, lie) : undefined };
+    return { personne, poste, attente: courrier.statut === 'EN_ATTENTE_REPONSE' ? await detailsAttente(courrier, lie) : undefined };
   }, [decision?.traiteeParId, decision?.posteAssigneId, courrier.id, courrier.sens, courrier.statut, reponseAId]);
 
   if (!circuit || circuit.statut === 'EN_COURS') return null;
@@ -178,69 +177,66 @@ export function VerdictFinal({
   const duree = circuit.termineLe
     ? differenceInCalendarDays(new Date(circuit.termineLe), new Date(circuit.demarreLe))
     : undefined;
-  const lie = details?.lie;
 
   return (
-    <section className={`rounded-lg border p-4 ${style.cadre}`} aria-label={t('verdict.titre')}>
+    <section className={`rounded-lg border px-4 py-3 ${style.cadre}`} aria-label={t('verdict.titre')}>
       <div className="flex items-center gap-2">
         {style.icone}
-        <p className="text-xs font-semibold tracking-wide uppercase opacity-70">
-          {t('verdict.titre')}
-        </p>
+        <p className="font-semibold">{t(cle)}</p>
       </div>
-      <p className="mt-1 text-lg font-semibold">{t(cle)}</p>
 
-      {decision && (
-        <div className="mt-2 text-sm">
-          <p>
-            {t(
-              decision.statut === 'REJETEE'
-                ? 'verdict.decision.REJET'
-                : `verdict.decision.${decision.type}`,
-            )}
-            {' · '}
-            {decision.libelle}
-            {avecPersonnes && details?.personne && (
-              <>
-                {' '}
-                {t('verdict.par')}{' '}
-                <strong>
-                  {details.personne.prenom} {details.personne.nom}
-                </strong>
-                {details.poste && <> ({details.poste.libelle})</>}
-              </>
-            )}
-            {decision.finLe && <> — {format(new Date(decision.finLe), 'PPp', { locale })}</>}
-          </p>
-          {avecPersonnes && decision.commentaire && (
-            <blockquote className="mt-2 border-l-2 border-current pl-3 italic opacity-80">
-              {decision.statut === 'REJETEE' ? `${t('verdict.motif')} : ` : ''}«{' '}
-              {decision.commentaire} »
-            </blockquote>
-          )}
-        </div>
+      {/* Un motif de rejet doit se lire tout de suite : c'est ce qu'il faut corriger. */}
+      {avecPersonnes && decision?.statut === 'REJETEE' && decision.commentaire && (
+        <blockquote className="mt-2 border-l-2 border-current pl-3 text-sm italic opacity-80">
+          {t('verdict.motif')} : « {decision.commentaire} »
+        </blockquote>
       )}
-
-      <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs opacity-80">
-        {duree !== undefined && <li>{t('verdict.duree', { count: duree })}</li>}
-        <li>
-          {etapesEnRetard === 0
-            ? t('verdict.delaisTenus')
-            : t('verdict.etapesEnRetard', { count: etapesEnRetard })}
-        </li>
-        {nbRejets > 0 && <li>{t('verdict.rejets', { count: nbRejets })}</li>}
-      </ul>
 
       {details?.attente && <AttenteReponse attente={details.attente} avecPersonnes={avecPersonnes} />}
 
-      {lie && (
-        <p className="mt-3 text-sm">
-          {t(courrier.sens === 'ENTRANT' ? 'verdict.reponse' : 'verdict.enReponseA')}{' '}
-          <Link to={`/courriers/${lie.id}`} className="font-medium underline">
-            {lie.numero ?? lie.codeSuivi}
-          </Link>
-        </p>
-      )}
+      <details className="mt-2 text-sm">
+        <summary className="cursor-pointer text-xs font-medium opacity-70 hover:opacity-100">
+          {t('verdict.voirDetail')}
+        </summary>
+        {decision && (
+          <div className="mt-2">
+            <p>
+              {t(
+                decision.statut === 'REJETEE'
+                  ? 'verdict.decision.REJET'
+                  : `verdict.decision.${decision.type}`,
+              )}
+              {' · '}
+              {decision.libelle}
+              {avecPersonnes && details?.personne && (
+                <>
+                  {' '}
+                  {t('verdict.par')}{' '}
+                  <strong>
+                    {details.personne.prenom} {details.personne.nom}
+                  </strong>
+                  {details.poste && <> ({details.poste.libelle})</>}
+                </>
+              )}
+              {decision.finLe && <> — {format(new Date(decision.finLe), 'PPp', { locale })}</>}
+            </p>
+            {avecPersonnes && decision.statut !== 'REJETEE' && decision.commentaire && (
+              <blockquote className="mt-2 border-l-2 border-current pl-3 italic opacity-80">
+                « {decision.commentaire} »
+              </blockquote>
+            )}
+          </div>
+        )}
+        <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs opacity-80">
+          {duree !== undefined && <li>{t('verdict.duree', { count: duree })}</li>}
+          <li>
+            {etapesEnRetard === 0
+              ? t('verdict.delaisTenus')
+              : t('verdict.etapesEnRetard', { count: etapesEnRetard })}
+          </li>
+          {nbRejets > 0 && <li>{t('verdict.rejets', { count: nbRejets })}</li>}
+        </ul>
+      </details>
     </section>
   );
 }

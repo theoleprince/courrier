@@ -72,7 +72,10 @@
       "delaiEscalade": "Escalation delay (days)",
       "modeDemo": "Demo mode",
       "apercu": "Preview",
-      "enregistre": "Branding saved"
+      "enregistre": "Branding saved",
+      "cachet": "Digital stamp",
+      "retirerCachet": "Remove",
+      "cachetAide": "PNG or JPEG. The white background is made transparent automatically, so a scanned or photographed stamp works. Offered at every signature."
     }
   },
   "tableauDeBord": {
@@ -168,7 +171,9 @@
     "reutiliser": "Reuse my last signature",
     "mentionSimulee": "Simulated signature, no legal value in this POC.",
     "empreinte": "Document fingerprint",
-    "confirmer": "Sign"
+    "confirmer": "Sign",
+    "importerImage": "Import an image",
+    "apposerCachet": "Apply the organisation stamp"
   },
   "verification": {
     "titre": "Signed document verification",
@@ -230,7 +235,25 @@
       "historique": "History",
       "signatures": "Signatures",
       "pieces": "Attachments"
-    }
+    },
+    "reponseARediger": {
+      "titre": "Reply expected, not drafted",
+      "explication": "This letter was marked as processed but the expected reply was never drafted.",
+      "bouton": "Draft the reply"
+    },
+    "recu": "Received",
+    "envoye": "Sent",
+    "codeSuivi": "tracking code",
+    "commenter": "Comment",
+    "aFaire": "To do",
+    "naturePiece": {
+      "SCAN": "Scanned letter",
+      "BROUILLON": "Draft",
+      "VERSION_SIGNEE": "Signed version",
+      "ANNEXE": "Attachment"
+    },
+    "validationExplication": "Draw or import your initials: they will be stamped with the mention “Validated”, your name and the date on every page of the document.",
+    "validationApposee": "Validation stamped on the document"
   },
   "statutEntrant": {
     "ENREGISTRE": "Registered",
@@ -336,7 +359,8 @@
       "reponse": "Reply {{numero}}:",
       "actuellementChez": "currently with",
       "aEnvoyerAvant": "To be sent by {{date}}"
-    }
+    },
+    "voirDetail": "Show details"
   },
   "manuscrit": {
     "titreVisa": "Or approve by hand",
