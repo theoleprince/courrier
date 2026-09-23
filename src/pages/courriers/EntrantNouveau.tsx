@@ -19,6 +19,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ZoneDepot } from '@/components/courrier/ZoneDepot';
 import { SelecteurCorrespondant } from '@/components/courrier/SelecteurCorrespondant';
 import type { CourrierEntrant, ModeDepot, Priorite, TypeCourrier } from '@/types/models';
+import { origineApp } from '@/services/urls';
 
 const schema = z.object({
   objet: z.string().min(1),
@@ -118,7 +119,7 @@ export function EntrantNouveau(): React.JSX.Element {
       correspondant,
       parametres,
       nombrePages: fichiers.length || 1,
-      urlPortail: `${window.location.origin}/portail?code=${resultat.codeSuivi}`,
+      urlPortail: `${origineApp()}/portail?code=${resultat.codeSuivi}`,
       dateAffichee: maintenant().toLocaleString('fr-FR'),
     });
     ouvrirPdf(blob);

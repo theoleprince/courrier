@@ -29,6 +29,7 @@ import { Modal } from '@/components/ui/Modal';
 import { SelecteurEntite } from '@/components/organisation/SelecteurEntite';
 import { PadSignature } from '@/components/courrier/PadSignature';
 import type { CircuitInstance, Courrier, ModeEnvoi } from '@/types/models';
+import { origineApp } from '@/services/urls';
 
 interface Props {
   courrier: Courrier;
@@ -129,7 +130,7 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
     if (!circuit) return;
     setEnCours(true);
     try {
-      await signer(circuit.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { imagePngDataUrl, origineUrl: window.location.origin });
+      await signer(circuit.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { imagePngDataUrl, origineUrl: origineApp() });
       toastSucces(t('signature.confirmer'));
       setOuvrirSignature(false);
     } catch (e) {

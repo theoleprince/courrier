@@ -5,6 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
 
 export default defineConfig({
+  base: process.env.VITE_BASE ?? '/',
   plugins: [
     react(),
     tailwindcss(),
@@ -18,7 +19,8 @@ export default defineConfig({
         theme_color: '#1d4ed8',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: '.',
+        scope: '.',
         icons: [
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
         ],

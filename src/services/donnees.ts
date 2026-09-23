@@ -1,9 +1,10 @@
 import { db } from '@/db/db';
+import { BASE_APP } from '@/services/urls';
 
 /** Vide la base et recharge l'application ; le seed se rejoue au démarrage. */
 export async function reinitialiserDemo(): Promise<void> {
   await db.delete();
-  window.location.href = '/connexion';
+  window.location.href = `${BASE_APP}connexion`;
 }
 
 async function blobVersBase64(blob: Blob): Promise<string> {

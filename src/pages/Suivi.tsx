@@ -14,6 +14,7 @@ import { BadgeStatut } from '@/components/courrier/Badges';
 import { TimelineParcours } from '@/components/courrier/TimelineParcours';
 import { Button } from '@/components/ui/Button';
 import type { CourrierEntrant } from '@/types/models';
+import { origineApp } from '@/services/urls';
 
 export function Suivi(): React.JSX.Element {
   const { code } = useParams();
@@ -51,7 +52,7 @@ export function Suivi(): React.JSX.Element {
       correspondant,
       parametres,
       nombrePages: 1,
-      urlPortail: `${window.location.origin}/portail?code=${entrant.codeSuivi}`,
+      urlPortail: `${origineApp()}/portail?code=${entrant.codeSuivi}`,
       dateAffichee: format(new Date(entrant.dateReception), 'Pp', { locale }),
     });
     ouvrirPdf(blob);

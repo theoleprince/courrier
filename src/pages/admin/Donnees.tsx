@@ -5,6 +5,7 @@ import { exporterDonnees, importerDonnees, reinitialiserDemo } from '@/services/
 import { toastErreur, toastSucces } from '@/store/toasts';
 import { messageErreur } from '@/services/traduireErreur';
 import { Button } from '@/components/ui/Button';
+import { BASE_APP } from '@/services/urls';
 
 export function Donnees(): React.JSX.Element {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ export function Donnees(): React.JSX.Element {
     try {
       await importerDonnees(fichier);
       toastSucces(t('commun.confirmer'));
-      window.location.href = '/';
+      window.location.href = BASE_APP;
     } catch (erreur) {
       toastErreur(messageErreur(erreur));
     } finally {

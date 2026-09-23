@@ -11,6 +11,7 @@ import { ApercuDocument } from '@/components/courrier/ApercuDocument';
 import { PadSignature } from '@/components/courrier/PadSignature';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
+import { origineApp } from '@/services/urls';
 
 export function Parapheur(): React.JSX.Element {
   const { t } = useTranslation();
@@ -41,7 +42,7 @@ export function Parapheur(): React.JSX.Element {
     setEnCours(true);
     try {
       const acteurCourant = { personneId: acteur.personne.id, posteId: acteur.poste.id };
-      const contexte = { imagePngDataUrl, origineUrl: window.location.origin };
+      const contexte = { imagePngDataUrl, origineUrl: origineApp() };
       if (selection.size === 1) {
         await signer([...selection][0], acteurCourant, contexte);
         toastSucces(t('parapheur.signer'));
