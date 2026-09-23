@@ -11,7 +11,18 @@ import { useDemoStore } from '@/store/demo';
 import { useSessionStore } from '@/store/session';
 import { reinitialiserDemo } from '@/services/donnees';
 import { Button } from '@/components/ui/Button';
-import type { Personne } from '@/types/models';
+import type { Entite, Personne } from '@/types/models';
+
+/** Chemin de l'entité depuis la racine de l'organigramme, ex. [DG, DAF, Service comptabilité]. */
+function cheminEntite(entiteId: string | undefined, entites: Map<string, Entite>): Entite[] {
+  const chemin: Entite[] = [];
+  let courante = entiteId ? entites.get(entiteId) : undefined;
+  while (courante && !chemin.includes(courante)) {
+    chemin.unshift(courante);
+    courante = courante.parentId ? entites.get(courante.parentId) : undefined;
+  }
+  return chemin;
+}
 
 export function BarreDemo(): React.JSX.Element {
   const { t, i18n } = useTranslation();
@@ -20,7 +31,10 @@ export function BarreDemo(): React.JSX.Element {
   const connecter = useSessionStore((s) => s.connecter);
   const [horlogeAffichee, setHorlogeAffichee] = useState(maintenant());
   const [afficherUtilisateurs, setAfficherUtilisateurs] = useState(false);
-  const toutesPersonnes = useLiveQuery(() => db.personnes.toArray());
+  const annuaire = useLiveQuery(async () => {
+    const [personnes, postes, entites] = await Promise.all([db.personnes.toArray(), db.postes.toArray(), db.entites.toArray()]);
+    return { personnes, postes: new Map(postes.map((p) => [p.id, p])), entites: new Map(entites.map((e) => [e.id, e])) };
+  });
 
   useEffect(() => {
     const id = setInterval(() => setHorlogeAffichee(maintenant()), 1000);
@@ -45,7 +59,21 @@ export function BarreDemo(): React.JSX.Element {
     setAfficherUtilisateurs(false);
   }
 
-  const liste = (toutesPersonnes ?? []).filter((p) => p.actif);
+  // Chaque personne avec son poste et sa place dans l'organigramme, triée du sommet vers la base.
+  const liste = (annuaire?.personnes ?? [])
+    .filter((p) => p.actif)
+    .map((personne) => {
+      const poste = personne.posteId ? annuaire?.postes.get(personne.posteId) : undefined;
+      const chemin = annuaire ? cheminEntite(poste?.entiteId, annuaire.entites) : [];
+      return { personne, poste, chemin };
+    })
+    .sort(
+      (a, b) =>
+        a.chemin.length - b.chemin.length ||
+        a.chemin.map((e) => e.libelle).join('/').localeCompare(b.chemin.map((e) => e.libelle).join('/')) ||
+        Number(b.poste?.estResponsable ?? false) - Number(a.poste?.estResponsable ?? false) ||
+        a.personne.nom.localeCompare(b.personne.nom),
+    );
 
   if (repliee) {
     return (
@@ -89,19 +117,30 @@ export function BarreDemo(): React.JSX.Element {
             <Users size={14} /> {t('demo.changerUtilisateur')}
           </Button>
           {afficherUtilisateurs && (
-            <div className="absolute bottom-full mb-2 max-h-64 w-64 overflow-y-auto rounded-md border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
-              {liste.map((personne) => (
+            <div className="absolute bottom-full mb-2 max-h-96 w-80 overflow-y-auto rounded-md border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+              {liste.map(({ personne, poste, chemin }) => (
                 <button
                   key={personne.id}
                   type="button"
                   onClick={() => connecterCommePersonne(personne)}
-                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+                  className="flex w-full items-start gap-2 rounded px-2 py-1.5 text-left text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+                  style={{ paddingLeft: `${0.5 + Math.max(0, chemin.length - 1) * 0.75}rem` }}
                 >
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--couleur-primaire)] text-[10px] font-semibold text-white">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--couleur-primaire)] text-[10px] font-semibold text-white">
                     {personne.prenom[0]}
                     {personne.nom[0]}
                   </span>
-                  {personne.prenom} {personne.nom}
+                  <span className="min-w-0">
+                    <span className="block">
+                      {personne.prenom} {personne.nom}
+                    </span>
+                    {poste && <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{poste.libelle}</span>}
+                    {chemin.length > 0 && (
+                      <span className="block truncate text-[11px] text-slate-400" title={chemin.map((e) => e.libelle).join(' › ')}>
+                        {chemin.map((e, i) => (i === chemin.length - 1 ? e.libelle : e.code)).join(' › ')}
+                      </span>
+                    )}
+                  </span>
                 </button>
               ))}
             </div>

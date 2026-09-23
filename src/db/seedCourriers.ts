@@ -85,6 +85,7 @@ export async function dejaInitialisee(): Promise<boolean> {
  */
 export async function seedCourriers(): Promise<void> {
   if (await dejaInitialisee()) return;
+  await db.parametres.update('global', { seedEnCours: true });
 
   const carine = await acteurDe('Carine Ngo Bassong');
   const idriss = await acteurDe('Idriss Moussa');
@@ -276,4 +277,5 @@ export async function seedCourriers(): Promise<void> {
   }
 
   await verifierEcheances();
+  await db.parametres.update('global', { seedEnCours: false });
 }

@@ -6,6 +6,9 @@ import { fr, enUS } from 'date-fns/locale';
 import { CheckCircle2, Hourglass, XCircle } from 'lucide-react';
 import { db } from '@/db/db';
 import { sortantReponseDe } from '@/services/requetes';
+import { statutClair } from '@/services/suivi';
+import { BadgeStatut } from '@/components/courrier/Badges';
+import type { StatutClair } from '@/services/suivi';
 import type { CircuitInstance, Courrier, EtapeInstance, Historique } from '@/types/models';
 
 type Issue = 'favorable' | 'enAttente' | 'defavorable';
@@ -58,6 +61,75 @@ function derniereDecision(circuit: CircuitInstance): EtapeInstance | undefined {
     .at(-1);
 }
 
+interface Attente {
+  /** Entité chargée de rédiger la réponse (celle à qui le courrier a été imputé). */
+  entite: string | undefined;
+  dateLimite: string | undefined;
+  /** Réponse déjà rédigée : son statut et le poste qui doit agir dessus. */
+  reponse?: { numero: string; statut: StatutClair; posteCourant: string | undefined; personneCourante: string | undefined };
+}
+
+/** Qui doit agir pour que la réponse parte : l'entité traitante, ou le poste où la réponse est bloquée. */
+async function detailsAttente(courrier: Courrier, reponse: Courrier | undefined): Promise<Attente> {
+  const entite = courrier.entiteTraitanteId ? (await db.entites.get(courrier.entiteTraitanteId))?.libelle : undefined;
+  const dateLimite = courrier.sens === 'ENTRANT' ? courrier.dateLimiteReponse : undefined;
+  if (!reponse) return { entite, dateLimite };
+
+  const circuit = reponse.circuitInstanceId ? await db.circuits.get(reponse.circuitInstanceId) : undefined;
+  const posteId = circuit?.statut === 'EN_COURS' ? circuit.posteCourantId : null;
+  const [poste, occupant] = posteId
+    ? await Promise.all([db.postes.get(posteId), db.personnes.where('posteId').equals(posteId).first()])
+    : [undefined, undefined];
+  return {
+    entite,
+    dateLimite,
+    reponse: {
+      numero: reponse.numero ?? reponse.codeSuivi,
+      statut: await statutClair(reponse),
+      posteCourant: poste?.libelle,
+      personneCourante: occupant ? `${occupant.prenom} ${occupant.nom}` : undefined,
+    },
+  };
+}
+
+function AttenteReponse({ attente, avecPersonnes }: { attente: Attente; avecPersonnes: boolean }): React.JSX.Element {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === 'en' ? enUS : fr;
+  const { reponse } = attente;
+
+  return (
+    <div className="mt-3 space-y-1 text-sm">
+      {!reponse && (
+        <p>
+          {t('verdict.attente.aucuneReponse')}
+          {attente.entite && (
+            <>
+              {' '}
+              {t('verdict.attente.aPreparerPar')} <strong>{attente.entite}</strong>
+            </>
+          )}
+        </p>
+      )}
+      {reponse && (
+        <p className="flex flex-wrap items-center gap-2">
+          {t('verdict.attente.reponse', { numero: reponse.numero })} <BadgeStatut statut={reponse.statut} />
+          {reponse.posteCourant && (
+            <span>
+              — {t('verdict.attente.actuellementChez')} <strong>{reponse.posteCourant}</strong>
+              {avecPersonnes && reponse.personneCourante && <> ({reponse.personneCourante})</>}
+            </span>
+          )}
+        </p>
+      )}
+      {attente.dateLimite && (
+        <p className="opacity-80">
+          {t('verdict.attente.aEnvoyerAvant', { date: format(new Date(attente.dateLimite), 'PP', { locale }) })}
+        </p>
+      )}
+    </div>
+  );
+}
+
 interface Props {
   courrier: Courrier;
   circuit: CircuitInstance | undefined;
@@ -92,8 +164,8 @@ export function VerdictFinal({
         : reponseAId
           ? await db.courriers.get(reponseAId)
           : undefined;
-    return { personne, poste, lie };
-  }, [decision?.traiteeParId, decision?.posteAssigneId, courrier.id, courrier.sens, reponseAId]);
+    return { personne, poste, lie, attente: courrier.statut === 'EN_ATTENTE_REPONSE' ? await detailsAttente(courrier, lie) : undefined };
+  }, [decision?.traiteeParId, decision?.posteAssigneId, courrier.id, courrier.sens, courrier.statut, reponseAId]);
 
   if (!circuit || circuit.statut === 'EN_COURS') return null;
 
@@ -158,6 +230,8 @@ export function VerdictFinal({
         </li>
         {nbRejets > 0 && <li>{t('verdict.rejets', { count: nbRejets })}</li>}
       </ul>
+
+      {details?.attente && <AttenteReponse attente={details.attente} avecPersonnes={avecPersonnes} />}
 
       {lie && (
         <p className="mt-3 text-sm">

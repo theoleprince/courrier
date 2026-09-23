@@ -330,6 +330,8 @@ export interface Parametres {
   delaiEscaladeJours: number; // retard avant escalade (défaut 2)
   modeDemo: boolean;
   decalageHorlogeMinutes: number; // horloge de démo
+  /** Vrai pendant la génération des courriers de démo : resté vrai au démarrage = génération interrompue. */
+  seedEnCours?: boolean;
 }
 
 export interface Sequence {

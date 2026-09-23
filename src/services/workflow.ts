@@ -986,7 +986,30 @@ export async function expedier(courrierId: ID, acteur: Acteur, options: OptionsE
 
     if (sortant.reponseAId) {
       const entrant = await db.courriers.get(sortant.reponseAId);
-      if (entrant && entrant.sens === 'ENTRANT' && entrant.statut === 'EN_ATTENTE_REPONSE') {
+      const circuitEntrant = entrant?.circuitInstanceId ? await db.circuits.get(entrant.circuitInstanceId) : undefined;
+      if (entrant && entrant.sens === 'ENTRANT' && circuitEntrant?.statut === 'EN_COURS') {
+        // La réponse expédiée vaut traitement : on solde le circuit de l'entrant resté ouvert,
+        // ce qui le clôture (terminerCircuit voit la réponse EXPEDIE).
+        circuitEntrant.etapes.forEach((e, i) => {
+          if (i === circuitEntrant.indexCourant) {
+            e.statut = 'VALIDEE';
+            e.finLe = maintenantHorodatage;
+            e.commentaire = `Réponse expédiée : ${numero}`;
+          } else if (e.statut === 'EN_ATTENTE') {
+            e.statut = 'IGNOREE';
+            e.debutLe = maintenantHorodatage;
+            e.finLe = maintenantHorodatage;
+          }
+        });
+        await tracer({
+          courrierId: entrant.id,
+          action: 'TRAITEMENT',
+          acteurId: ACTEUR_SYSTEME,
+          posteId: ACTEUR_SYSTEME,
+          commentaire: `Réponse expédiée : ${numero}`,
+        });
+        await terminerCircuit(circuitEntrant, entrant);
+      } else if (entrant && entrant.sens === 'ENTRANT' && entrant.statut === 'EN_ATTENTE_REPONSE') {
         const entrantType = entrant as CourrierEntrant;
         entrantType.statut = 'CLOTURE';
         entrantType.misAJourLe = maintenantHorodatage;

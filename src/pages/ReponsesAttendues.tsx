@@ -10,7 +10,7 @@ export function ReponsesAttendues(): React.JSX.Element {
   return (
     <div>
       <h1 className="mb-4 text-xl font-semibold text-slate-800 dark:text-slate-100">{t('nav.reponsesAttendues')}</h1>
-      <TableCourriers courriers={courriers} />
+      <TableCourriers courriers={courriers} avecDelaiReponse />
     </div>
   );
 }

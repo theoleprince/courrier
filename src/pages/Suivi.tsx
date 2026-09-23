@@ -89,7 +89,7 @@ export function Suivi(): React.JSX.Element {
         <Button variante="secondaire" onClick={copierMessage}>
           {t('suivi.copierMessage')}
         </Button>
-        {niveau === 'COMPLET' && (
+        {(niveau === 'COMPLET' || niveau === 'SUIVI') && (
           <Button variante="discret" onClick={() => navigate(`/courriers/${courrier.id}`)}>
             {t('suivi.voirDetailComplet')}
           </Button>

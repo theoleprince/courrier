@@ -61,3 +61,13 @@ export class GestionCourrierDB extends Dexie {
 }
 
 export const db = new GestionCourrierDB();
+
+// Base supprimée depuis un autre onglet (réinitialisation de la démo) : on recharge
+// cet onglet pour qu'il reparte sur la nouvelle base au lieu de rester sur une connexion fermée.
+db.on('versionchange', (evenement) => {
+  if (evenement.newVersion === null) {
+    db.close();
+    window.location.reload();
+    return false;
+  }
+});

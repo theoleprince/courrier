@@ -305,7 +305,7 @@
       "cloture": "Processed and closed",
       "archive": "Archived",
       "expedie": "Sent",
-      "attenteReponse": "Processed — awaiting the reply",
+      "attenteReponse": "Processed — our reply to the correspondent is still to be sent",
       "signe": "Signed — awaiting dispatch",
       "rejete": "Rejected — awaiting a new version",
       "termine": "Workflow completed"
@@ -329,7 +329,14 @@
     "rejets_one": "{{count}} rejection along the way",
     "rejets_other": "{{count}} rejections along the way",
     "reponse": "Reply:",
-    "enReponseA": "In reply to"
+    "enReponseA": "In reply to",
+    "attente": {
+      "aucuneReponse": "No reply drafted yet.",
+      "aPreparerPar": "To be prepared by:",
+      "reponse": "Reply {{numero}}:",
+      "actuellementChez": "currently with",
+      "aEnvoyerAvant": "To be sent by {{date}}"
+    }
   },
   "manuscrit": {
     "titreVisa": "Or approve by hand",
@@ -338,5 +345,19 @@
     "imprimer": "1. Print the document",
     "televerser": "2. Upload the scan (PDF)",
     "enregistre": "Scanned version saved, step validated"
+  },
+  "dossier": {
+    "titre": "File: original letter and reply",
+    "initial": "Original letter",
+    "reponse": "Reply",
+    "ceCourrier": "this letter",
+    "ouvrir": "Open",
+    "accesRestreint": "Restricted access"
+  },
+  "reponsesAttendues": {
+    "delai": "Reply due by",
+    "aujourdhui": "today",
+    "joursRestants_one": "{{count}} day left",
+    "joursRestants_other": "{{count}} days left"
   }
 }

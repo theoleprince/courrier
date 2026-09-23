@@ -1,10 +1,13 @@
 import { db } from '@/db/db';
 import { BASE_APP } from '@/services/urls';
+import { useSessionStore } from '@/store/session';
 
 /** Vide la base et recharge l'application ; le seed se rejoue au démarrage. */
 export async function reinitialiserDemo(): Promise<void> {
+  // Les identifiants des personnes changent au prochain seed : la session enregistrée deviendrait invalide.
+  useSessionStore.getState().deconnecter();
   await db.delete();
-  window.location.href = `${BASE_APP}connexion`;
+  window.location.replace(`${BASE_APP}connexion`);
 }
 
 async function blobVersBase64(blob: Blob): Promise<string> {

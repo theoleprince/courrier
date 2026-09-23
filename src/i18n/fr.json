@@ -305,7 +305,7 @@
       "cloture": "Traité et clôturé",
       "archive": "Archivé",
       "expedie": "Expédié",
-      "attenteReponse": "Traité — en attente de la réponse",
+      "attenteReponse": "Traité — notre réponse au correspondant reste à envoyer",
       "signe": "Signé — en attente d'expédition",
       "rejete": "Rejeté — en attente d'une nouvelle version",
       "termine": "Circuit terminé"
@@ -329,7 +329,14 @@
     "rejets_one": "{{count}} rejet en cours de route",
     "rejets_other": "{{count}} rejets en cours de route",
     "reponse": "Réponse :",
-    "enReponseA": "En réponse au courrier"
+    "enReponseA": "En réponse au courrier",
+    "attente": {
+      "aucuneReponse": "Aucune réponse rédigée pour l’instant.",
+      "aPreparerPar": "À préparer par :",
+      "reponse": "Réponse {{numero}} :",
+      "actuellementChez": "actuellement chez",
+      "aEnvoyerAvant": "À envoyer avant le {{date}}"
+    }
   },
   "manuscrit": {
     "titreVisa": "Ou viser à la main",
@@ -338,5 +345,19 @@
     "imprimer": "1. Imprimer le document",
     "televerser": "2. Téléverser le scan (PDF)",
     "enregistre": "Version scannée enregistrée, étape validée"
+  },
+  "dossier": {
+    "titre": "Dossier : courrier initial et réponse",
+    "initial": "Courrier initial",
+    "reponse": "Réponse",
+    "ceCourrier": "ce courrier",
+    "ouvrir": "Ouvrir",
+    "accesRestreint": "Accès restreint"
+  },
+  "reponsesAttendues": {
+    "delai": "Réponse attendue avant",
+    "aujourdhui": "aujourd’hui",
+    "joursRestants_one": "encore {{count}} jour",
+    "joursRestants_other": "encore {{count}} jours"
   }
 }

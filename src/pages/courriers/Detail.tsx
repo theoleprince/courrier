@@ -13,10 +13,10 @@ import { objetAffiche } from '@/services/requetes';
 import { verifierPdfDepose } from '@/services/signature';
 import { toastSucces, toastErreur } from '@/store/toasts';
 import { BadgeStatut, BadgePriorite } from '@/components/courrier/Badges';
-import { TimelineParcours } from '@/components/courrier/TimelineParcours';
 import { ApercuDocument } from '@/components/courrier/ApercuDocument';
 import { PanneauActions } from '@/components/courrier/PanneauActions';
 import { VerdictFinal } from '@/components/courrier/VerdictFinal';
+import { DossierLie, ParcoursDossier } from '@/components/courrier/DossierLie';
 import { Tabs, type Onglet } from '@/components/ui/Tabs';
 import { Button } from '@/components/ui/Button';
 
@@ -74,6 +74,9 @@ export function Detail(): React.JSX.Element {
 
   const { courrier, correspondant, pieces, signatures, historique } = donnees;
   const objet = objetAffiche(courrier, niveau);
+  // Le bureau d'ordre n'a qu'un accès « suivi », mais doit pouvoir agir sur l'étape qui lui est assignée (expédition).
+  const circuitEnCours = donnees.circuit?.statut === 'EN_COURS' ? donnees.circuit : undefined;
+  const etapeAssigneeAMoi = circuitEnCours?.etapes[circuitEnCours.indexCourant]?.posteAssigneId === acteur.poste.id;
 
   return (
     <div>
@@ -120,12 +123,13 @@ export function Detail(): React.JSX.Element {
             historique={historique}
             avecPersonnes={niveau !== 'MINIMAL'}
           />
-          {niveau === 'COMPLET' && <PanneauActions courrier={courrier} circuit={donnees.circuit} acteur={acteur} />}
+          <DossierLie courrier={courrier} />
+          {(niveau === 'COMPLET' || etapeAssigneeAMoi) && <PanneauActions courrier={courrier} circuit={donnees.circuit} acteur={acteur} />}
 
           <div>
             <Tabs onglets={onglets} actif={onglet} onChange={setOnglet} />
             <div className="pt-4">
-              {onglet === 'parcours' && (parcours ? <TimelineParcours etapes={parcours} /> : null)}
+              {onglet === 'parcours' && <ParcoursDossier courrier={courrier} parcours={parcours} />}
 
               {onglet === 'historique' && (
                 <ul className="space-y-2 text-sm">
