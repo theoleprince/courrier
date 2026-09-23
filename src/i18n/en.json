@@ -1,0 +1,342 @@
+{
+  "app": {
+    "titre": "Mail management"
+  },
+  "commun": {
+    "enregistrer": "Save",
+    "annuler": "Cancel",
+    "confirmer": "Confirm",
+    "suivant": "Next",
+    "retour": "Back",
+    "chargement": "Loading…",
+    "horsLigne": "Offline — your data stays on this device",
+    "aucunResultat": "No results"
+  },
+  "nav": {
+    "tableauDeBord": "Dashboard",
+    "corbeille": "My inbox",
+    "parapheur": "Signature desk",
+    "information": "For information",
+    "recherche": "Search",
+    "registreEntrant": "Incoming register",
+    "registreSortant": "Outgoing register",
+    "aExpedier": "To dispatch",
+    "reponsesAttendues": "Awaited replies",
+    "correspondants": "Correspondents",
+    "administration": "Administration"
+  },
+  "connexion": {
+    "titre": "Who are you?",
+    "sousTitre": "Choose your name in the org chart to sign in.",
+    "choisirPoste": "This account holds several positions. Which one do you want to sign in as?",
+    "interim": "(acting)",
+    "seConnecter": "Sign in",
+    "posteVacant": "Vacant position",
+    "modeArbre": "Org chart",
+    "modeIdentifiants": "Login",
+    "identifiant": "Login (email or full name)",
+    "motDePasse": "Password",
+    "identifiantsInvalides": "Incorrect login or password.",
+    "motDePasseDefaut": "Default password for all demo accounts: {{motDePasse}}"
+  },
+  "enTete": {
+    "posteActif": "Active position",
+    "changerPoste": "Switch position",
+    "seDeconnecter": "Sign out",
+    "langue": "Language"
+  },
+  "demo": {
+    "titre": "Demo mode",
+    "avancerUneHeure": "+1 h",
+    "avancerUnJour": "+1 day",
+    "avancerUneSemaine": "+1 week",
+    "revenirAuPresent": "Back to now",
+    "changerUtilisateur": "Switch user",
+    "reinitialiser": "Reset demo",
+    "scenarioGuide": "Guided scenario",
+    "replier": "Collapse",
+    "deplier": "Expand"
+  },
+  "admin": {
+    "personnalisation": {
+      "titre": "Identity and branding",
+      "nomOrganisation": "Organization name",
+      "sigle": "Short name",
+      "adresse": "Address",
+      "telephone": "Phone",
+      "email": "Email",
+      "logo": "Logo",
+      "importerLogo": "Upload a logo",
+      "couleurPrimaire": "Primary color",
+      "langueParDefaut": "Default language",
+      "delaiEscalade": "Escalation delay (days)",
+      "modeDemo": "Demo mode",
+      "apercu": "Preview",
+      "enregistre": "Branding saved"
+    }
+  },
+  "tableauDeBord": {
+    "titre": "Dashboard",
+    "bienvenue": "Welcome, {{prenom}}",
+    "rechercherPlaceholder": "Search a mail, a correspondent, a tracking code…",
+    "scannerRecepisse": "Scan a receipt"
+  },
+  "suivi": {
+    "statut": {
+      "enregistre": "Received, being routed",
+      "enTraitement": "Being processed by {{entite}}",
+      "enValidation": "Under validation",
+      "reponseEnSignature": "Processed, reply awaiting signature",
+      "reponseEnPreparation": "Processed, reply being prepared",
+      "reponseEnvoyee": "Reply sent on {{date}} ({{mode}})",
+      "traiteLe": "Processed on {{date}}",
+      "archive": "Processed and archived",
+      "brouillon": "Being drafted",
+      "rejete": "Rejected, under revision",
+      "signe": "Signed, awaiting dispatch",
+      "expedieLe": "Dispatched on {{date}}"
+    },
+    "actuellementA": "Currently at: {{entite}} — {{poste}}",
+    "depuis": "for {{duree}}",
+    "enRetardDe": "{{jours}}d overdue",
+    "dansLesDelais": "on time",
+    "reponseAttendueAvant": "Reply expected before {{date}}",
+    "reponseEstimee": "Estimated reply before {{date}}",
+    "parcours": "Journey",
+    "informations": "Information",
+    "reimprimerRecepisse": "Reprint the receipt",
+    "copierMessage": "Copy a message for the user",
+    "messageCopie": "Message copied to clipboard",
+    "voirDetailComplet": "View full detail",
+    "codeIntrouvable": "No mail matches this tracking code.",
+    "etapeIgnoree": "Not required",
+    "etapeRejetee": "Rejected"
+  },
+  "recherche": {
+    "titre": "Search",
+    "placeholder": "Search…",
+    "courriers": "Mail",
+    "correspondants": "Correspondents",
+    "aucunResultat": "No results for this search.",
+    "scannerQr": "Scan a QR / tracking code"
+  },
+  "portail": {
+    "titre": "Track my mail",
+    "sousTitre": "Enter your tracking code and the first 3 letters of your name to check your file's status.",
+    "codeSuivi": "Tracking code",
+    "identifiant": "Name (first 3 letters are enough)",
+    "verifier": "Check",
+    "introuvable": "No file matches this information.",
+    "verifierDocument": "Verify a signed document"
+  },
+  "registre": {
+    "exporterCsv": "Export as CSV",
+    "imprimerRegistre": "Print the register",
+    "genererBordereau": "Transmission slip",
+    "selectionnes": "{{nombre}} mail item(s) selected",
+    "selectionRequise": "Select at least one mail item to generate a transmission slip."
+  },
+  "corbeille": {
+    "titre": "My inbox",
+    "vide": "No pending task.",
+    "echeance": "Due date",
+    "priorite": "Priority",
+    "recuLe": "Received on"
+  },
+  "parapheur": {
+    "titre": "Signature desk",
+    "vide": "No mail awaiting signature.",
+    "signer": "Sign",
+    "signerSelection": "Sign selection",
+    "visasObtenus": "Approvals obtained",
+    "redacteur": "Drafter"
+  },
+  "information": {
+    "titre": "For information",
+    "vide": "No broadcast.",
+    "marquerLu": "Mark as read",
+    "diffuseLe": "Sent on {{date}}"
+  },
+  "signature": {
+    "manuscriteTitre": "Or sign by hand",
+    "manuscriteExplication": "Print the approved document, sign it (and annotate if needed), scan it and upload the PDF: it becomes the signed version.",
+    "manuscriteEnregistree": "Hand-signed version saved",
+    "modeManuscrite": "Handwritten (scan)",
+    "modeElectronique": "Electronic",
+    "titre": "Electronic signature",
+    "effacer": "Clear",
+    "reutiliser": "Reuse my last signature",
+    "mentionSimulee": "Simulated signature, no legal value in this POC.",
+    "empreinte": "Document fingerprint",
+    "confirmer": "Sign"
+  },
+  "verification": {
+    "titre": "Signed document verification",
+    "deposerPdf": "Drop the PDF you received",
+    "authentique": "Document authentic and unmodified",
+    "modifie": "This document was altered after signature",
+    "signePar": "Signed by",
+    "leDate": "on {{date}}",
+    "verifierIntegrite": "Verify integrity"
+  },
+  "courrier": {
+    "nouveauEntrant": "Register a mail",
+    "nouveauSortant": "Draft a mail",
+    "objet": "Subject",
+    "type": "Type",
+    "priorite": "Priority",
+    "confidentialite": "Confidentiality",
+    "correspondant": "Correspondent",
+    "nouveauCorrespondant": "New correspondent",
+    "modeDepot": "Drop-off method",
+    "deposant": "Submitted by",
+    "dateCourrier": "Mail date",
+    "referenceExpediteur": "Sender reference",
+    "reponseAttendue": "Reply expected",
+    "dateLimiteReponse": "Reply deadline",
+    "motsCles": "Keywords",
+    "fichier": "Document",
+    "aucunDocument": "No document attached to this letter",
+    "enregistrer": "Register",
+    "enregistrerEtImprimer": "Register and print the receipt",
+    "courrierEnregistre": "Mail {{numero}} registered",
+    "enregistrerUnAutre": "Register another",
+    "enReponseA": "In reply to",
+    "rediger": "Draft",
+    "choisirModele": "Choose a template",
+    "deposerDocument": "Upload a document",
+    "enregistrerBrouillon": "Save draft",
+    "soumettreAuCircuit": "Submit to workflow",
+    "imputer": "Assign",
+    "marquerTraite": "Mark as processed",
+    "viser": "Approve",
+    "visaExplication": "Draw your initials: they will be stamped with the words \"Read and approved\", your name and the date on every page of the document.",
+    "visaAppose": "Approval stamped on the document",
+    "valider": "Validate",
+    "rejeter": "Reject",
+    "motifRejet": "Rejection reason",
+    "expedier": "Dispatch",
+    "modeEnvoi": "Dispatch method",
+    "accuseReception": "Acknowledgement of receipt",
+    "commentaire": "Comment",
+    "diffuserPourInformation": "Broadcast for information",
+    "archiver": "Archive",
+    "entiteTraitante": "Handling entity",
+    "suggestions": "Suggestions",
+    "nouvelleVersion": "New version",
+    "resoumettre": "Resubmit",
+    "onglets": {
+      "parcours": "Journey",
+      "historique": "History",
+      "signatures": "Signatures",
+      "pieces": "Attachments"
+    }
+  },
+  "statutEntrant": {
+    "ENREGISTRE": "Registered",
+    "EN_TRAITEMENT": "Processing",
+    "EN_VALIDATION": "Under validation",
+    "EN_ATTENTE_REPONSE": "Awaiting reply",
+    "CLOTURE": "Closed",
+    "ARCHIVE": "Archived"
+  },
+  "statutSortant": {
+    "BROUILLON": "Draft",
+    "EN_VALIDATION": "Under validation",
+    "REJETE": "Rejected",
+    "SIGNE": "Signed",
+    "EXPEDIE": "Dispatched",
+    "ARCHIVE": "Archived"
+  },
+  "typeCourrier": {
+    "LETTRE": "Letter",
+    "FACTURE": "Invoice",
+    "CONVOCATION": "Summons",
+    "NOTE": "Note",
+    "DEMANDE": "Request",
+    "RECLAMATION": "Complaint",
+    "AUTRE": "Other"
+  },
+  "priorite": {
+    "NORMALE": "Normal",
+    "URGENTE": "Urgent",
+    "TRES_URGENTE": "Very urgent"
+  },
+  "confidentialite": {
+    "PUBLIC": "Public",
+    "INTERNE": "Internal",
+    "CONFIDENTIEL": "Confidential"
+  },
+  "modeDepot": {
+    "GUICHET": "Front desk",
+    "POSTE": "Mail",
+    "COURSIER": "Courier",
+    "EMAIL": "Email"
+  },
+  "modeEnvoi": {
+    "MAIN_PROPRE": "Hand delivery",
+    "POSTE": "Mail",
+    "EMAIL": "Email",
+    "COURSIER": "Courier"
+  },
+  "erreurs": {
+    "pdfAttendu": "The file must be a PDF.",
+    "imputationManquante": "A handling entity must be chosen.",
+    "posteNonAssigne": "This task is not assigned to your active position.",
+    "habilitationSignatureRequise": "Your position is not authorized to sign.",
+    "documentAltere": "The document has been altered since it was first filed.",
+    "motifObligatoire": "A reason is required to reject.",
+    "rejetImpossible": "This step cannot be rejected.",
+    "expeditionImpossible": "This mail is not ready to be dispatched.",
+    "soumissionImpossible": "This mail cannot be submitted in its current state.",
+    "aucunModeleCircuit": "No workflow is configured for this mail type.",
+    "courrierIntrouvable": "Mail not found.",
+    "circuitIntrouvable": "Workflow not found or already completed.",
+    "etapeIntrouvable": "Step not found or already processed.",
+    "documentIntrouvable": "No document to sign.",
+    "serviceParentObligatoire": "A service must have a parent entity.",
+    "parentInvalide": "An entity cannot be attached to itself or to one of its sub-entities.",
+    "parentInactif": "Reactivate the parent entity first.",
+    "inconnue": "An unexpected error occurred."
+  },
+  "verdict": {
+    "titre": "Final outcome",
+    "issue": {
+      "cloture": "Processed and closed",
+      "archive": "Archived",
+      "expedie": "Sent",
+      "attenteReponse": "Processed — awaiting the reply",
+      "signe": "Signed — awaiting dispatch",
+      "rejete": "Rejected — awaiting a new version",
+      "termine": "Workflow completed"
+    },
+    "decision": {
+      "IMPUTATION": "Assigned",
+      "TRAITEMENT": "Processed",
+      "VISA": "Approved",
+      "VALIDATION": "Validated",
+      "SIGNATURE": "Signed",
+      "EXPEDITION": "Sent",
+      "REJET": "Rejected"
+    },
+    "par": "by",
+    "motif": "Reason",
+    "duree_one": "Processed in {{count}} day",
+    "duree_other": "Processed in {{count}} days",
+    "delaisTenus": "All deadlines were met",
+    "etapesEnRetard_one": "{{count}} step completed late",
+    "etapesEnRetard_other": "{{count}} steps completed late",
+    "rejets_one": "{{count}} rejection along the way",
+    "rejets_other": "{{count}} rejections along the way",
+    "reponse": "Reply:",
+    "enReponseA": "In reply to"
+  },
+  "manuscrit": {
+    "titreVisa": "Or approve by hand",
+    "titreValidation": "Or validate by hand",
+    "explication": "Print the document, approve or annotate it by hand, scan it and upload the PDF: it becomes the next version of the document and the step is validated.",
+    "imprimer": "1. Print the document",
+    "televerser": "2. Upload the scan (PDF)",
+    "enregistre": "Scanned version saved, step validated"
+  }
+}

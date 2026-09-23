@@ -1,0 +1,342 @@
+{
+  "app": {
+    "titre": "Gestion du courrier"
+  },
+  "commun": {
+    "enregistrer": "Enregistrer",
+    "annuler": "Annuler",
+    "confirmer": "Confirmer",
+    "suivant": "Suivant",
+    "retour": "Retour",
+    "chargement": "Chargement…",
+    "horsLigne": "Hors ligne — vos données restent sur ce poste",
+    "aucunResultat": "Aucun résultat"
+  },
+  "nav": {
+    "tableauDeBord": "Tableau de bord",
+    "corbeille": "Ma corbeille",
+    "parapheur": "Parapheur",
+    "information": "Pour information",
+    "recherche": "Recherche",
+    "registreEntrant": "Registre entrant",
+    "registreSortant": "Registre sortant",
+    "aExpedier": "À expédier",
+    "reponsesAttendues": "Réponses attendues",
+    "correspondants": "Correspondants",
+    "administration": "Administration"
+  },
+  "connexion": {
+    "titre": "Qui êtes-vous ?",
+    "sousTitre": "Choisissez votre nom dans l'organigramme pour vous connecter.",
+    "choisirPoste": "Ce compte occupe plusieurs postes. Sur quel poste souhaitez-vous vous connecter ?",
+    "interim": "(intérim)",
+    "seConnecter": "Se connecter",
+    "posteVacant": "Poste vacant",
+    "modeArbre": "Organigramme",
+    "modeIdentifiants": "Identifiant",
+    "identifiant": "Identifiant (e-mail ou nom complet)",
+    "motDePasse": "Mot de passe",
+    "identifiantsInvalides": "Identifiant ou mot de passe incorrect.",
+    "motDePasseDefaut": "Mot de passe par défaut pour tous les comptes de démonstration : {{motDePasse}}"
+  },
+  "enTete": {
+    "posteActif": "Poste actif",
+    "changerPoste": "Changer de poste",
+    "seDeconnecter": "Se déconnecter",
+    "langue": "Langue"
+  },
+  "demo": {
+    "titre": "Mode démonstration",
+    "avancerUneHeure": "+1 h",
+    "avancerUnJour": "+1 jour",
+    "avancerUneSemaine": "+1 semaine",
+    "revenirAuPresent": "Revenir au présent",
+    "changerUtilisateur": "Changer d'utilisateur",
+    "reinitialiser": "Réinitialiser la démo",
+    "scenarioGuide": "Scénario guidé",
+    "replier": "Replier",
+    "deplier": "Déplier"
+  },
+  "admin": {
+    "personnalisation": {
+      "titre": "Identité et personnalisation",
+      "nomOrganisation": "Nom de l'organisation",
+      "sigle": "Sigle",
+      "adresse": "Adresse",
+      "telephone": "Téléphone",
+      "email": "E-mail",
+      "logo": "Logo",
+      "importerLogo": "Importer un logo",
+      "couleurPrimaire": "Couleur primaire",
+      "langueParDefaut": "Langue par défaut",
+      "delaiEscalade": "Délai avant escalade (jours)",
+      "modeDemo": "Mode démonstration",
+      "apercu": "Aperçu",
+      "enregistre": "Personnalisation enregistrée"
+    }
+  },
+  "tableauDeBord": {
+    "titre": "Tableau de bord",
+    "bienvenue": "Bienvenue, {{prenom}}",
+    "rechercherPlaceholder": "Rechercher un courrier, un correspondant, un code de suivi…",
+    "scannerRecepisse": "Scanner un récépissé"
+  },
+  "suivi": {
+    "statut": {
+      "enregistre": "Reçu, en cours d'orientation",
+      "enTraitement": "En cours de traitement par {{entite}}",
+      "enValidation": "En cours de validation",
+      "reponseEnSignature": "Traité, réponse en cours de signature",
+      "reponseEnPreparation": "Traité, réponse en préparation",
+      "reponseEnvoyee": "Réponse envoyée le {{date}} ({{mode}})",
+      "traiteLe": "Traité le {{date}}",
+      "archive": "Traité et archivé",
+      "brouillon": "En préparation",
+      "rejete": "Rejeté, en cours de révision",
+      "signe": "Signé, en cours d'expédition",
+      "expedieLe": "Expédié le {{date}}"
+    },
+    "actuellementA": "Actuellement à : {{entite}} — {{poste}}",
+    "depuis": "depuis {{duree}}",
+    "enRetardDe": "en retard de {{jours}} j",
+    "dansLesDelais": "dans les délais",
+    "reponseAttendueAvant": "Réponse attendue avant le {{date}}",
+    "reponseEstimee": "Réponse estimée avant le {{date}}",
+    "parcours": "Parcours",
+    "informations": "Informations",
+    "reimprimerRecepisse": "Réimprimer le récépissé",
+    "copierMessage": "Copier un message pour l'usager",
+    "messageCopie": "Message copié dans le presse-papiers",
+    "voirDetailComplet": "Voir le détail complet",
+    "codeIntrouvable": "Aucun courrier ne correspond à ce code de suivi.",
+    "etapeIgnoree": "Étape non nécessaire",
+    "etapeRejetee": "Rejetée"
+  },
+  "recherche": {
+    "titre": "Recherche",
+    "placeholder": "Rechercher…",
+    "courriers": "Courriers",
+    "correspondants": "Correspondants",
+    "aucunResultat": "Aucun résultat pour cette recherche.",
+    "scannerQr": "Scanner un QR / code de suivi"
+  },
+  "portail": {
+    "titre": "Suivre mon courrier",
+    "sousTitre": "Renseignez votre code de suivi et les 3 premières lettres de votre nom pour connaître l'état de votre dossier.",
+    "codeSuivi": "Code de suivi",
+    "identifiant": "Nom (3 premières lettres suffisent)",
+    "verifier": "Vérifier",
+    "introuvable": "Aucun dossier ne correspond à ces informations.",
+    "verifierDocument": "Vérifier un document signé"
+  },
+  "registre": {
+    "exporterCsv": "Exporter en CSV",
+    "imprimerRegistre": "Imprimer le registre",
+    "genererBordereau": "Bordereau de transmission",
+    "selectionnes": "{{nombre}} courrier(s) sélectionné(s)",
+    "selectionRequise": "Sélectionnez au moins un courrier pour générer un bordereau."
+  },
+  "corbeille": {
+    "titre": "Ma corbeille",
+    "vide": "Aucune tâche en attente.",
+    "echeance": "Échéance",
+    "priorite": "Priorité",
+    "recuLe": "Reçu le"
+  },
+  "parapheur": {
+    "titre": "Parapheur",
+    "vide": "Aucun courrier en attente de signature.",
+    "signer": "Signer",
+    "signerSelection": "Signer la sélection",
+    "visasObtenus": "Visas obtenus",
+    "redacteur": "Rédacteur"
+  },
+  "information": {
+    "titre": "Pour information",
+    "vide": "Aucune diffusion.",
+    "marquerLu": "Marquer comme lu",
+    "diffuseLe": "Diffusé le {{date}}"
+  },
+  "signature": {
+    "manuscriteTitre": "Ou signer à la main",
+    "manuscriteExplication": "Imprimez le document visé, signez-le (et annotez-le si besoin), scannez-le puis téléversez le PDF : il devient la version signée.",
+    "manuscriteEnregistree": "Version signée à la main enregistrée",
+    "modeManuscrite": "Manuscrite (scan)",
+    "modeElectronique": "Électronique",
+    "titre": "Signature électronique",
+    "effacer": "Effacer",
+    "reutiliser": "Réutiliser ma dernière signature",
+    "mentionSimulee": "Signature simulée, sans valeur légale dans ce POC.",
+    "empreinte": "Empreinte du document",
+    "confirmer": "Signer"
+  },
+  "verification": {
+    "titre": "Vérification d'un document signé",
+    "deposerPdf": "Déposez le PDF que vous avez reçu",
+    "authentique": "Document authentique et non modifié",
+    "modifie": "Ce document a été modifié après signature",
+    "signePar": "Signé par",
+    "leDate": "le {{date}}",
+    "verifierIntegrite": "Vérifier l'intégrité"
+  },
+  "courrier": {
+    "nouveauEntrant": "Enregistrer un courrier",
+    "nouveauSortant": "Rédiger un courrier",
+    "objet": "Objet",
+    "type": "Type",
+    "priorite": "Priorité",
+    "confidentialite": "Confidentialité",
+    "correspondant": "Correspondant",
+    "nouveauCorrespondant": "Nouveau correspondant",
+    "modeDepot": "Mode de dépôt",
+    "deposant": "Déposant",
+    "dateCourrier": "Date du courrier",
+    "referenceExpediteur": "Référence expéditeur",
+    "reponseAttendue": "Réponse attendue",
+    "dateLimiteReponse": "Date limite de réponse",
+    "motsCles": "Mots-clés",
+    "fichier": "Document",
+    "aucunDocument": "Aucun document joint à ce courrier",
+    "enregistrer": "Enregistrer",
+    "enregistrerEtImprimer": "Enregistrer et imprimer le récépissé",
+    "courrierEnregistre": "Courrier {{numero}} enregistré",
+    "enregistrerUnAutre": "Enregistrer un autre",
+    "enReponseA": "En réponse à",
+    "rediger": "Rédiger",
+    "choisirModele": "Choisir un modèle",
+    "deposerDocument": "Déposer un document",
+    "enregistrerBrouillon": "Enregistrer le brouillon",
+    "soumettreAuCircuit": "Soumettre au circuit",
+    "imputer": "Imputer",
+    "marquerTraite": "Marquer comme traité",
+    "viser": "Viser",
+    "visaExplication": "Tracez votre paraphe : il sera apposé avec la mention « Lu et approuvé », votre nom et la date sur chaque page du document.",
+    "visaAppose": "Visa apposé sur le document",
+    "valider": "Valider",
+    "rejeter": "Rejeter",
+    "motifRejet": "Motif du rejet",
+    "expedier": "Expédier",
+    "modeEnvoi": "Mode d'envoi",
+    "accuseReception": "Accusé de réception",
+    "commentaire": "Commentaire",
+    "diffuserPourInformation": "Diffuser pour information",
+    "archiver": "Archiver",
+    "entiteTraitante": "Entité traitante",
+    "suggestions": "Suggestions",
+    "nouvelleVersion": "Nouvelle version",
+    "resoumettre": "Resoumettre",
+    "onglets": {
+      "parcours": "Parcours",
+      "historique": "Historique",
+      "signatures": "Signatures",
+      "pieces": "Pièces"
+    }
+  },
+  "statutEntrant": {
+    "ENREGISTRE": "Enregistré",
+    "EN_TRAITEMENT": "En traitement",
+    "EN_VALIDATION": "En validation",
+    "EN_ATTENTE_REPONSE": "En attente de réponse",
+    "CLOTURE": "Clôturé",
+    "ARCHIVE": "Archivé"
+  },
+  "statutSortant": {
+    "BROUILLON": "Brouillon",
+    "EN_VALIDATION": "En validation",
+    "REJETE": "Rejeté",
+    "SIGNE": "Signé",
+    "EXPEDIE": "Expédié",
+    "ARCHIVE": "Archivé"
+  },
+  "typeCourrier": {
+    "LETTRE": "Lettre",
+    "FACTURE": "Facture",
+    "CONVOCATION": "Convocation",
+    "NOTE": "Note",
+    "DEMANDE": "Demande",
+    "RECLAMATION": "Réclamation",
+    "AUTRE": "Autre"
+  },
+  "priorite": {
+    "NORMALE": "Normale",
+    "URGENTE": "Urgente",
+    "TRES_URGENTE": "Très urgente"
+  },
+  "confidentialite": {
+    "PUBLIC": "Public",
+    "INTERNE": "Interne",
+    "CONFIDENTIEL": "Confidentiel"
+  },
+  "modeDepot": {
+    "GUICHET": "Guichet",
+    "POSTE": "Poste",
+    "COURSIER": "Coursier",
+    "EMAIL": "E-mail"
+  },
+  "modeEnvoi": {
+    "MAIN_PROPRE": "Main propre",
+    "POSTE": "Poste",
+    "EMAIL": "E-mail",
+    "COURSIER": "Coursier"
+  },
+  "erreurs": {
+    "pdfAttendu": "Le fichier doit être un PDF.",
+    "imputationManquante": "Une entité traitante doit être choisie.",
+    "posteNonAssigne": "Cette tâche n'est pas assignée à votre poste actif.",
+    "habilitationSignatureRequise": "Votre poste n'est pas habilité à signer.",
+    "documentAltere": "Le document a été altéré depuis son dépôt initial.",
+    "motifObligatoire": "Un motif est obligatoire pour rejeter.",
+    "rejetImpossible": "Cette étape ne peut pas être rejetée.",
+    "expeditionImpossible": "Ce courrier n'est pas prêt à être expédié.",
+    "soumissionImpossible": "Ce courrier n'est pas soumissible dans son état actuel.",
+    "aucunModeleCircuit": "Aucun circuit n'est configuré pour ce type de courrier.",
+    "courrierIntrouvable": "Courrier introuvable.",
+    "circuitIntrouvable": "Circuit introuvable ou terminé.",
+    "etapeIntrouvable": "Étape introuvable ou déjà traitée.",
+    "documentIntrouvable": "Aucun document à signer.",
+    "serviceParentObligatoire": "Un service doit obligatoirement avoir une entité parente.",
+    "parentInvalide": "Une entité ne peut pas être rattachée à elle-même ni à l’une de ses sous-entités.",
+    "parentInactif": "Réactivez d’abord l’entité parente.",
+    "inconnue": "Une erreur inattendue est survenue."
+  },
+  "verdict": {
+    "titre": "Verdict final",
+    "issue": {
+      "cloture": "Traité et clôturé",
+      "archive": "Archivé",
+      "expedie": "Expédié",
+      "attenteReponse": "Traité — en attente de la réponse",
+      "signe": "Signé — en attente d'expédition",
+      "rejete": "Rejeté — en attente d'une nouvelle version",
+      "termine": "Circuit terminé"
+    },
+    "decision": {
+      "IMPUTATION": "Imputé",
+      "TRAITEMENT": "Traité",
+      "VISA": "Visé",
+      "VALIDATION": "Validé",
+      "SIGNATURE": "Signé",
+      "EXPEDITION": "Expédié",
+      "REJET": "Rejeté"
+    },
+    "par": "par",
+    "motif": "Motif",
+    "duree_one": "Traité en {{count}} jour",
+    "duree_other": "Traité en {{count}} jours",
+    "delaisTenus": "Tous les délais ont été tenus",
+    "etapesEnRetard_one": "{{count}} étape terminée hors délai",
+    "etapesEnRetard_other": "{{count}} étapes terminées hors délai",
+    "rejets_one": "{{count}} rejet en cours de route",
+    "rejets_other": "{{count}} rejets en cours de route",
+    "reponse": "Réponse :",
+    "enReponseA": "En réponse au courrier"
+  },
+  "manuscrit": {
+    "titreVisa": "Ou viser à la main",
+    "titreValidation": "Ou valider à la main",
+    "explication": "Imprimez le document, visez-le ou annotez-le à la main, scannez-le puis téléversez le PDF : il devient la version suivante du document et l'étape est validée.",
+    "imprimer": "1. Imprimer le document",
+    "televerser": "2. Téléverser le scan (PDF)",
+    "enregistre": "Version scannée enregistrée, étape validée"
+  }
+}
