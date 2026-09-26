@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/db';
 import { useActeur } from '@/hooks/useActeur';
@@ -16,6 +17,7 @@ import { origineApp } from '@/services/urls';
 
 export function Parapheur(): React.JSX.Element {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const acteur = useActeur();
   const parametres = useParametres();
   const taches = useLiveQuery(() => (acteur ? parapheur(acteur.poste.id) : []), [acteur?.poste.id]) ?? [];
@@ -86,12 +88,23 @@ export function Parapheur(): React.JSX.Element {
                   onChange={() => basculer(tache.circuit.id)}
                   className="mt-1"
                 />
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="font-medium text-slate-800 dark:text-slate-100">
                     {tache.courrier.numero ?? tache.courrier.codeSuivi}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400">{objetAffiche(tache.courrier, 'COMPLET')}</p>
                 </div>
+                {/* Ouvrir la fiche : annoter, confier le travail, consulter le parcours avant de signer. */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/courriers/${tache.courrier.id}`);
+                  }}
+                  className="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-[var(--couleur-primaire)] hover:bg-[var(--primaire-doux)]"
+                >
+                  {t('parapheur.ouvrir')}
+                </button>
               </label>
             ))}
 

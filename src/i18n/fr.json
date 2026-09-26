@@ -152,7 +152,8 @@
     "signer": "Signer",
     "signerSelection": "Signer la sélection",
     "visasObtenus": "Visas obtenus",
-    "redacteur": "Rédacteur"
+    "redacteur": "Rédacteur",
+    "ouvrir": "Ouvrir"
   },
   "information": {
     "titre": "Pour information",
@@ -253,7 +254,16 @@
       "ANNEXE": "Annexe"
     },
     "validationExplication": "Tracez ou importez votre paraphe : il sera apposé avec la mention « Validé », votre nom et la date sur chaque page du document.",
-    "validationApposee": "Validation apposée sur le document"
+    "validationApposee": "Validation apposée sur le document",
+    "emailReponse": "E-mail pour la réponse",
+    "emailReponseAide": "Prérempli avec l'adresse du correspondant. La réponse partira à cette adresse.",
+    "emailDestinataire": "E-mail du destinataire",
+    "emailDestinataireAide": "Utilisé si le courrier est expédié par e-mail.",
+    "emailExpeditionAide": "Le courrier signé sera enregistré comme envoyé à cette adresse.",
+    "emailEnvoye": "Courrier {{numero}} expédié par e-mail à {{email}}.",
+    "apercuLettre": "Aperçu de la lettre",
+    "deposerNouvelleVersion": "Déposer une nouvelle version (PDF)",
+    "resoumettreAide": "Corrigez selon le motif du rejet, déposez la nouvelle version si besoin, puis resoumettez : le circuit repart du début. Les versions précédentes restent consultables."
   },
   "statutEntrant": {
     "ENREGISTRE": "Enregistré",
@@ -312,7 +322,7 @@
     "rejetImpossible": "Cette étape ne peut pas être rejetée.",
     "expeditionImpossible": "Ce courrier n'est pas prêt à être expédié.",
     "soumissionImpossible": "Ce courrier n'est pas soumissible dans son état actuel.",
-    "aucunModeleCircuit": "Aucun circuit n'est configuré pour ce type de courrier.",
+    "aucunModeleCircuit": "Aucun circuit actif pour ce type de courrier : activez un circuit dans Administration → Circuits.",
     "courrierIntrouvable": "Courrier introuvable.",
     "circuitIntrouvable": "Circuit introuvable ou terminé.",
     "etapeIntrouvable": "Étape introuvable ou déjà traitée.",
@@ -320,7 +330,21 @@
     "serviceParentObligatoire": "Un service doit obligatoirement avoir une entité parente.",
     "parentInvalide": "Une entité ne peut pas être rattachée à elle-même ni à l’une de ses sous-entités.",
     "parentInactif": "Réactivez d’abord l’entité parente.",
-    "inconnue": "Une erreur inattendue est survenue."
+    "inconnue": "Une erreur inattendue est survenue.",
+    "emailInvalide": "Adresse e-mail invalide.",
+    "tacheConfieeEnCours": "Une tâche confiée à « {{poste}} » attend son compte rendu. Attendez-le ou reprenez la main avant de clore l'étape.",
+    "noteObligatoire": "La note est obligatoire.",
+    "confierASoiMeme": "Vous ne pouvez pas vous confier une tâche à vous-même.",
+    "compteRenduObligatoire": "Le compte rendu est obligatoire.",
+    "tacheIntrouvable": "Cette tâche est introuvable ou déjà close.",
+    "posteIntrouvable": "Poste introuvable ou inactif.",
+    "actionIncorrecte": "Cette action ne correspond pas à l'étape en cours.",
+    "diffusionIntrouvable": "Diffusion introuvable.",
+    "directionIntrouvable": "Aucune direction n'est rattachée à l'entité traitante : vérifiez l'organigramme.",
+    "etapeSansCible": "Cette étape du circuit n'a ni poste ni rôle cible : corrigez le circuit dans Administration → Circuits.",
+    "modeleIntrouvable": "Aucun circuit actif ne correspond à ce courrier : activez un circuit dans Administration → Circuits.",
+    "redacteurIntrouvable": "Le rédacteur de ce courrier n’a plus de poste : vérifiez l’organigramme.",
+    "responsableIntrouvable": "L'entité concernée n'a pas de poste responsable actif : désignez-en un dans l'organigramme."
   },
   "verdict": {
     "titre": "Verdict final",
@@ -383,5 +407,30 @@
     "aujourdhui": "aujourd’hui",
     "joursRestants_one": "encore {{count}} jour",
     "joursRestants_other": "encore {{count}} jours"
+  },
+  "taches": {
+    "titre": "Notes et tâches confiées",
+    "confier": "Confier à…",
+    "aide": "Écrivez une note et confiez le travail à un collaborateur (ex. votre assistante). L'étape reste la vôtre : il vous rendra compte, puis vous pourrez valider.",
+    "choisirPoste": "Poste à qui confier le travail",
+    "notePlaceholder": "Note / instruction (ex. « Préparer un projet de réponse pour jeudi »)",
+    "delai": "Délai",
+    "jours": "jour(s) (facultatif)",
+    "confiee": "Tâche confiée à {{poste}}",
+    "confieeParPoste": "Confié par {{poste}} ({{personne}})",
+    "echeance": "À rendre avant le {{date}}",
+    "compteRenduPlaceholder": "Votre compte rendu",
+    "joindre": "Joindre un fichier",
+    "rendreCompte": "Rendre compte",
+    "compteRenduEnvoye": "Compte rendu envoyé",
+    "annuler": "Reprendre la main (annuler la tâche)",
+    "annulee": "Tâche annulée",
+    "pieceJointe": "pièce jointe",
+    "confieesAMoi": "Tâches qui vous ont été confiées",
+    "statut": {
+      "EN_COURS": "En attente du compte rendu",
+      "RENDUE": "Compte rendu reçu",
+      "ANNULEE": "Annulée"
+    }
   }
 }

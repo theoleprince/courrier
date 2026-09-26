@@ -33,6 +33,7 @@ export async function niveauAcces(
   const postesImpliques = new Set<ID>();
   circuit?.etapes.forEach((e) => e.posteAssigneId && postesImpliques.add(e.posteAssigneId));
   diffusions.forEach((d) => postesImpliques.add(d.posteId));
+  (await db.tachesConfiees.where('courrierId').equals(courrier.id).toArray()).forEach((t) => postesImpliques.add(t.posteDestinataireId));
 
   if (postesImpliques.has(acteur.poste.id)) return 'COMPLET';
   if (estAccueilOuBureauOrdre) return 'MINIMAL';

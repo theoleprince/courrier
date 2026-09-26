@@ -15,6 +15,7 @@ import type {
   Signature,
   Parametres,
   Sequence,
+  TacheConfiee,
 } from '@/types/models';
 
 export class GestionCourrierDB extends Dexie {
@@ -33,6 +34,7 @@ export class GestionCourrierDB extends Dexie {
   signatures!: EntityTable<Signature, 'id'>;
   parametres!: EntityTable<Parametres, 'id'>;
   sequences!: EntityTable<Sequence, 'id'>;
+  tachesConfiees!: EntityTable<TacheConfiee, 'id'>;
 
   constructor() {
     super('gestion-courrier');
@@ -56,6 +58,10 @@ export class GestionCourrierDB extends Dexie {
       signatures: 'id, courrierId',
       parametres: 'id',
       sequences: 'id',
+    });
+    // v2 : tâches confiées (note + imputation interne au titulaire d'une étape).
+    this.version(2).stores({
+      tachesConfiees: 'id, courrierId, circuitId, posteDestinataireId, statut, [posteDestinataireId+statut]',
     });
   }
 }

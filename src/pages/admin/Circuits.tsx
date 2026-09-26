@@ -33,11 +33,15 @@ function etapeParDefaut(ordre: number): EtapeModele {
   return { ordre, type: 'TRAITEMENT', libelle: 'Nouvelle étape', roleCible: 'RESPONSABLE_ENTITE_TRAITANTE', delaiJours: 2, sauterSiRedacteur: false };
 }
 
-/** Entrant : doit commencer par IMPUTATION. Sortant : doit contenir SIGNATURE et se terminer par EXPEDITION (section 13). */
+/** Entrant : doit commencer par IMPUTATION, sans SIGNATURE ni EXPEDITION. Sortant : doit contenir SIGNATURE et se terminer par EXPEDITION (section 13). */
 function validerCircuit(sens: ModeleCircuit['sens'], etapes: EtapeModele[]): string | null {
   if (etapes.length === 0) return 'Le circuit doit comporter au moins une étape.';
   if (sens === 'ENTRANT' && etapes[0].type !== 'IMPUTATION') {
     return 'Un circuit entrant doit commencer par une étape Imputation.';
+  }
+  // Le moteur ne signe et n'expédie que des sortants : dans un entrant, le courrier resterait bloqué.
+  if (sens === 'ENTRANT' && etapes.some((e) => e.type === 'SIGNATURE' || e.type === 'EXPEDITION')) {
+    return 'Un circuit entrant ne peut pas contenir d’étape Signature ou Expédition : utilisez Visa ou Validation (paraphe sur le document).';
   }
   if (sens === 'SORTANT') {
     if (!etapes.some((e) => e.type === 'SIGNATURE')) return 'Un circuit sortant doit contenir une étape Signature.';

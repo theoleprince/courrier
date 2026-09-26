@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -34,6 +34,7 @@ const schema = z.object({
   referenceExpediteur: z.string().optional(),
   reponseAttendue: z.boolean(),
   dateLimiteReponse: z.string().optional(),
+  emailReponse: z.union([z.literal(''), z.string().trim().email()]).optional(),
   motsCles: z.string().optional(),
 });
 type Formulaire = z.infer<typeof schema>;
@@ -73,6 +74,14 @@ export function EntrantNouveau(): React.JSX.Element {
   const modeDepot = watch('modeDepot');
   const reponseAttendue = watch('reponseAttendue');
   const correspondantId = watch('correspondantId');
+  const emailCorrespondant = useLiveQuery(
+    async () => (correspondantId ? (await db.correspondants.get(correspondantId))?.email ?? '' : ''),
+    [correspondantId],
+  );
+  // Préremplit l'adresse de réponse avec celle du correspondant choisi.
+  useEffect(() => {
+    if (emailCorrespondant !== undefined) setValue('emailReponse', emailCorrespondant);
+  }, [emailCorrespondant, setValue]);
 
   async function surSoumission(valeurs: Formulaire) {
     if (!acteur) return;
@@ -96,6 +105,7 @@ export function EntrantNouveau(): React.JSX.Element {
           referenceExpediteur: valeurs.referenceExpediteur,
           reponseAttendue: valeurs.reponseAttendue,
           dateLimiteReponse: valeurs.dateLimiteReponse,
+          emailReponse: valeurs.reponseAttendue ? valeurs.emailReponse : undefined,
           motsCles: valeurs.motsCles?.split(',').map((m) => m.trim()).filter(Boolean),
         },
         fichier,
@@ -234,6 +244,18 @@ export function EntrantNouveau(): React.JSX.Element {
           </label>
         )}
 
+        {reponseAttendue && (
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('courrier.emailReponse')}</span>
+            <input type="email" className="champ" placeholder="nom@exemple.com" {...register('emailReponse')} />
+            {errors.emailReponse ? (
+              <p className="mt-1 text-xs text-red-500">{t('erreurs.emailInvalide')}</p>
+            ) : (
+              <p className="mt-1 text-xs text-slate-400">{t('courrier.emailReponseAide')}</p>
+            )}
+          </label>
+        )}
+
         <label className="block md:col-span-2">
           <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('courrier.motsCles')}</span>
           <input className="champ" placeholder="facture, urgent, …" {...register('motsCles')} />
@@ -250,7 +272,7 @@ export function EntrantNouveau(): React.JSX.Element {
         <Modal titre={t('courrier.courrierEnregistre', { numero: resultat.numero })} onFermer={() => navigate(`/courriers/${resultat.id}`)}>
           <div className="space-y-4">
             <div className="rounded-md bg-slate-50 p-4 text-center dark:bg-slate-800">
-              <p className="text-xs uppercase tracking-wide text-slate-400">{t('courrier.objet')}</p>
+              <p className="text-xs uppercase tracking-wide text-slate-400">{t('portail.codeSuivi')}</p>
               <p className="my-2 text-2xl font-bold tracking-widest text-[var(--couleur-primaire)]">{resultat.codeSuivi}</p>
               <p className="text-sm text-slate-500">{resultat.numero}</p>
             </div>

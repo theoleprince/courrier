@@ -123,6 +123,8 @@ export interface CourrierEntrant extends CourrierBase {
   deposant?: Deposant;
   reponseAttendue: boolean;
   dateLimiteReponse?: ISODate;
+  /** Adresse à laquelle envoyer la réponse (par défaut celle du correspondant). */
+  emailReponse?: string;
 }
 
 export interface CourrierSortant extends CourrierBase {
@@ -133,6 +135,8 @@ export interface CourrierSortant extends CourrierBase {
   dateExpedition?: ISODate;
   modeEnvoi?: ModeEnvoi;
   accuseReception?: boolean;
+  /** Adresse du destinataire pour un envoi par e-mail. */
+  emailDestinataire?: string;
 }
 
 export type Courrier = CourrierEntrant | CourrierSortant;
@@ -228,6 +232,8 @@ export interface Diffusion {
 
 export type TypeNotification =
   | 'NOUVELLE_TACHE'
+  | 'TACHE_CONFIEE'
+  | 'COMPTE_RENDU'
   | 'RAPPEL_ECHEANCE'
   | 'RETARD'
   | 'ESCALADE'
@@ -248,6 +254,30 @@ export interface Notification {
   lueLe?: ISODate;
 }
 
+/* ----- Tâches confiées ----- */
+
+/**
+ * Note + imputation interne : le titulaire d'une étape confie le travail à un
+ * autre poste et garde l'étape ; le destinataire rend compte (services/taches.ts).
+ */
+export interface TacheConfiee {
+  id: ID;
+  courrierId: ID;
+  circuitId: ID;
+  etapeOrdre: number;
+  posteSourceId: ID;
+  confieeParId: ID;
+  posteDestinataireId: ID;
+  note: string;
+  confieeLe: ISODate;
+  echeance?: ISODate;
+  statut: 'EN_COURS' | 'RENDUE' | 'ANNULEE';
+  compteRendu?: string;
+  pieceJointeId?: ID;
+  clotureeParId?: ID;
+  clotureeLe?: ISODate;
+}
+
 /* ----- Modèles de lettres ----- */
 
 export interface ModeleLettre {
@@ -262,6 +292,9 @@ export interface ModeleLettre {
 /* ----- Traçabilité ----- */
 
 export type ActionHistorique =
+  | 'TACHE_CONFIEE'
+  | 'COMPTE_RENDU'
+  | 'TACHE_ANNULEE'
   | 'ENREGISTREMENT'
   | 'CREATION'
   | 'CIRCUIT_DEMARRE'

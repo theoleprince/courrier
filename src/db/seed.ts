@@ -62,6 +62,7 @@ export async function seedOrganisation(): Promise<void> {
   });
 
   const posteDG = idPoste({ libelle: 'Directeur général', entiteId: dg.id, role: 'DG', estResponsable: true, peutSigner: true });
+  const posteAssistanteDG = idPoste({ libelle: 'Assistante de direction', entiteId: dg.id, role: 'AGENT', estResponsable: false, peutSigner: false });
   const posteSG = idPoste({ libelle: 'Secrétaire général', entiteId: sg.id, role: 'DIRECTEUR', estResponsable: true, peutSigner: false });
   const posteAdmin = idPoste({ libelle: 'Administrateur fonctionnel', entiteId: sg.id, role: 'ADMIN', estResponsable: false, peutSigner: false });
   const posteAccueil = idPoste({ libelle: 'Chargée d’accueil', entiteId: accueil.id, role: 'ACCUEIL', estResponsable: true, peutSigner: false });
@@ -89,6 +90,7 @@ export async function seedOrganisation(): Promise<void> {
     posteDT,
     posteChefMNT,
     posteTechnicien,
+    posteAssistanteDG,
   ];
 
   const MOT_DE_PASSE_DEFAUT = '123456789';
@@ -123,6 +125,7 @@ export async function seedOrganisation(): Promise<void> {
     idPersonne('Hervé', 'Kamga', posteDT.id),
     idPersonne('Josiane', 'Atangana', posteChefMNT.id),
     idPersonne('Rodrigue', 'Essomba', posteTechnicien.id),
+    idPersonne('Nadège', 'Owona', posteAssistanteDG.id),
   ];
 
   const idCorrespondant = (partiel: Omit<Correspondant, 'id'>): Correspondant => ({

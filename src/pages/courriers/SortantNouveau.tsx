@@ -28,6 +28,7 @@ interface FormValues {
   correspondantId: string;
   motsCles: string;
   corpsLettre: string;
+  emailDestinataire: string;
 }
 
 export function SortantNouveau(): React.JSX.Element {
@@ -54,11 +55,20 @@ export function SortantNouveau(): React.JSX.Element {
   );
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
-    defaultValues: { type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', motsCles: '', corpsLettre: '' },
+    defaultValues: { type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', motsCles: '', corpsLettre: '', emailDestinataire: '' },
   });
 
   const correspondantId = watch('correspondantId');
   const corpsLettre = watch('corpsLettre');
+  // Adresse proposée : celle donnée pour la réponse sur l'entrant, sinon celle du correspondant.
+  const emailPropose = useLiveQuery(async () => {
+    if (entrantLie?.emailReponse) return entrantLie.emailReponse;
+    const id = entrantLie?.correspondantId ?? correspondantId;
+    return id ? (await db.correspondants.get(id))?.email ?? '' : '';
+  }, [entrantLie?.emailReponse, entrantLie?.correspondantId, correspondantId]);
+  useEffect(() => {
+    if (emailPropose !== undefined) setValue('emailDestinataire', emailPropose);
+  }, [emailPropose, setValue]);
 
   useEffect(() => {
     if (entrantLie) {
@@ -123,6 +133,7 @@ export function SortantNouveau(): React.JSX.Element {
           reponseAId: enReponseA,
           modeleLettreId: mode === 'modele' ? modeleId : undefined,
           motsCles: valeurs.motsCles.split(',').map((m) => m.trim()).filter(Boolean),
+          emailDestinataire: valeurs.emailDestinataire.trim() || undefined,
         },
         document_,
         { personneId: acteur.personne.id, posteId: acteur.poste.id },
@@ -190,6 +201,21 @@ export function SortantNouveau(): React.JSX.Element {
           </select>
         </label>
 
+        <label className="block">
+          <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('courrier.emailDestinataire')}</span>
+          <input
+            type="email"
+            className="champ"
+            placeholder="nom@exemple.com"
+            {...register('emailDestinataire', { pattern: /^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/ })}
+          />
+          {errors.emailDestinataire ? (
+            <p className="mt-1 text-xs text-red-500">{t('erreurs.emailInvalide')}</p>
+          ) : (
+            <p className="mt-1 text-xs text-slate-400">{t('courrier.emailDestinataireAide')}</p>
+          )}
+        </label>
+
         <label className="block md:col-span-2">
           <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('courrier.objet')}</span>
           <input className="champ" {...register('objet', { required: true })} />
@@ -206,7 +232,7 @@ export function SortantNouveau(): React.JSX.Element {
             </select>
             <textarea className="champ font-mono text-xs" rows={10} {...register('corpsLettre')} />
             <Button type="button" variante="discret" onClick={() => apercuPdf(watch('objet'), corpsLettre)}>
-              {t('suivi.voirDetailComplet')}
+              {t('courrier.apercuLettre')}
             </Button>
           </div>
         ) : (

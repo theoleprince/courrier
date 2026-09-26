@@ -17,8 +17,8 @@ describe('seedOrganisation()', () => {
     ]);
 
     expect(entites.length).toBe(9);
-    expect(postes.length).toBe(13);
-    expect(personnes.length).toBe(13);
+    expect(postes.length).toBe(14);
+    expect(personnes.length).toBe(14);
     expect(parametres?.nomOrganisation).toBe('Groupe Sanaga Industries');
     expect(parametres?.delaiEscaladeJours).toBe(2);
     expect(parametres?.modeDemo).toBe(true);

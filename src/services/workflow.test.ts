@@ -50,7 +50,7 @@ describe('expedier()', () => {
   it("clôture l'entrant et solde son circuit, même s'il n'a pas été marqué traité", async () => {
     await preparer();
 
-    const sortant = await expedier('reponse', acteur, { modeEnvoi: 'EMAIL', accuseReception: false });
+    const sortant = await expedier('reponse', acteur, { modeEnvoi: 'EMAIL', accuseReception: false, emailDestinataire: 'usager@exemple.com' });
 
     expect(sortant.statut).toBe('EXPEDIE');
     expect((await db.courriers.get('entrant'))?.statut).toBe('CLOTURE');
@@ -58,5 +58,16 @@ describe('expedier()', () => {
     expect(circuit?.statut).toBe('TERMINE');
     expect(circuit?.etapes.map((e) => e.statut)).toEqual(['VALIDEE', 'VALIDEE', 'IGNOREE']);
     expect(circuit?.etapes[1].commentaire).toBe(`Réponse expédiée : ${sortant.numero}`);
+  });
+
+  it("refuse un envoi par e-mail sans adresse valide et garde l'adresse sinon", async () => {
+    await preparer();
+
+    await expect(expedier('reponse', acteur, { modeEnvoi: 'EMAIL' })).rejects.toThrow('erreurs.emailInvalide');
+    await expect(expedier('reponse', acteur, { modeEnvoi: 'EMAIL', emailDestinataire: 'pas-une-adresse' })).rejects.toThrow('erreurs.emailInvalide');
+    expect((await db.courriers.get('reponse'))?.statut).toBe('SIGNE');
+
+    const sortant = await expedier('reponse', acteur, { modeEnvoi: 'EMAIL', emailDestinataire: ' usager@exemple.com ' });
+    expect(sortant.emailDestinataire).toBe('usager@exemple.com');
   });
 });

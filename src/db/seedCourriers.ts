@@ -124,10 +124,11 @@ export async function seedCourriers(): Promise<void> {
   }
   await avancerHorloge(3);
 
-  // 2) Réponse à une lettre de la banque, signée et expédiée
+  // 2) Réponse à une lettre de la banque, signée et expédiée par e-mail
   {
+    const EMAIL_BANQUE = 'contact@banque-atlantique-centrale.example';
     const entrant = await enregistrerEntrant(
-      { objet: 'Mise à jour des conditions du compte professionnel', type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: banque, modeDepot: 'POSTE', reponseAttendue: true },
+      { objet: 'Mise à jour des conditions du compte professionnel', type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: banque, modeDepot: 'POSTE', reponseAttendue: true, emailReponse: EMAIL_BANQUE },
       await scanDe('Mise à jour des conditions du compte professionnel'),
       carine,
     );
@@ -136,7 +137,7 @@ export async function seedCourriers(): Promise<void> {
 
     const modele = (await db.modelesLettre.toArray()).find((m) => m.libelle === 'Réponse favorable');
     const sortant = await creerSortant(
-      { objet: 'Réponse — conditions du compte', type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: banque, reponseAId: entrant.id, modeleLettreId: modele?.id },
+      { objet: 'Réponse — conditions du compte', type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: banque, reponseAId: entrant.id, modeleLettreId: modele?.id, emailDestinataire: EMAIL_BANQUE },
       { blob: await pdfPlaceholder('Réponse — conditions du compte'), nom: 'reponse-banque.pdf', mime: 'application/pdf' },
       samuel,
     );
@@ -146,7 +147,7 @@ export async function seedCourriers(): Promise<void> {
       await signer(sortant.circuitInstanceId, paul, { imagePngDataUrl: IMAGE_SIGNATURE_SEED, origineUrl: 'https://poc.local' });
     }
     await avancerHorloge(1);
-    await expedier(sortant.id, carine, { modeEnvoi: 'EMAIL', accuseReception: true });
+    await expedier(sortant.id, carine, { modeEnvoi: 'EMAIL', accuseReception: true, emailDestinataire: EMAIL_BANQUE });
   }
   await avancerHorloge(4);
 

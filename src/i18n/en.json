@@ -152,7 +152,8 @@
     "signer": "Sign",
     "signerSelection": "Sign selection",
     "visasObtenus": "Approvals obtained",
-    "redacteur": "Drafter"
+    "redacteur": "Drafter",
+    "ouvrir": "Open"
   },
   "information": {
     "titre": "For information",
@@ -253,7 +254,16 @@
       "ANNEXE": "Attachment"
     },
     "validationExplication": "Draw or import your initials: they will be stamped with the mention “Validated”, your name and the date on every page of the document.",
-    "validationApposee": "Validation stamped on the document"
+    "validationApposee": "Validation stamped on the document",
+    "emailReponse": "Email for the reply",
+    "emailReponseAide": "Prefilled with the correspondent's address. The reply will be sent there.",
+    "emailDestinataire": "Recipient email",
+    "emailDestinataireAide": "Used if the letter is sent by email.",
+    "emailExpeditionAide": "The signed letter will be recorded as sent to this address.",
+    "emailEnvoye": "Letter {{numero}} sent by email to {{email}}.",
+    "apercuLettre": "Preview letter",
+    "deposerNouvelleVersion": "Upload a new version (PDF)",
+    "resoumettreAide": "Fix according to the rejection reason, upload the new version if needed, then resubmit: the workflow restarts from the beginning. Previous versions remain available."
   },
   "statutEntrant": {
     "ENREGISTRE": "Registered",
@@ -312,7 +322,7 @@
     "rejetImpossible": "This step cannot be rejected.",
     "expeditionImpossible": "This mail is not ready to be dispatched.",
     "soumissionImpossible": "This mail cannot be submitted in its current state.",
-    "aucunModeleCircuit": "No workflow is configured for this mail type.",
+    "aucunModeleCircuit": "No active workflow for this type of letter: activate a workflow in Administration → Workflows.",
     "courrierIntrouvable": "Mail not found.",
     "circuitIntrouvable": "Workflow not found or already completed.",
     "etapeIntrouvable": "Step not found or already processed.",
@@ -320,7 +330,21 @@
     "serviceParentObligatoire": "A service must have a parent entity.",
     "parentInvalide": "An entity cannot be attached to itself or to one of its sub-entities.",
     "parentInactif": "Reactivate the parent entity first.",
-    "inconnue": "An unexpected error occurred."
+    "inconnue": "An unexpected error occurred.",
+    "emailInvalide": "Invalid email address.",
+    "tacheConfieeEnCours": "A task delegated to \"{{poste}}\" is awaiting its report. Wait for it or take back the task before closing the step.",
+    "noteObligatoire": "The note is required.",
+    "confierASoiMeme": "You cannot delegate a task to yourself.",
+    "compteRenduObligatoire": "The report is required.",
+    "tacheIntrouvable": "This task cannot be found or is already closed.",
+    "posteIntrouvable": "Position not found or inactive.",
+    "actionIncorrecte": "This action does not match the current step.",
+    "diffusionIntrouvable": "Distribution not found.",
+    "directionIntrouvable": "No directorate is linked to the handling unit: check the organisation chart.",
+    "etapeSansCible": "This workflow step has no target position or role: fix the workflow in Administration → Workflows.",
+    "modeleIntrouvable": "No active workflow matches this letter: activate a workflow in Administration → Workflows.",
+    "redacteurIntrouvable": "The author of this letter no longer holds a position: check the organisation chart.",
+    "responsableIntrouvable": "The unit concerned has no active head position: assign one in the organisation chart."
   },
   "verdict": {
     "titre": "Final outcome",
@@ -383,5 +407,30 @@
     "aujourdhui": "today",
     "joursRestants_one": "{{count}} day left",
     "joursRestants_other": "{{count}} days left"
+  },
+  "taches": {
+    "titre": "Notes and delegated tasks",
+    "confier": "Delegate to…",
+    "aide": "Write a note and delegate the work to a colleague (e.g. your assistant). The step stays yours: they will report back, then you can validate.",
+    "choisirPoste": "Position to delegate to",
+    "notePlaceholder": "Note / instruction (e.g. \"Draft a reply by Thursday\")",
+    "delai": "Deadline",
+    "jours": "day(s) (optional)",
+    "confiee": "Task delegated to {{poste}}",
+    "confieeParPoste": "Delegated by {{poste}} ({{personne}})",
+    "echeance": "Due by {{date}}",
+    "compteRenduPlaceholder": "Your report",
+    "joindre": "Attach a file",
+    "rendreCompte": "Report back",
+    "compteRenduEnvoye": "Report sent",
+    "annuler": "Take back (cancel the task)",
+    "annulee": "Task cancelled",
+    "pieceJointe": "attachment",
+    "confieesAMoi": "Tasks delegated to you",
+    "statut": {
+      "EN_COURS": "Awaiting report",
+      "RENDUE": "Report received",
+      "ANNULEE": "Cancelled"
+    }
   }
 }

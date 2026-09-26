@@ -16,6 +16,21 @@ async function changerUtilisateur(page: Page, nomComplet: string) {
   await page.getByRole('button', { name: nomComplet }).click();
 }
 
+/** Trace un paraphe à la souris dans le pad de la fenêtre ouverte, puis confirme. */
+async function tracerEtConfirmer(page: Page) {
+  const modale = page.getByRole('dialog');
+  const zone = await modale.locator('canvas').boundingBox();
+  expect(zone).toBeTruthy();
+  const { x, y, width, height } = zone!;
+  await page.mouse.move(x + width * 0.2, y + height * 0.6);
+  await page.mouse.down();
+  await page.mouse.move(x + width * 0.4, y + height * 0.3, { steps: 5 });
+  await page.mouse.move(x + width * 0.6, y + height * 0.7, { steps: 5 });
+  await page.mouse.move(x + width * 0.8, y + height * 0.4, { steps: 5 });
+  await page.mouse.up();
+  await modale.getByRole('button', { name: 'Signer', exact: true }).click();
+}
+
 async function choisirEntiteParLibelle(page: Page, libelle: string) {
   // Scopé à <main> : l'en-tête contient aussi des <select> (langue, poste actif).
   const zone = page.locator('main');
@@ -73,12 +88,15 @@ test('scénario A : circulation avec rejet puis clôture', async ({ page }) => {
   await changerUtilisateur(page, 'Samuel Tchoupo');
   await page.goto(urlCourrier);
   await page.getByRole('button', { name: 'Viser', exact: true }).click();
+  await tracerEtConfirmer(page);
   await expect(page.getByText(/Traité le/)).toBeVisible();
 
   // Verdict final : issue, dernière décision avec son auteur, rejet intermédiaire compté.
   const verdict = page.getByRole('region', { name: 'Verdict final' });
   await expect(verdict).toBeVisible();
   await expect(verdict.getByText('Traité et clôturé')).toBeVisible();
+  // Le détail de la décision est replié par défaut.
+  await verdict.locator('summary').click();
   await expect(verdict.getByText(/Visé · Visa du DAF par/)).toBeVisible();
   await expect(verdict.getByText('Samuel Tchoupo')).toBeVisible();
   await expect(verdict.getByText('1 rejet en cours de route')).toBeVisible();
