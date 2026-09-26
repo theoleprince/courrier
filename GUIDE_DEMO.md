@@ -209,7 +209,7 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 | « Et si internet coupe ? » | Le POC fonctionne entièrement hors ligne ; la version cible synchronise au retour de la connexion. |
 | « La signature a-t-elle une valeur légale ? » | Pas dans le POC ; la version cible s'appuie sur des certificats qualifiés. |
 | « Peut-on adapter les circuits nous-mêmes ? » | Oui → démo en direct de `/admin/circuits` (Admin POC). |
-| « Et nos courriers papier existants ? » | Numérisation au guichet, OCR (feuille de route), registre chronologique pour la continuité. |
+| « Et nos courriers papier existants ? » | Numérisation au guichet (caméra ou scanner), OCR (feuille de route), registre chronologique pour la continuité. |
 
 ---
 
@@ -218,7 +218,7 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 1. **Pas de « Scénario guidé » à l'écran** → suivre ce guide imprimé ou sur un second écran.
 2. **Pas de lecteur QR dans l'appli** → scanner avec l'appareil photo du téléphone. Le téléphone doit joindre la machine (`--host` + IP) : avec `localhost`, le QR ne mène nulle part.
 3. **Pas de bouton « Télécharger une version modifiée »** → utiliser le PDF modifié préparé à l'étape 1.4.
-4. **OCR / scan webcam non développés** → les présenter comme feuille de route uniquement.
+4. **OCR non développé** → le présenter comme feuille de route. La **numérisation par caméra** existe : « Numériser avec la caméra » dans l'enregistrement d'un courrier (une capture par page, assemblées en PDF). Autoriser la caméra dans le navigateur avant la démo. Un scanner de bureau se pilote hors de l'appli : numériser vers un fichier puis le déposer.
 5. **~20 courriers d'historique seulement** → ne pas promettre de volume sur le tableau de bord.
 6. **Toujours « Revenir au présent »** après le cas 6, sinon les délais affichés ensuite sont faux.
 7. **Réinitialiser la démo avant chaque passage** → les courriers de scène (ABEN-2345, convocation Ekambi, réponse Banque) reviennent à leur état exact.

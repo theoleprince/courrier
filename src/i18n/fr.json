@@ -432,5 +432,21 @@
       "RENDUE": "Compte rendu reçu",
       "ANNULEE": "Annulée"
     }
+  },
+  "numerisation": {
+    "bouton": "Numériser avec la caméra",
+    "aideScanner": "Scanner de bureau : numérisez vers un PDF ou une image, puis sélectionnez le fichier ci-dessus.",
+    "titre": "Numériser le courrier",
+    "navigateurSansCamera": "Ce navigateur ne donne pas accès à la caméra.",
+    "cameraRefusee": "L’accès à la caméra a été refusé. Autorisez-le dans le navigateur (icône à gauche de l’adresse), puis rouvrez cette fenêtre.",
+    "aucuneCamera": "Aucune caméra disponible sur cet appareil.",
+    "prendrePhoto": "Prendre une photo avec l’appareil",
+    "capturer": "Capturer la page {{numero}}",
+    "effetScanner": "Effet scanner (noir et blanc contrasté)",
+    "conseil": "Posez la page à plat, bien éclairée, et cadrez-la en entier. Une capture par page.",
+    "page": "Page {{numero}}",
+    "supprimerPage": "Supprimer cette page",
+    "terminer_one": "Terminer ({{count}} page)",
+    "terminer_other": "Terminer ({{count}} pages)"
   }
 }

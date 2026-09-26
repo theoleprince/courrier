@@ -107,11 +107,6 @@ async function pdfDeTest(titre: string): Promise<Buffer> {
   return Buffer.from(await pdf.save());
 }
 
-/** Éditeur du circuit de l'onglet actif (les autres restent montés mais masqués). */
-function editeur(page: Page): Locator {
-  return page.locator('main div[hidden], main div:not([hidden])').filter({ has: page.getByLabel('Nom de l’étape') }).filter({ visible: true }).last();
-}
-
 function champsNom(page: Page): Locator {
   return page.getByLabel('Nom de l’étape').filter({ visible: true });
 }
