@@ -13,7 +13,8 @@ test('accueil : recherche, fiche de suivi et portail usager', async ({ page }) =
   await expect(page).toHaveURL('/');
 
   await page.goto('/recherche');
-  await page.getByPlaceholder('Rechercher…', { exact: true }).fill('abena');
+  // Scopé à <main> : l'en-tête a aussi un champ de recherche.
+  await page.getByRole('main').getByPlaceholder('Rechercher…', { exact: true }).fill('abena');
   await expect(page.getByText(/ABEN-2345|Demande de duplicata/)).toBeVisible();
 
   await page.goto('/suivi/ABEN-2345');

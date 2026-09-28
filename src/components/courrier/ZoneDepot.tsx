@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
-import { Eye, Upload, X } from 'lucide-react';
+import { Camera, Eye, Upload, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ApercuDocument } from '@/components/courrier/ApercuDocument';
+import { Numeriseur } from '@/components/courrier/Numeriseur';
+import { Button } from '@/components/ui/Button';
 
 interface Props {
   fichiers: File[];
@@ -10,6 +12,8 @@ interface Props {
   multiple?: boolean;
   /** Affiche l'aperçu du fichier sélectionné sous la liste (vrai par défaut). */
   apercu?: boolean;
+  /** Propose de numériser un courrier papier avec la caméra (défaut : si des images sont acceptées). */
+  numerisation?: boolean;
 }
 
 export function ZoneDepot({
@@ -18,13 +22,15 @@ export function ZoneDepot({
   accept = 'application/pdf,image/png,image/jpeg',
   multiple = true,
   apercu = true,
+  numerisation = accept.includes('image/'),
 }: Props): React.JSX.Element {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [survole, setSurvole] = useState(false);
   const [indexApercu, setIndexApercu] = useState(0);
+  const [numeriser, setNumeriser] = useState(false);
 
-  function ajouter(liste: FileList | null) {
+  function ajouter(liste: FileList | File[] | null) {
     if (!liste || liste.length === 0) return;
     // Le premier fichier ajouté passe directement en aperçu.
     setIndexApercu(multiple ? fichiers.length : 0);
@@ -78,6 +84,24 @@ export function ZoneDepot({
           }}
         />
       </div>
+
+      {numerisation && (
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <Button variante="secondaire" type="button" className="text-sm" onClick={() => setNumeriser(true)}>
+            <Camera size={16} /> {t('numerisation.bouton')}
+          </Button>
+          <span className="text-xs text-slate-400">{t('numerisation.aideScanner')}</span>
+        </div>
+      )}
+      {numeriser && (
+        <Numeriseur
+          onFermer={() => setNumeriser(false)}
+          onTermine={(pdf) => {
+            ajouter([pdf]);
+            setNumeriser(false);
+          }}
+        />
+      )}
 
       {fichiers.length > 0 && (
         <ul className="mt-2 space-y-1 text-sm">

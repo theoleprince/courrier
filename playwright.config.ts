@@ -14,6 +14,8 @@ export default defineConfig({
   },
   use: {
     baseURL: 'http://localhost:4173',
+    // PW_CHANNEL=msedge (ou chrome) : utilise le navigateur installé si Chromium de Playwright est absent.
+    ...(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {}),
     trace: 'retain-on-failure',
     navigationTimeout: 30_000,
     actionTimeout: 15_000,

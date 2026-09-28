@@ -7,6 +7,7 @@ import { direction } from '@/services/organisation';
 import { creerNotification } from '@/services/notifications';
 import { sortantReponseDe } from '@/services/requetes';
 import { apposerSignature, apposerVisa } from '@/services/signature';
+import { verifierAucuneTacheOuverte } from '@/services/taches';
 import type {
   Acteur,
   CircuitInstance,
@@ -267,8 +268,16 @@ export interface DonneesEntrant {
   referenceExpediteur?: string;
   reponseAttendue: boolean;
   dateLimiteReponse?: ISODate;
+  emailReponse?: string;
   motsCles?: string[];
   cote?: string;
+}
+
+/** Enregistre l'adresse sur la fiche du correspondant s'il n'en avait pas encore. */
+async function completerEmailCorrespondant(correspondantId: ID, email: string | undefined): Promise<void> {
+  if (!email) return;
+  const correspondant = await db.correspondants.get(correspondantId);
+  if (correspondant && !correspondant.email) await db.correspondants.update(correspondantId, { email });
 }
 
 export async function enregistrerEntrant(
@@ -309,7 +318,9 @@ export async function enregistrerEntrant(
       deposant: data.deposant,
       reponseAttendue: data.reponseAttendue,
       dateLimiteReponse: data.dateLimiteReponse,
+      emailReponse: data.emailReponse || undefined,
     };
+    await completerEmailCorrespondant(data.correspondantId, data.emailReponse);
     await db.courriers.add(courrier);
 
     if (fichier && empreinteSha256) {
@@ -355,6 +366,7 @@ export interface DonneesSortant {
   reponseAId?: ID | null;
   modeleLettreId?: ID;
   motsCles?: string[];
+  emailDestinataire?: string;
 }
 
 export async function creerSortant(
@@ -388,8 +400,10 @@ export async function creerSortant(
       statut: 'BROUILLON',
       reponseAId: data.reponseAId ?? null,
       modeleLettreId: data.modeleLettreId,
+      emailDestinataire: data.emailDestinataire || undefined,
     };
     await db.courriers.add(courrier);
+    await completerEmailCorrespondant(data.correspondantId, data.emailDestinataire);
 
     const piece: PieceJointe = {
       id: uid(),
@@ -506,6 +520,7 @@ export async function validerEtape(circuitId: ID, acteur: Acteur, options: Optio
     const etape = circuit.etapes[circuit.indexCourant];
     if (!etape || etape.statut !== 'EN_COURS') throw new ErreurWorkflow('erreurs.etapeIntrouvable');
     if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+    await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
     if (etape.type === 'SIGNATURE' || etape.type === 'EXPEDITION') {
       throw new ErreurWorkflow('erreurs.actionIncorrecte');
     }
@@ -563,6 +578,7 @@ export async function viser(
     throw new ErreurWorkflow('erreurs.etapeIntrouvable');
   }
   if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+  await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
 
   const piece = await documentDeTravail(circuit.courrierId);
   const toutes = await db.piecesJointes.where('courrierId').equals(circuit.courrierId).toArray();
@@ -609,6 +625,7 @@ export async function rejeterEtape(circuitId: ID, acteur: Acteur, motif: string)
     const etape = circuit.etapes[circuit.indexCourant];
     if (!etape || etape.statut !== 'EN_COURS') throw new ErreurWorkflow('erreurs.etapeIntrouvable');
     if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+    await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
     if (etape.type === 'IMPUTATION' || etape.type === 'TRAITEMENT') {
       throw new ErreurWorkflow('erreurs.rejetImpossible');
     }
@@ -698,6 +715,7 @@ async function preparerSignature(
     throw new ErreurWorkflow('erreurs.etapeIntrouvable');
   }
   if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+  await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
 
   const [poste, personne, courrier] = await Promise.all([
     db.postes.get(acteur.posteId),
@@ -818,6 +836,7 @@ export async function validerManuscrit(circuitId: ID, acteur: Acteur, scan: Fich
       throw new ErreurWorkflow('erreurs.etapeIntrouvable');
     }
     if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+    await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
 
     const source = await documentDeTravail(circuit.courrierId);
     if (!source) throw new ErreurWorkflow('erreurs.documentIntrouvable');
@@ -859,6 +878,7 @@ export async function signerManuscrit(circuitId: ID, acteur: Acteur, scan: Fichi
       throw new ErreurWorkflow('erreurs.etapeIntrouvable');
     }
     if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+    await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
     const poste = await db.postes.get(acteur.posteId);
     if (!poste?.peutSigner) throw new ErreurWorkflow('erreurs.habilitationSignatureRequise');
     const courrier = await db.courriers.get(circuit.courrierId);
@@ -955,7 +975,11 @@ export async function signerEnLot(
 export interface OptionsExpedition {
   modeEnvoi: ModeEnvoi;
   accuseReception?: boolean;
+  /** Obligatoire pour un envoi par e-mail. */
+  emailDestinataire?: string;
 }
+
+const FORMAT_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function expedier(courrierId: ID, acteur: Acteur, options: OptionsExpedition): Promise<CourrierSortant> {
   return db.transaction('rw', db.tables, async () => {
@@ -963,6 +987,8 @@ export async function expedier(courrierId: ID, acteur: Acteur, options: OptionsE
     if (!courrier || courrier.sens !== 'SORTANT') throw new ErreurWorkflow('erreurs.courrierIntrouvable');
     const sortant = courrier as CourrierSortant;
     if (sortant.statut !== 'SIGNE') throw new ErreurWorkflow('erreurs.expeditionImpossible');
+    const email = options.emailDestinataire?.trim();
+    if (options.modeEnvoi === 'EMAIL' && (!email || !FORMAT_EMAIL.test(email))) throw new ErreurWorkflow('erreurs.emailInvalide');
 
     const numero = await prochainNumero('SORTANT');
     const maintenantHorodatage = maintenantISO();
@@ -970,6 +996,7 @@ export async function expedier(courrierId: ID, acteur: Acteur, options: OptionsE
     sortant.dateExpedition = maintenantHorodatage;
     sortant.modeEnvoi = options.modeEnvoi;
     sortant.accuseReception = options.accuseReception;
+    if (options.modeEnvoi === 'EMAIL') sortant.emailDestinataire = email;
     sortant.statut = 'EXPEDIE';
     sortant.misAJourLe = maintenantHorodatage;
     await db.courriers.put(sortant);
@@ -978,6 +1005,7 @@ export async function expedier(courrierId: ID, acteur: Acteur, options: OptionsE
       const circuit = await db.circuits.get(sortant.circuitInstanceId);
       const etape = circuit?.etapes[circuit.indexCourant];
       if (circuit && etape?.type === 'EXPEDITION') {
+        await verifierAucuneTacheOuverte(circuit.id, etape.ordre);
         etape.statut = 'VALIDEE';
         etape.finLe = maintenantHorodatage;
         etape.traiteeParId = acteur.personneId;
@@ -991,7 +1019,7 @@ export async function expedier(courrierId: ID, acteur: Acteur, options: OptionsE
       action: 'EXPEDITION',
       acteurId: acteur.personneId,
       posteId: acteur.posteId,
-      details: { numero, modeEnvoi: options.modeEnvoi },
+      details: { numero, modeEnvoi: options.modeEnvoi, ...(options.modeEnvoi === 'EMAIL' ? { emailDestinataire: email } : {}) },
     });
 
     if (sortant.reponseAId) {

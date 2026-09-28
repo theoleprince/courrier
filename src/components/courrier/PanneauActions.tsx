@@ -32,7 +32,9 @@ import { PadSignature, type OptionsSignature } from '@/components/courrier/PadSi
 import { useParametres } from '@/hooks/useParametres';
 import type { CircuitInstance, Courrier, ModeEnvoi } from '@/types/models';
 import { origineApp } from '@/services/urls';
+import { envoyerEmail, parametresEmailExpedition } from '@/services/email';
 import { sortantReponseDe } from '@/services/requetes';
+import { peutSoumettreProjet } from '@/services/taches';
 
 interface Props {
   courrier: Courrier;
@@ -62,9 +64,18 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
   const [posteDiffusion, setPosteDiffusion] = useState<string>();
   const [modeEnvoi, setModeEnvoi] = useState<ModeEnvoi>('POSTE');
   const [accuseReception, setAccuseReception] = useState(false);
+  const [emailEnvoi, setEmailEnvoi] = useState<string>();
+  const [nouvelleVersion, setNouvelleVersion] = useState<File>();
   const [enCours, setEnCours] = useState(false);
 
   const postes = useLiveQuery(() => db.postes.toArray()) ?? [];
+  // Adresse proposée pour un envoi par e-mail : celle du sortant, sinon celle du correspondant.
+  const emailPropose = useLiveQuery(async () => {
+    if (courrier.sens !== 'SORTANT') return '';
+    if (courrier.emailDestinataire) return courrier.emailDestinataire;
+    return (await db.correspondants.get(courrier.correspondantId))?.email ?? '';
+  }, [courrier.id, courrier.correspondantId]);
+  const emailExpedition = emailEnvoi ?? emailPropose ?? '';
   const parametres = useParametres();
 
   const etape = circuit && circuit.statut === 'EN_COURS' ? circuit.etapes[circuit.indexCourant] : undefined;
@@ -72,6 +83,12 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
 
   // Entrant traité mais dont la réponse attendue n'a jamais été rédigée : l'entité traitante
   // (ou sa hiérarchie, ou celui qui a traité, ou le DG) peut encore la rédiger.
+  // Brouillon rédigé pour une tâche confiée : le responsable qui l'a demandé peut le soumettre.
+  const demandeurDuProjet = useLiveQuery(
+    () => (courrier.sens === 'SORTANT' && courrier.statut === 'BROUILLON' ? peutSoumettreProjet(courrier.id, acteur.poste.id) : false),
+    [courrier.id, courrier.statut, acteur.poste.id],
+  );
+
   const peutRedigerReponseTardive = useLiveQuery(async () => {
     if (courrier.sens !== 'ENTRANT' || courrier.statut !== 'EN_ATTENTE_REPONSE') return false;
     if (await sortantReponseDe(courrier.id)) return false;
@@ -253,8 +270,22 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
   async function surExpedier() {
     setEnCours(true);
     try {
-      const resultat = await expedier(courrier.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { modeEnvoi, accuseReception });
-      toastSucces(t('courrier.courrierEnregistre', { numero: resultat.numero }));
+      const resultat = await expedier(
+        courrier.id,
+        { personneId: acteur.personne.id, posteId: acteur.poste.id },
+        { modeEnvoi, accuseReception, emailDestinataire: modeEnvoi === 'EMAIL' ? emailExpedition : undefined },
+      );
+      if (modeEnvoi === 'EMAIL') {
+        // L'expédition est déjà enregistrée : un échec d'envoi ne l'annule pas, il est signalé.
+        try {
+          await envoyerEmail(await parametresEmailExpedition(resultat));
+          toastSucces(t('courrier.emailEnvoye', { numero: resultat.numero, email: resultat.emailDestinataire }));
+        } catch (erreurEmail) {
+          toastErreur(t('courrier.emailEchec', { numero: resultat.numero, detail: (erreurEmail as Error).message }));
+        }
+      } else {
+        toastSucces(t('courrier.courrierEnregistre', { numero: resultat.numero }));
+      }
     } catch (e) {
       gererErreur(e);
     } finally {
@@ -318,8 +349,13 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
   async function surResoumettre() {
     setEnCours(true);
     try {
-      await soumettreSortant(courrier.id, { personneId: acteur.personne.id, posteId: acteur.poste.id });
+      await soumettreSortant(
+        courrier.id,
+        { personneId: acteur.personne.id, posteId: acteur.poste.id },
+        nouvelleVersion ? { blob: nouvelleVersion, nom: nouvelleVersion.name, mime: nouvelleVersion.type || 'application/pdf' } : undefined,
+      );
       toastSucces(t('courrier.resoumettre'));
+      setNouvelleVersion(undefined);
     } catch (e) {
       gererErreur(e);
     } finally {
@@ -497,11 +533,24 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
               </option>
             ))}
           </select>
+          {modeEnvoi === 'EMAIL' && (
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('courrier.emailDestinataire')}</span>
+              <input
+                type="email"
+                className="champ"
+                placeholder="nom@exemple.com"
+                value={emailExpedition}
+                onChange={(e) => setEmailEnvoi(e.target.value)}
+              />
+              <p className="mt-1 text-xs text-slate-400">{t('courrier.emailExpeditionAide')}</p>
+            </label>
+          )}
           <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
             <input type="checkbox" checked={accuseReception} onChange={(e) => setAccuseReception(e.target.checked)} />
             {t('courrier.accuseReception')}
           </label>
-          <Button variante="primaire" disabled={enCours} onClick={surExpedier}>
+          <Button variante="primaire" disabled={enCours || (modeEnvoi === 'EMAIL' && !emailExpedition.trim())} onClick={surExpedier}>
             {t('courrier.expedier')}
           </Button>
         </div>
@@ -509,13 +558,39 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
     }
   }
 
+  if (courrier.sens === 'SORTANT' && courrier.statut === 'BROUILLON' && (courrier.creeParId === acteur.personne.id || demandeurDuProjet)) {
+    return (
+      <div className={CADRE_TACHE}>
+        <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
+        <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.brouillonASoumettre')}</h3>
+        <p className="text-sm text-slate-600 dark:text-slate-300">{t('courrier.brouillonAide')}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="cursor-pointer rounded-lg border border-[var(--bordure)] px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+            {nouvelleVersion ? nouvelleVersion.name : t('courrier.deposerNouvelleVersion')}
+            <input type="file" accept="application/pdf" className="hidden" onChange={(e) => setNouvelleVersion(e.target.files?.[0])} />
+          </label>
+          <Button variante="primaire" disabled={enCours} onClick={surResoumettre}>
+            {t('courrier.soumettreAuCircuit')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (courrier.sens === 'SORTANT' && courrier.statut === 'REJETE' && courrier.creeParId === acteur.personne.id) {
     return (
       <div className="space-y-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
         <h3 className="font-medium text-red-800 dark:text-red-300">{t('courrier.rejeter')}</h3>
-        <Button variante="primaire" disabled={enCours} onClick={surResoumettre}>
-          {t('courrier.resoumettre')}
-        </Button>
+        <p className="text-sm text-red-700 dark:text-red-300">{t('courrier.resoumettreAide')}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="cursor-pointer rounded-lg border border-red-300 bg-white px-3 py-2 text-sm hover:bg-red-100 dark:border-red-800 dark:bg-slate-900 dark:hover:bg-red-950">
+            {nouvelleVersion ? nouvelleVersion.name : t('courrier.deposerNouvelleVersion')}
+            <input type="file" accept="application/pdf" className="hidden" onChange={(e) => setNouvelleVersion(e.target.files?.[0])} />
+          </label>
+          <Button variante="primaire" disabled={enCours} onClick={surResoumettre}>
+            {t('courrier.resoumettre')}
+          </Button>
+        </div>
       </div>
     );
   }

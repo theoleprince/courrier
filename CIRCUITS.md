@@ -148,6 +148,30 @@ Le rejet exige un **motif**. Il est impossible sur une étape d'imputation ou de
 | 5 | Contrôle comptable (bis) | Grâce | Traite à nouveau. |
 | 6 | Visa du DAF (bis) | Samuel | Vise → fin du circuit → **Clôturé**. |
 
+### 4.9 Note et tâche confiée (hors circuit)
+
+Le **titulaire de l'étape en cours** peut, à tout moment, écrire une note et **confier le travail** à un autre poste, par exemple le DG qui demande à son assistante de préparer une synthèse. Le bouton est **« Confier à… »**, dans le bloc « Notes et tâches confiées » de la fiche du courrier.
+
+| Qui | Ce qui se passe |
+|---|---|
+| **Titulaire** (ex. DG) | Choisit un poste, écrit la note, fixe un délai s'il le souhaite. **L'étape reste la sienne.** Il ne peut ni la valider, ni la rejeter, ni signer tant que la tâche attend son compte rendu, sauf s'il **reprend la main** (annule la tâche). |
+| **Destinataire** (ex. assistante de direction) | Reçoit une notification. La tâche apparaît en tête de sa **corbeille** (« Tâches qui vous ont été confiées »). Il accède au courrier, **même confidentiel**, fait le travail, puis **rend compte** (texte et fichier joint si besoin). |
+| **Retour** | Le titulaire est notifié et voit le compte rendu sur la fiche. Il valide ou signe son étape, et le circuit continue normalement. |
+
+La note porte une **instruction**, comme l'annotation en marge d'un courrier papier. L'instruction détermine ce que le destinataire doit produire :
+
+| Instruction | Courriers | Le destinataire… | Le demandeur retrouve sous sa note… |
+|---|---|---|---|
+| **Pour suite à donner** (par défaut) | Tous | écrit un compte rendu, et joint un fichier s'il le souhaite | le compte rendu et la pièce |
+| **Préparer un projet de réponse** | Entrants | rédige la réponse (formulaire prérempli), enregistrée en brouillon et rattachée à la tâche | un lien vers le projet, qu'il relit puis **soumet au circuit** |
+| **Corriger le document** | Sortants | dépose la version corrigée (PDF), qui devient le brouillon à viser ou signer | « Version corrigée : fichier (vN) » ; l'ancienne version reste consultable |
+| **Pour avis** | Tous | choisit favorable ou défavorable et motive son avis | l'avis (badge vert ou rouge) et sa motivation |
+| **Pour information** | Tous | clique « Vu » | « Vu. » |
+
+Un sortant en brouillon peut être soumis au circuit par son rédacteur ou par le responsable qui a demandé le projet.
+
+Plusieurs tâches peuvent être confiées successivement sur une même étape. Tout est tracé dans le journal d'audit (TACHE_CONFIEE, COMPTE_RENDU, TACHE_ANNULEE). Seul le titulaire de l'étape peut confier ; les autres utilisateurs gardent le commentaire simple.
+
 ---
 
 ## 5. Les règles de l'éditeur de circuits
@@ -203,4 +227,4 @@ La cible d'une étape est calculée **au moment où l'étape démarre**, d'aprè
 | Pas d'étapes en parallèle ni de conditions (montant, priorité…) | Hors périmètre du POC |
 | Pas de versionnage visible des modèles | Afficher sur chaque courrier la version du modèle utilisée |
 
-*Sources dans le code :* moteur `src/services/workflow.ts` (choix du modèle, activation, saut, rejet, fin), délais `src/services/notifications.ts`, éditeur `src/pages/admin/Circuits.tsx`, données de démo `src/db/seed.ts`.
+*Sources dans le code :* moteur `src/services/workflow.ts` (choix du modèle, activation, saut, rejet, fin), tâches confiées `src/services/taches.ts`, délais `src/services/notifications.ts`, éditeur `src/pages/admin/Circuits.tsx`, données de démo `src/db/seed.ts`.

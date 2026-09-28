@@ -15,6 +15,7 @@ import { toastSucces, toastErreur } from '@/store/toasts';
 import { BadgeStatut, BadgePriorite } from '@/components/courrier/Badges';
 import { ApercuDocument } from '@/components/courrier/ApercuDocument';
 import { PanneauActions } from '@/components/courrier/PanneauActions';
+import { TachesConfiees } from '@/components/courrier/TachesConfiees';
 import { VerdictFinal } from '@/components/courrier/VerdictFinal';
 import { DossierLie, ParcoursDossier } from '@/components/courrier/DossierLie';
 import { Tabs, type Onglet } from '@/components/ui/Tabs';
@@ -127,6 +128,7 @@ export function Detail(): React.JSX.Element {
         {/* Ordre de lecture : ce que je dois faire, où en est le courrier, le courrier lié, puis le détail. */}
         <div className="order-1 space-y-3 lg:order-2 lg:col-span-3">
           {(niveau === 'COMPLET' || etapeAssigneeAMoi) && <PanneauActions courrier={courrier} circuit={donnees.circuit} acteur={acteur} />}
+          {(niveau === 'COMPLET' || etapeAssigneeAMoi) && <TachesConfiees courrier={courrier} circuit={donnees.circuit} acteur={acteur} />}
           <VerdictFinal
             courrier={courrier}
             circuit={donnees.circuit}
