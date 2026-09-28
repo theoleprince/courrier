@@ -72,6 +72,13 @@ export function TachesConfiees({ courrier, circuit, acteur }: Props): React.JSX.
   const titulaire = !!etape && etape.statut === 'EN_COURS' && etape.posteAssigneId === acteur.poste.id;
   const aMoi = taches.filter((x) => x.statut === 'EN_COURS' && x.posteDestinataireId === acteur.poste.id);
   const triees = [...taches].sort((a, b) => b.confieeLe.localeCompare(a.confieeLe));
+  // Restent visibles : les tâches en cours et celles conclues (rendues, annulées) pendant l'étape
+  // en cours — c'est sur elles qu'on agit maintenant. Le reste est l'historique, replié par défaut.
+  const debutEtape = etape?.statut === 'EN_COURS' ? etape.debutLe : undefined;
+  const estActuelle = (x: TacheConfiee) =>
+    x.statut === 'EN_COURS' || (!!debutEtape && !!x.clotureeLe && x.clotureeLe >= debutEtape);
+  const actuelles = triees.filter(estActuelle);
+  const anciennes = triees.filter((x) => !estActuelle(x));
 
   if (!titulaire && aMoi.length === 0 && taches.length === 0) return null;
 
@@ -246,6 +253,61 @@ export function TachesConfiees({ courrier, circuit, acteur }: Props): React.JSX.
     );
   }
 
+  /** Une note / tâche de la liste : qui a confié quoi à qui, et le compte rendu éventuel. */
+  function ligneTache(tache: TacheConfiee): React.JSX.Element {
+    return (
+      <li key={tache.id} className="rounded-md bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-medium text-slate-700 dark:text-slate-200">
+            {libellePoste(tache.posteSourceId)} → {libellePoste(tache.posteDestinataireId)}
+          </span>
+          <span className="flex items-center gap-2">
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                tache.statut === 'EN_COURS'
+                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                  : tache.statut === 'RENDUE'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300'
+                    : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+              }`}
+            >
+              {t(`taches.statut.${tache.statut}`)}
+            </span>
+            {tache.statut === 'EN_COURS' && tache.posteSourceId === acteur.poste.id && (
+              <button
+                type="button"
+                title={t('taches.annuler') ?? undefined}
+                disabled={enCours}
+                onClick={() => executer(() => annulerTache(tache.id, auteur), t('taches.annulee'))}
+                className="inline-flex items-center gap-1 rounded-lg border border-[var(--bordure)] bg-[var(--surface)] px-2 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:text-red-600 dark:text-slate-300"
+              >
+                <Undo2 size={13} /> {t('taches.reprendre')}
+              </button>
+            )}
+          </span>
+        </div>
+        <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(`taches.nature.${natureDe(tache)}`)}</p>
+        <p className="mt-0.5 whitespace-pre-line text-slate-600 dark:text-slate-300">« {tache.note} »</p>
+        <p className="mt-1 text-xs text-slate-400">
+          {nomPersonne(tache.confieeParId)} · {format(new Date(tache.confieeLe), 'Pp', { locale })}
+        </p>
+        {tache.compteRendu && (
+          <div className="mt-2 flex gap-2 border-t border-slate-200 pt-2 dark:border-slate-700">
+            <CornerDownRight size={14} className="mt-0.5 shrink-0 text-slate-400" />
+            <div className="min-w-0 flex-1">
+              <p className="whitespace-pre-line text-slate-700 dark:text-slate-200">{tache.compteRendu}</p>
+              {produit(tache)}
+              <p className="mt-1 text-xs text-slate-400">
+                {nomPersonne(tache.clotureeParId)} · {tache.clotureeLe && format(new Date(tache.clotureeLe), 'Pp', { locale })}
+                {tache.pieceJointeId && ` · ${t('taches.pieceJointe')}`}
+              </p>
+            </div>
+          </div>
+        )}
+      </li>
+    );
+  }
+
   return (
     <div className="space-y-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -273,61 +335,16 @@ export function TachesConfiees({ courrier, circuit, acteur }: Props): React.JSX.
         </div>
       ))}
 
-      {/* Historique des tâches confiées sur ce courrier */}
-      {triees.length > 0 && (
-        <ul className="space-y-2">
-          {triees.map((tache) => (
-            <li key={tache.id} className="rounded-md bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium text-slate-700 dark:text-slate-200">
-                  {libellePoste(tache.posteSourceId)} → {libellePoste(tache.posteDestinataireId)}
-                </span>
-                <span className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      tache.statut === 'EN_COURS'
-                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                        : tache.statut === 'RENDUE'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300'
-                          : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    {t(`taches.statut.${tache.statut}`)}
-                  </span>
-                  {tache.statut === 'EN_COURS' && tache.posteSourceId === acteur.poste.id && (
-                    <button
-                      type="button"
-                      title={t('taches.annuler') ?? undefined}
-                      disabled={enCours}
-                      onClick={() => executer(() => annulerTache(tache.id, auteur), t('taches.annulee'))}
-                      className="inline-flex items-center gap-1 rounded-lg border border-[var(--bordure)] bg-[var(--surface)] px-2 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:text-red-600 dark:text-slate-300"
-                    >
-                      <Undo2 size={13} /> {t('taches.reprendre')}
-                    </button>
-                  )}
-                </span>
-              </div>
-              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{t(`taches.nature.${natureDe(tache)}`)}</p>
-              <p className="mt-0.5 whitespace-pre-line text-slate-600 dark:text-slate-300">« {tache.note} »</p>
-              <p className="mt-1 text-xs text-slate-400">
-                {nomPersonne(tache.confieeParId)} · {format(new Date(tache.confieeLe), 'Pp', { locale })}
-              </p>
-              {tache.compteRendu && (
-                <div className="mt-2 flex gap-2 border-t border-slate-200 pt-2 dark:border-slate-700">
-                  <CornerDownRight size={14} className="mt-0.5 shrink-0 text-slate-400" />
-                  <div className="min-w-0 flex-1">
-                    <p className="whitespace-pre-line text-slate-700 dark:text-slate-200">{tache.compteRendu}</p>
-                    {produit(tache)}
-                    <p className="mt-1 text-xs text-slate-400">
-                      {nomPersonne(tache.clotureeParId)} · {tache.clotureeLe && format(new Date(tache.clotureeLe), 'Pp', { locale })}
-                      {tache.pieceJointeId && ` · ${t('taches.pieceJointe')}`}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+      {actuelles.length > 0 && <ul className="space-y-2">{actuelles.map(ligneTache)}</ul>}
+
+      {/* Notes et tâches des étapes précédentes : repliées pour laisser la place à l'essentiel. */}
+      {anciennes.length > 0 && (
+        <details className="group">
+          <summary className="cursor-pointer select-none text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100">
+            {t('taches.anciennes', { count: anciennes.length })}
+          </summary>
+          <ul className="mt-2 space-y-2">{anciennes.map(ligneTache)}</ul>
+        </details>
       )}
 
       {ouvrirConfier && (

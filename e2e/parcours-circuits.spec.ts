@@ -497,6 +497,13 @@ test('tâche confiée : le DG reprend la main et peut signer sans attendre', asy
   await page.getByRole('main').getByRole('button', { name: 'Signer', exact: true }).first().click();
   await tracerEtConfirmer(page);
   await expect(page.getByText(/attend son compte rendu/)).toHaveCount(0);
+
+  // Étape suivante : la tâche annulée passe dans l'historique, replié par défaut.
+  const historique = page.getByText('1 note ou tâche précédente');
+  await expect(historique).toBeVisible();
+  await expect(page.getByText('Annulée', { exact: true })).toBeHidden();
+  await historique.click();
+  await expect(page.getByText('Annulée', { exact: true })).toBeVisible();
 });
 
 test('tâche confiée sur un entrant à l’agent du bureau d’ordre : il voit la tâche et rend compte', async ({ page }) => {

@@ -464,7 +464,9 @@
     "projetAide": "This draft is saved and linked to the task. The person who delegated it will review it and submit it to the workflow.",
     "enregistrerProjet": "Save the draft reply",
     "deposerVersionCorrigee": "Upload the corrected version (PDF)",
-    "versionCorrigeeProduite": "Corrected version: {{nom}} (v{{version}})"
+    "versionCorrigeeProduite": "Corrected version: {{nom}} (v{{version}})",
+    "anciennes_one": "{{count}} earlier note or task",
+    "anciennes_other": "{{count}} earlier notes and tasks"
   },
   "numerisation": {
     "bouton": "Scan with the camera",

@@ -464,7 +464,9 @@
     "projetAide": "Ce projet est enregistré en brouillon et rattaché à la tâche. Celui qui vous l'a confiée le relira et le soumettra au circuit.",
     "enregistrerProjet": "Enregistrer le projet de réponse",
     "deposerVersionCorrigee": "Déposer la version corrigée (PDF)",
-    "versionCorrigeeProduite": "Version corrigée : {{nom}} (v{{version}})"
+    "versionCorrigeeProduite": "Version corrigée : {{nom}} (v{{version}})",
+    "anciennes_one": "{{count}} note ou tâche précédente",
+    "anciennes_other": "{{count}} notes et tâches précédentes"
   },
   "numerisation": {
     "bouton": "Numériser avec la caméra",
