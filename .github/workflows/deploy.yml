@@ -27,6 +27,8 @@ jobs:
       - run: npm run build
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
+          # Clé de licence Dynamsoft (numérisation par scanner) : variable du dépôt, publique par nature.
+          VITE_DWT_PRODUCT_KEY: ${{ vars.DWT_PRODUCT_KEY }}
       # Fallback SPA : GitHub Pages sert 404.html pour les routes inconnues
       - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3

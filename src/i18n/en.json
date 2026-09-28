@@ -483,5 +483,34 @@
     "supprimerPage": "Remove this page",
     "terminer_one": "Finish ({{count}} page)",
     "terminer_other": "Finish ({{count}} pages)"
+  },
+  "scanner": {
+    "bouton": "Scan with the scanner",
+    "connexion": "Connecting to the scanner…",
+    "sansLicence": "Scanner support is not enabled yet: the Dynamsoft license key is not configured. Meanwhile, scan to a PDF with the scanner software, then select the file.",
+    "installationTitre": "Installation required (once per computer)",
+    "installationEtape1": "Download and install the scanning service:",
+    "installationEtape2": "Check that the scanner is plugged in and switched on.",
+    "installationEtape3": "Close this window and click “Scan with the scanner” again.",
+    "aucunScanner": "No scanner found. Plug in and switch on the scanner, then reopen this window.",
+    "bibliothequeIntrouvable": "Scanning library not found.",
+    "chargementImpossible": "Could not load the scanning library (internet connection?).",
+    "echec": "Scanning failed.",
+    "scanner": "Scanner",
+    "couleur": "Colour",
+    "modeCouleur": {
+      "0": "Black and white",
+      "1": "Greyscale",
+      "2": "Colour"
+    },
+    "resolution": "Resolution",
+    "ppi": "{{valeur}} dpi",
+    "ppiRecommande": "{{valeur}} dpi (recommended)",
+    "chargeur": "Document feeder",
+    "rectoVerso": "Duplex",
+    "numeriser": "Scan",
+    "numeriserAutres": "Scan more pages",
+    "pagesNumerisees_one": "{{count}} page scanned",
+    "pagesNumerisees_other": "{{count}} pages scanned"
   }
 }

@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { Camera, Eye, Upload, X } from 'lucide-react';
+import { Camera, Eye, Printer, Upload, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ApercuDocument } from '@/components/courrier/ApercuDocument';
 import { Numeriseur } from '@/components/courrier/Numeriseur';
+import { ScannerTwain } from '@/components/courrier/ScannerTwain';
 import { Button } from '@/components/ui/Button';
 
 interface Props {
@@ -29,6 +30,7 @@ export function ZoneDepot({
   const [survole, setSurvole] = useState(false);
   const [indexApercu, setIndexApercu] = useState(0);
   const [numeriser, setNumeriser] = useState(false);
+  const [scanner, setScanner] = useState(false);
 
   function ajouter(liste: FileList | File[] | null) {
     if (!liste || liste.length === 0) return;
@@ -87,11 +89,22 @@ export function ZoneDepot({
 
       {numerisation && (
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <Button variante="secondaire" type="button" className="text-sm" onClick={() => setScanner(true)}>
+            <Printer size={16} /> {t('scanner.bouton')}
+          </Button>
           <Button variante="secondaire" type="button" className="text-sm" onClick={() => setNumeriser(true)}>
             <Camera size={16} /> {t('numerisation.bouton')}
           </Button>
-          <span className="text-xs text-slate-400">{t('numerisation.aideScanner')}</span>
         </div>
+      )}
+      {scanner && (
+        <ScannerTwain
+          onFermer={() => setScanner(false)}
+          onTermine={(pdf) => {
+            ajouter([pdf]);
+            setScanner(false);
+          }}
+        />
       )}
       {numeriser && (
         <Numeriseur

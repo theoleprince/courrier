@@ -483,5 +483,34 @@
     "supprimerPage": "Supprimer cette page",
     "terminer_one": "Terminer ({{count}} page)",
     "terminer_other": "Terminer ({{count}} pages)"
+  },
+  "scanner": {
+    "bouton": "Numériser avec le scanner",
+    "connexion": "Connexion au scanner…",
+    "sansLicence": "La numérisation par scanner n’est pas encore activée : la clé de licence Dynamsoft n’est pas configurée. En attendant, numérisez avec le logiciel du scanner vers un PDF, puis sélectionnez le fichier.",
+    "installationTitre": "Installation nécessaire (une seule fois sur ce poste)",
+    "installationEtape1": "Téléchargez et installez le service de numérisation :",
+    "installationEtape2": "Vérifiez que le scanner est branché et allumé.",
+    "installationEtape3": "Fermez cette fenêtre et cliquez de nouveau sur « Numériser avec le scanner ».",
+    "aucunScanner": "Aucun scanner détecté. Branchez et allumez le scanner, puis rouvrez cette fenêtre.",
+    "bibliothequeIntrouvable": "Bibliothèque de numérisation introuvable.",
+    "chargementImpossible": "Impossible de charger la bibliothèque de numérisation (connexion internet ?).",
+    "echec": "La numérisation a échoué.",
+    "scanner": "Scanner",
+    "couleur": "Couleur",
+    "modeCouleur": {
+      "0": "Noir et blanc",
+      "1": "Niveaux de gris",
+      "2": "Couleur"
+    },
+    "resolution": "Résolution",
+    "ppi": "{{valeur}} ppp",
+    "ppiRecommande": "{{valeur}} ppp (recommandé)",
+    "chargeur": "Chargeur de feuilles",
+    "rectoVerso": "Recto-verso",
+    "numeriser": "Numériser",
+    "numeriserAutres": "Numériser d’autres pages",
+    "pagesNumerisees_one": "{{count}} page numérisée",
+    "pagesNumerisees_other": "{{count}} pages numérisées"
   }
 }
