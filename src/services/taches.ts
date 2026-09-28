@@ -4,31 +4,64 @@ import { maintenantISO, ajouterJours } from '@/services/horloge';
 import { tracer } from '@/services/journal';
 import { ErreurWorkflow } from '@/services/erreurs';
 import { creerNotification } from '@/services/notifications';
-import type { Acteur, Courrier, ID, TacheConfiee } from '@/types/models';
+import type { Acteur, Courrier, ID, NatureTache, PieceJointe, Sens, TacheConfiee } from '@/types/models';
 
 /*
  * Tâches confiées (note + imputation interne).
  *
  * Le titulaire de l'étape en cours (ex. le DG au parapheur) écrit une note et
- * confie le travail à un autre poste (ex. son assistante). L'étape reste la
- * sienne : le destinataire rend compte, le dossier revient au titulaire, qui
- * valide alors son étape. Tant qu'une tâche est ouverte, l'étape ne peut pas
- * être validée, rejetée ni signée.
+ * confie le travail à un autre poste (ex. son assistante), avec une instruction
+ * (préparer un projet de réponse, corriger le document, pour avis…). L'étape
+ * reste la sienne : le destinataire rend compte avec ce que l'instruction
+ * demande, le dossier revient au titulaire, qui valide alors son étape. Tant
+ * qu'une tâche est ouverte, l'étape ne peut pas être validée, rejetée ni signée.
  */
 
 export interface DonneesTache {
   posteDestinataireId: ID;
   note: string;
+  nature?: NatureTache;
   delaiJours?: number;
+}
+
+export interface FichierTache {
+  blob: Blob;
+  nom: string;
+  mime: string;
 }
 
 export interface DonneesCompteRendu {
   texte: string;
-  fichier?: { blob: Blob; nom: string; mime: string };
+  fichier?: FichierTache;
+  /** POUR_AVIS */
+  avis?: 'FAVORABLE' | 'DEFAVORABLE';
+  /** CORRIGER_DOCUMENT : la version corrigée (PDF). */
+  versionCorrigee?: FichierTache;
+}
+
+/** Instructions proposées selon le sens du courrier (la première est proposée par défaut). */
+export function naturesPossibles(sens: Sens): NatureTache[] {
+  return sens === 'ENTRANT'
+    ? ['SUITE_A_DONNER', 'PROJET_REPONSE', 'POUR_AVIS', 'POUR_INFORMATION']
+    : ['SUITE_A_DONNER', 'CORRIGER_DOCUMENT', 'POUR_AVIS', 'POUR_INFORMATION'];
+}
+
+export function natureDe(tache: Pick<TacheConfiee, 'nature'>): NatureTache {
+  return tache.nature ?? 'SUITE_A_DONNER';
 }
 
 async function libellePoste(posteId: ID): Promise<string> {
   return (await db.postes.get(posteId))?.libelle ?? '';
+}
+
+/** Dernier brouillon, à défaut dernier scan : le document sur lequel on travaille. */
+async function documentDeTravail(courrierId: ID): Promise<{ piece: PieceJointe | undefined; versionMax: number }> {
+  const pieces = await db.piecesJointes.where('courrierId').equals(courrierId).toArray();
+  const tri = [...pieces].sort((a, b) => b.version - a.version);
+  return {
+    piece: tri.find((p) => p.nature === 'BROUILLON') ?? tri.find((p) => p.nature === 'SCAN'),
+    versionMax: Math.max(0, ...pieces.map((p) => p.version)),
+  };
 }
 
 /** Tâches encore ouvertes sur l'étape en cours d'un circuit. */
@@ -47,6 +80,7 @@ export async function verifierAucuneTacheOuverte(circuitId: ID, etapeOrdre: numb
 
 export async function confierTache(circuitId: ID, acteur: Acteur, donnees: DonneesTache): Promise<TacheConfiee> {
   const note = donnees.note.trim();
+  const nature = donnees.nature ?? 'SUITE_A_DONNER';
   if (!note) throw new ErreurWorkflow('erreurs.noteObligatoire');
   if (donnees.posteDestinataireId === acteur.posteId) throw new ErreurWorkflow('erreurs.confierASoiMeme');
 
@@ -58,10 +92,17 @@ export async function confierTache(circuitId: ID, acteur: Acteur, donnees: Donne
     if (etape.posteAssigneId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
     const destinataire = await db.postes.get(donnees.posteDestinataireId);
     if (!destinataire?.actif) throw new ErreurWorkflow('erreurs.posteIntrouvable');
+    const courrier = await db.courriers.get(circuit.courrierId);
+    if (!courrier) throw new ErreurWorkflow('erreurs.courrierIntrouvable');
+    if (!naturesPossibles(courrier.sens).includes(nature)) throw new ErreurWorkflow('erreurs.natureTacheImpossible');
+    if (nature === 'CORRIGER_DOCUMENT' && !(await documentDeTravail(courrier.id)).piece) {
+      throw new ErreurWorkflow('erreurs.documentIntrouvable');
+    }
 
     const maintenant = maintenantISO();
     const tache: TacheConfiee = {
       id: uid(),
+      nature,
       courrierId: circuit.courrierId,
       circuitId,
       etapeOrdre: etape.ordre,
@@ -81,7 +122,7 @@ export async function confierTache(circuitId: ID, acteur: Acteur, donnees: Donne
       acteurId: acteur.personneId,
       posteId: acteur.posteId,
       commentaire: note,
-      details: { tacheId: tache.id, posteDestinataireId: destinataire.id },
+      details: { tacheId: tache.id, nature, posteDestinataireId: destinataire.id },
     });
     await creerNotification({
       posteId: destinataire.id,
@@ -94,20 +135,83 @@ export async function confierTache(circuitId: ID, acteur: Acteur, donnees: Donne
   });
 }
 
+/** PROJET_REPONSE : rattache à la tâche le sortant (brouillon) que le destinataire vient de rédiger. */
+export async function attacherProjetReponse(tacheId: ID, acteur: Acteur, sortantId: ID): Promise<void> {
+  await db.transaction('rw', db.tables, async () => {
+    const tache = await db.tachesConfiees.get(tacheId);
+    if (!tache || tache.statut !== 'EN_COURS') throw new ErreurWorkflow('erreurs.tacheIntrouvable');
+    if (tache.posteDestinataireId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
+    if (natureDe(tache) !== 'PROJET_REPONSE') throw new ErreurWorkflow('erreurs.natureTacheImpossible');
+    const sortant = await db.courriers.get(sortantId);
+    if (!sortant || sortant.sens !== 'SORTANT' || sortant.reponseAId !== tache.courrierId) {
+      throw new ErreurWorkflow('erreurs.projetReponseInvalide');
+    }
+    await db.tachesConfiees.update(tacheId, { sortantProduitId: sortantId });
+  });
+}
+
 export async function rendreCompte(tacheId: ID, acteur: Acteur, donnees: DonneesCompteRendu): Promise<void> {
-  const texte = donnees.texte.trim();
-  if (!texte) throw new ErreurWorkflow('erreurs.compteRenduObligatoire');
-  const empreinte = donnees.fichier ? await sha256(donnees.fichier.blob) : undefined;
+  const [empreinteFichier, empreinteVersion] = await Promise.all([
+    donnees.fichier ? sha256(donnees.fichier.blob) : undefined,
+    donnees.versionCorrigee ? sha256(donnees.versionCorrigee.blob) : undefined,
+  ]);
 
   await db.transaction('rw', db.tables, async () => {
     const tache = await db.tachesConfiees.get(tacheId);
     if (!tache || tache.statut !== 'EN_COURS') throw new ErreurWorkflow('erreurs.tacheIntrouvable');
     if (tache.posteDestinataireId !== acteur.posteId) throw new ErreurWorkflow('erreurs.posteNonAssigne');
 
+    // Ce que chaque instruction exige, et le compte rendu par défaut quand le texte est facultatif.
+    const nature = natureDe(tache);
+    let texte = donnees.texte.trim();
+    switch (nature) {
+      case 'POUR_AVIS':
+        if (!donnees.avis) throw new ErreurWorkflow('erreurs.avisObligatoire');
+        if (!texte) throw new ErreurWorkflow('erreurs.compteRenduObligatoire');
+        break;
+      case 'CORRIGER_DOCUMENT':
+        if (!donnees.versionCorrigee) throw new ErreurWorkflow('erreurs.versionCorrigeeObligatoire');
+        if (donnees.versionCorrigee.mime !== 'application/pdf') throw new ErreurWorkflow('erreurs.pdfAttendu');
+        texte ||= 'Version corrigée déposée.';
+        break;
+      case 'PROJET_REPONSE':
+        if (!tache.sortantProduitId) throw new ErreurWorkflow('erreurs.projetReponseManquant');
+        texte ||= 'Projet de réponse préparé.';
+        break;
+      case 'POUR_INFORMATION':
+        texte ||= 'Vu.';
+        break;
+      default:
+        if (!texte) throw new ErreurWorkflow('erreurs.compteRenduObligatoire');
+    }
+
     const maintenant = maintenantISO();
+    const travail = await documentDeTravail(tache.courrierId);
+    const source = travail.piece;
+    let versionMax = travail.versionMax;
+
+    let pieceProduiteId: ID | undefined;
+    if (donnees.versionCorrigee && empreinteVersion) {
+      pieceProduiteId = uid();
+      versionMax += 1;
+      // Même nature que le document de travail : c'est cette version qui sera visée ou signée ensuite.
+      await db.piecesJointes.add({
+        id: pieceProduiteId,
+        courrierId: tache.courrierId,
+        nom: donnees.versionCorrigee.nom,
+        mime: 'application/pdf',
+        taille: donnees.versionCorrigee.blob.size,
+        contenu: donnees.versionCorrigee.blob,
+        version: versionMax,
+        nature: source?.nature ?? 'BROUILLON',
+        empreinteSha256: empreinteVersion,
+        ajouteeParId: acteur.personneId,
+        ajouteeLe: maintenant,
+      });
+    }
+
     let pieceJointeId: ID | undefined;
-    if (donnees.fichier && empreinte) {
-      const pieces = await db.piecesJointes.where('courrierId').equals(tache.courrierId).toArray();
+    if (donnees.fichier && empreinteFichier) {
       pieceJointeId = uid();
       await db.piecesJointes.add({
         id: pieceJointeId,
@@ -116,9 +220,9 @@ export async function rendreCompte(tacheId: ID, acteur: Acteur, donnees: Donnees
         mime: donnees.fichier.mime,
         taille: donnees.fichier.blob.size,
         contenu: donnees.fichier.blob,
-        version: 1 + Math.max(0, ...pieces.map((p) => p.version)),
+        version: versionMax + 1,
         nature: 'ANNEXE',
-        empreinteSha256: empreinte,
+        empreinteSha256: empreinteFichier,
         ajouteeParId: acteur.personneId,
         ajouteeLe: maintenant,
       });
@@ -127,7 +231,9 @@ export async function rendreCompte(tacheId: ID, acteur: Acteur, donnees: Donnees
     await db.tachesConfiees.update(tacheId, {
       statut: 'RENDUE',
       compteRendu: texte,
+      avis: nature === 'POUR_AVIS' ? donnees.avis : undefined,
       pieceJointeId,
+      pieceProduiteId,
       clotureeParId: acteur.personneId,
       clotureeLe: maintenant,
     });
@@ -138,14 +244,22 @@ export async function rendreCompte(tacheId: ID, acteur: Acteur, donnees: Donnees
       acteurId: acteur.personneId,
       posteId: acteur.posteId,
       commentaire: texte,
-      details: { tacheId, ...(donnees.fichier ? { fichier: donnees.fichier.nom } : {}) },
+      details: {
+        tacheId,
+        nature,
+        ...(donnees.avis && nature === 'POUR_AVIS' ? { avis: donnees.avis } : {}),
+        ...(donnees.versionCorrigee ? { versionCorrigee: donnees.versionCorrigee.nom } : {}),
+        ...(tache.sortantProduitId ? { sortantProduitId: tache.sortantProduitId } : {}),
+        ...(donnees.fichier ? { fichier: donnees.fichier.nom } : {}),
+      },
     });
+    const prefixe = nature === 'POUR_AVIS' ? `Avis ${donnees.avis === 'FAVORABLE' ? 'favorable' : 'défavorable'}` : 'Compte rendu';
     await creerNotification({
       posteId: tache.posteSourceId,
       courrierId: tache.courrierId,
       type: 'COMPTE_RENDU',
       cle: `COMPTE_RENDU:${tacheId}`,
-      message: `Compte rendu de ${await libellePoste(acteur.posteId)} : ${texte}`,
+      message: `${prefixe} de ${await libellePoste(acteur.posteId)} : ${texte}`,
     });
   });
 }
@@ -166,6 +280,12 @@ export async function annulerTache(tacheId: ID, acteur: Acteur): Promise<void> {
       details: { tacheId },
     });
   });
+}
+
+/** Le responsable qui a demandé ce projet de réponse peut le soumettre au circuit. */
+export async function peutSoumettreProjet(sortantId: ID, posteId: ID): Promise<boolean> {
+  const taches = await db.tachesConfiees.filter((t) => t.sortantProduitId === sortantId).toArray();
+  return taches.some((t) => t.posteSourceId === posteId);
 }
 
 export interface ElementTacheConfiee {

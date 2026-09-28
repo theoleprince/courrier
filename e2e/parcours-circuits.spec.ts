@@ -342,7 +342,7 @@ test('tâche confiée : la signature est bloquée jusqu’au compte rendu', asyn
 
   await page.getByRole('button', { name: /Confier à/ }).click();
   const modale = page.getByRole('dialog');
-  const select = modale.locator('select');
+  const select = modale.locator('select').first();
   await select.selectOption((await select.locator('option', { hasText: 'Assistante de direction' }).getAttribute('value'))!);
   await modale.locator('textarea').fill('Vérifier les pièces avant signature');
   await modale.getByRole('button', { name: /Confier à/ }).click();
@@ -466,4 +466,67 @@ test('plus aucun circuit entrant actif : message clair à l’enregistrement', a
   await page.getByLabel('Type').selectOption('FACTURE');
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
   await expect(page.getByText(/Aucun circuit actif pour ce type de courrier/)).toBeVisible();
+});
+
+test('tâche confiée : le DG reprend la main et peut signer sans attendre', async ({ page }) => {
+  await connecter(page, 'Paul Mbarga');
+  await page.goto('/parapheur');
+  await page.getByRole('button', { name: 'Ouvrir', exact: true }).first().click();
+  const url = page.url();
+
+  await page.getByRole('button', { name: /Confier à/ }).click();
+  const modale = page.getByRole('dialog');
+  const select = modale.locator('select').first();
+  await select.selectOption((await select.locator('option', { hasText: 'Assistante de direction' }).getAttribute('value'))!);
+  await modale.locator('textarea').fill('Préparer une synthèse');
+  await modale.getByRole('button', { name: /Confier à/ }).click();
+  await expect(page.getByText('En attente du compte rendu')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Reprendre la main' }).click();
+  await expect(page.getByText('Annulée', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Reprendre la main' })).toHaveCount(0);
+
+  // La tâche a quitté la corbeille de l'assistante.
+  await changerUtilisateur(page, 'Nadège Owona');
+  await page.goto('/corbeille');
+  await expect(page.getByText('Préparer une synthèse')).toHaveCount(0);
+
+  // Le DG signe sans attendre de compte rendu.
+  await changerUtilisateur(page, 'Paul Mbarga');
+  await page.goto(url);
+  await page.getByRole('main').getByRole('button', { name: 'Signer', exact: true }).first().click();
+  await tracerEtConfirmer(page);
+  await expect(page.getByText(/attend son compte rendu/)).toHaveCount(0);
+});
+
+test('tâche confiée sur un entrant à l’agent du bureau d’ordre : il voit la tâche et rend compte', async ({ page }) => {
+  await connecter(page, 'Carine Ngo Bassong');
+  const url = await enregistrerFacture(page, 'Facture — tâche au bureau d’ordre');
+
+  // La SG, à l'imputation, confie une vérification au bureau d'ordre.
+  await changerUtilisateur(page, 'Aïcha Bello');
+  await page.goto(url);
+  await page.getByRole('button', { name: /Confier à/ }).click();
+  const modale = page.getByRole('dialog');
+  const select = modale.locator('select').first();
+  await select.selectOption((await select.locator('option', { hasText: 'Agent du bureau d’ordre' }).getAttribute('value'))!);
+  await modale.locator('textarea').fill('Vérifier le bon de commande correspondant');
+  await modale.getByRole('button', { name: /Confier à/ }).click();
+
+  // L'agent du bureau d'ordre la trouve dans sa corbeille et peut agir.
+  await changerUtilisateur(page, 'Carine Ngo Bassong');
+  await page.goto('/corbeille');
+  await page.getByText('Vérifier le bon de commande correspondant').click();
+  await expect(page.getByText(/Confié par Secrétaire général/)).toBeVisible();
+  await page.getByPlaceholder('Votre compte rendu').fill('Bon de commande BC-2026-0342 retrouvé et joint.');
+  await page.getByRole('button', { name: 'Rendre compte' }).click();
+  await expect(page.getByText('Compte rendu reçu')).toBeVisible();
+
+  // Retour chez la SG, qui peut imputer.
+  await changerUtilisateur(page, 'Aïcha Bello');
+  await page.goto(url);
+  await expect(page.getByText('Bon de commande BC-2026-0342 retrouvé et joint.')).toBeVisible();
+  await choisirEntite(page, 'Service comptabilité');
+  await page.getByRole('button', { name: 'Imputer', exact: true }).click();
+  await expect(page.getByText('En cours de traitement par')).toBeVisible();
 });

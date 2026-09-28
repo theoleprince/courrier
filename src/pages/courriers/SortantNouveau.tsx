@@ -7,6 +7,7 @@ import { db } from '@/db/db';
 import { useActeur } from '@/hooks/useActeur';
 import { useParametres } from '@/hooks/useParametres';
 import { creerSortant } from '@/services/workflow';
+import { attacherProjetReponse } from '@/services/taches';
 import { genererLettrePdf, remplacerVariables } from '@/services/documents';
 import { maintenant } from '@/services/horloge';
 import { ouvrirPdf } from '@/services/impression';
@@ -37,6 +38,8 @@ export function SortantNouveau(): React.JSX.Element {
   const [params] = useSearchParams();
   const enReponseA = params.get('enReponseA') ?? undefined;
   const correspondantPrefill = params.get('correspondantId') ?? undefined;
+  // Projet de réponse demandé par une tâche confiée : enregistré en brouillon et rattaché à la tâche.
+  const tacheId = params.get('tache') ?? undefined;
   const acteur = useActeur();
   const parametres = useParametres();
   const [mode, setMode] = useState<'modele' | 'fichier'>('modele');
@@ -137,8 +140,14 @@ export function SortantNouveau(): React.JSX.Element {
         },
         document_,
         { personneId: acteur.personne.id, posteId: acteur.poste.id },
-        soumettreCircuit,
+        soumettreCircuit && !tacheId,
       );
+      if (tacheId) {
+        await attacherProjetReponse(tacheId, { personneId: acteur.personne.id, posteId: acteur.poste.id }, courrier.id);
+        toastSucces(t('taches.projetEnregistre'));
+        navigate(`/courriers/${enReponseA}`);
+        return;
+      }
       toastSucces(soumettreCircuit ? t('courrier.soumettreAuCircuit') : t('courrier.enregistrerBrouillon'));
       navigate(`/courriers/${courrier.id}`);
     } catch (erreur) {
@@ -246,14 +255,23 @@ export function SortantNouveau(): React.JSX.Element {
           <input className="champ" {...register('motsCles')} />
         </label>
 
-        <div className="flex gap-2 md:col-span-2">
-          <Button type="button" variante="secondaire" disabled={enCours} onClick={handleSubmit((v) => soumettre(v, false))}>
-            {t('courrier.enregistrerBrouillon')}
-          </Button>
-          <Button type="submit" variante="primaire" disabled={enCours}>
-            {t('courrier.soumettreAuCircuit')}
-          </Button>
-        </div>
+        {tacheId ? (
+          <div className="space-y-2 md:col-span-2">
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('taches.projetAide')}</p>
+            <Button type="button" variante="primaire" disabled={enCours} onClick={handleSubmit((v) => soumettre(v, false))}>
+              {t('taches.enregistrerProjet')}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-2 md:col-span-2">
+            <Button type="button" variante="secondaire" disabled={enCours} onClick={handleSubmit((v) => soumettre(v, false))}>
+              {t('courrier.enregistrerBrouillon')}
+            </Button>
+            <Button type="submit" variante="primaire" disabled={enCours}>
+              {t('courrier.soumettreAuCircuit')}
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

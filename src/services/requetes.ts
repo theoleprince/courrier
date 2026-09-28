@@ -19,6 +19,10 @@ export async function niveauAcces(
 ): Promise<NiveauAcces> {
   const estAccueilOuBureauOrdre = acteur.poste.role === 'ACCUEIL' || acteur.poste.role === 'BUREAU_ORDRE';
 
+  // Un poste à qui une tâche a été confiée sur ce courrier doit pouvoir le traiter, quel que soit son rôle.
+  const taches = await db.tachesConfiees.where('courrierId').equals(courrier.id).toArray();
+  if (taches.some((t) => t.posteDestinataireId === acteur.poste.id)) return 'COMPLET';
+
   if (courrier.confidentialite !== 'CONFIDENTIEL') {
     return estAccueilOuBureauOrdre ? 'SUIVI' : 'COMPLET';
   }
@@ -33,7 +37,6 @@ export async function niveauAcces(
   const postesImpliques = new Set<ID>();
   circuit?.etapes.forEach((e) => e.posteAssigneId && postesImpliques.add(e.posteAssigneId));
   diffusions.forEach((d) => postesImpliques.add(d.posteId));
-  (await db.tachesConfiees.where('courrierId').equals(courrier.id).toArray()).forEach((t) => postesImpliques.add(t.posteDestinataireId));
 
   if (postesImpliques.has(acteur.poste.id)) return 'COMPLET';
   if (estAccueilOuBureauOrdre) return 'MINIMAL';

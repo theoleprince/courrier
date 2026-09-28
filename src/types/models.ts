@@ -260,8 +260,13 @@ export interface Notification {
  * Note + imputation interne : le titulaire d'une étape confie le travail à un
  * autre poste et garde l'étape ; le destinataire rend compte (services/taches.ts).
  */
+/** Instruction portée par la note, comme l'annotation en marge d'un courrier papier. */
+export type NatureTache = 'PROJET_REPONSE' | 'CORRIGER_DOCUMENT' | 'POUR_AVIS' | 'SUITE_A_DONNER' | 'POUR_INFORMATION';
+
 export interface TacheConfiee {
   id: ID;
+  /** Absent sur les tâches créées avant l'introduction des natures : SUITE_A_DONNER. */
+  nature?: NatureTache;
   courrierId: ID;
   circuitId: ID;
   etapeOrdre: number;
@@ -274,6 +279,12 @@ export interface TacheConfiee {
   statut: 'EN_COURS' | 'RENDUE' | 'ANNULEE';
   compteRendu?: string;
   pieceJointeId?: ID;
+  /** POUR_AVIS */
+  avis?: 'FAVORABLE' | 'DEFAVORABLE';
+  /** CORRIGER_DOCUMENT : nouvelle version du document de travail déposée par le destinataire. */
+  pieceProduiteId?: ID;
+  /** PROJET_REPONSE : sortant en brouillon rédigé par le destinataire. */
+  sortantProduitId?: ID;
   clotureeParId?: ID;
   clotureeLe?: ISODate;
 }

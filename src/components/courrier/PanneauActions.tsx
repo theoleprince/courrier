@@ -32,7 +32,9 @@ import { PadSignature, type OptionsSignature } from '@/components/courrier/PadSi
 import { useParametres } from '@/hooks/useParametres';
 import type { CircuitInstance, Courrier, ModeEnvoi } from '@/types/models';
 import { origineApp } from '@/services/urls';
+import { envoyerEmail, parametresEmailExpedition } from '@/services/email';
 import { sortantReponseDe } from '@/services/requetes';
+import { peutSoumettreProjet } from '@/services/taches';
 
 interface Props {
   courrier: Courrier;
@@ -81,6 +83,12 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
 
   // Entrant traité mais dont la réponse attendue n'a jamais été rédigée : l'entité traitante
   // (ou sa hiérarchie, ou celui qui a traité, ou le DG) peut encore la rédiger.
+  // Brouillon rédigé pour une tâche confiée : le responsable qui l'a demandé peut le soumettre.
+  const demandeurDuProjet = useLiveQuery(
+    () => (courrier.sens === 'SORTANT' && courrier.statut === 'BROUILLON' ? peutSoumettreProjet(courrier.id, acteur.poste.id) : false),
+    [courrier.id, courrier.statut, acteur.poste.id],
+  );
+
   const peutRedigerReponseTardive = useLiveQuery(async () => {
     if (courrier.sens !== 'ENTRANT' || courrier.statut !== 'EN_ATTENTE_REPONSE') return false;
     if (await sortantReponseDe(courrier.id)) return false;
@@ -268,7 +276,13 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
         { modeEnvoi, accuseReception, emailDestinataire: modeEnvoi === 'EMAIL' ? emailExpedition : undefined },
       );
       if (modeEnvoi === 'EMAIL') {
-        toastSucces(t('courrier.emailEnvoye', { numero: resultat.numero, email: resultat.emailDestinataire }));
+        // L'expédition est déjà enregistrée : un échec d'envoi ne l'annule pas, il est signalé.
+        try {
+          await envoyerEmail(await parametresEmailExpedition(resultat));
+          toastSucces(t('courrier.emailEnvoye', { numero: resultat.numero, email: resultat.emailDestinataire }));
+        } catch (erreurEmail) {
+          toastErreur(t('courrier.emailEchec', { numero: resultat.numero, detail: (erreurEmail as Error).message }));
+        }
       } else {
         toastSucces(t('courrier.courrierEnregistre', { numero: resultat.numero }));
       }
@@ -542,6 +556,25 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
         </div>
       );
     }
+  }
+
+  if (courrier.sens === 'SORTANT' && courrier.statut === 'BROUILLON' && (courrier.creeParId === acteur.personne.id || demandeurDuProjet)) {
+    return (
+      <div className={CADRE_TACHE}>
+        <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
+        <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('courrier.brouillonASoumettre')}</h3>
+        <p className="text-sm text-slate-600 dark:text-slate-300">{t('courrier.brouillonAide')}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="cursor-pointer rounded-lg border border-[var(--bordure)] px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+            {nouvelleVersion ? nouvelleVersion.name : t('courrier.deposerNouvelleVersion')}
+            <input type="file" accept="application/pdf" className="hidden" onChange={(e) => setNouvelleVersion(e.target.files?.[0])} />
+          </label>
+          <Button variante="primaire" disabled={enCours} onClick={surResoumettre}>
+            {t('courrier.soumettreAuCircuit')}
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (courrier.sens === 'SORTANT' && courrier.statut === 'REJETE' && courrier.creeParId === acteur.personne.id) {

@@ -263,7 +263,10 @@
     "emailEnvoye": "Letter {{numero}} sent by email to {{email}}.",
     "apercuLettre": "Preview letter",
     "deposerNouvelleVersion": "Upload a new version (PDF)",
-    "resoumettreAide": "Fix according to the rejection reason, upload the new version if needed, then resubmit: the workflow restarts from the beginning. Previous versions remain available."
+    "resoumettreAide": "Fix according to the rejection reason, upload the new version if needed, then resubmit: the workflow restarts from the beginning. Previous versions remain available.",
+    "brouillonASoumettre": "Draft to submit",
+    "brouillonAide": "Review the draft (and upload a new version if needed), then submit it: it goes through the approval and signature workflow.",
+    "emailEchec": "Letter {{numero}} dispatched, but the email could not be sent ({{detail}}). Send it another way or try again later."
   },
   "statutEntrant": {
     "ENREGISTRE": "Registered",
@@ -344,7 +347,12 @@
     "etapeSansCible": "This workflow step has no target position or role: fix the workflow in Administration → Workflows.",
     "modeleIntrouvable": "No active workflow matches this letter: activate a workflow in Administration → Workflows.",
     "redacteurIntrouvable": "The author of this letter no longer holds a position: check the organisation chart.",
-    "responsableIntrouvable": "The unit concerned has no active head position: assign one in the organisation chart."
+    "responsableIntrouvable": "The unit concerned has no active head position: assign one in the organisation chart.",
+    "natureTacheImpossible": "This instruction is not possible for this letter.",
+    "avisObligatoire": "Give a favourable or unfavourable opinion.",
+    "versionCorrigeeObligatoire": "Upload the corrected version of the document.",
+    "projetReponseManquant": "Draft the reply first.",
+    "projetReponseInvalide": "This draft does not reply to the task’s letter."
   },
   "verdict": {
     "titre": "Final outcome",
@@ -431,7 +439,32 @@
       "EN_COURS": "Awaiting report",
       "RENDUE": "Report received",
       "ANNULEE": "Cancelled"
-    }
+    },
+    "reprendre": "Take back",
+    "instruction": "Instruction",
+    "nature": {
+      "PROJET_REPONSE": "Draft a reply",
+      "CORRIGER_DOCUMENT": "Correct the document",
+      "POUR_AVIS": "For opinion",
+      "SUITE_A_DONNER": "For follow-up",
+      "POUR_INFORMATION": "For information"
+    },
+    "avis": {
+      "FAVORABLE": "Favourable opinion",
+      "DEFAVORABLE": "Unfavourable opinion"
+    },
+    "votreAvis": "Your opinion",
+    "motivationPlaceholder": "Explain your opinion",
+    "donnerAvis": "Give opinion",
+    "vu": "Seen",
+    "vuEnvoye": "Marked as seen",
+    "redigerProjet": "Draft the reply",
+    "projetProduit": "Draft reply: {{objet}}",
+    "projetEnregistre": "Draft reply saved and linked to the task: report back to hand it over.",
+    "projetAide": "This draft is saved and linked to the task. The person who delegated it will review it and submit it to the workflow.",
+    "enregistrerProjet": "Save the draft reply",
+    "deposerVersionCorrigee": "Upload the corrected version (PDF)",
+    "versionCorrigeeProduite": "Corrected version: {{nom}} (v{{version}})"
   },
   "numerisation": {
     "bouton": "Scan with the camera",

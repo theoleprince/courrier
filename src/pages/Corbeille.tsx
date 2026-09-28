@@ -6,7 +6,7 @@ import { fr, enUS } from 'date-fns/locale';
 import { db } from '@/db/db';
 import { useActeur } from '@/hooks/useActeur';
 import { corbeille, objetAffiche } from '@/services/requetes';
-import { tachesConfieesA } from '@/services/taches';
+import { natureDe, tachesConfieesA } from '@/services/taches';
 import { TableTaches } from '@/components/courrier/TableTaches';
 
 export function Corbeille(): React.JSX.Element {
@@ -46,6 +46,9 @@ export function Corbeille(): React.JSX.Element {
                       )}
                     </div>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                      <span className="mr-2 rounded-full bg-[var(--primaire-doux)] px-2 py-0.5 text-xs font-semibold text-[var(--couleur-primaire)]">
+                        {t(`taches.nature.${natureDe(tache)}`)}
+                      </span>
                       <span className="font-medium">{postes.find((p) => p.id === tache.posteSourceId)?.libelle}</span> : « {tache.note} »
                     </p>
                   </button>
