@@ -183,7 +183,11 @@
     "modifie": "Ce document a été modifié après signature",
     "signePar": "Signé par",
     "leDate": "le {{date}}",
-    "verifierIntegrite": "Vérifier l'intégrité"
+    "verifierIntegrite": "Vérifier l'intégrité",
+    "choix": "Comment voulez-vous vérifier ce courrier ?",
+    "parCode": "Code de suivi",
+    "parDocument": "Document signé",
+    "aideCode": "Saisissez le code de suivi indiqué dans l’e-mail ou sur votre récépissé de dépôt, et les 3 premières lettres de votre nom."
   },
   "courrier": {
     "nouveauEntrant": "Enregistrer un courrier",

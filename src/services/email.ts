@@ -39,8 +39,9 @@ export async function parametresEmailExpedition(sortant: CourrierSortant): Promi
     objet: sortant.objet,
     numero: sortant.numero ?? sortant.codeSuivi,
     date: new Date(sortant.dateExpedition ?? sortant.misAJourLe).toLocaleDateString('fr-FR'),
-    message: 'Le document original signé est conservé dans nos services.',
-    lien_verification: derniere ? `${origineApp()}/verifier/${derniere.id}` : `${origineApp()}/portail`,
+    // Le PDF n'est pas joint : le destinataire suit son dossier avec le code de suivi (pré-rempli par le lien).
+    message: `Code de suivi de ce courrier : ${sortant.codeSuivi}. Le document original signé est conservé dans nos services.`,
+    lien_verification: `${origineApp()}/verifier${derniere ? `/${derniere.id}` : ''}?code=${encodeURIComponent(sortant.codeSuivi)}`,
     organisation: parametres?.nomOrganisation ?? '',
   };
 }

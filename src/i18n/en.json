@@ -183,7 +183,11 @@
     "modifie": "This document was altered after signature",
     "signePar": "Signed by",
     "leDate": "on {{date}}",
-    "verifierIntegrite": "Verify integrity"
+    "verifierIntegrite": "Verify integrity",
+    "choix": "How do you want to check this letter?",
+    "parCode": "Tracking code",
+    "parDocument": "Signed document",
+    "aideCode": "Enter the tracking code shown in the email or on your filing receipt, and the first 3 letters of your name."
   },
   "courrier": {
     "nouveauEntrant": "Register a mail",

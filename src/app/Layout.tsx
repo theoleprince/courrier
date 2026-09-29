@@ -111,12 +111,15 @@ export function Layout(): React.JSX.Element {
 
   useEffect(() => {
     function surTouche(e: KeyboardEvent) {
+      // L'autoremplissage du navigateur émet des keydown sans `key`.
+      if (typeof e.key !== 'string') return;
+      const touche = e.key.toLowerCase();
       const cible = e.target as HTMLElement;
-      const dansChamp = ['INPUT', 'TEXTAREA', 'SELECT'].includes(cible.tagName);
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      const dansChamp = ['INPUT', 'TEXTAREA', 'SELECT'].includes(cible.tagName) || cible.isContentEditable;
+      if ((e.ctrlKey || e.metaKey) && touche === 'k') {
         e.preventDefault();
         rechercheRef.current?.focus();
-      } else if (e.key.toLowerCase() === 'n' && !dansChamp && acteur) {
+      } else if (touche === 'n' && !dansChamp && acteur) {
         const cible2 =
           acteur.poste.role === 'ACCUEIL' || acteur.poste.role === 'BUREAU_ORDRE'
             ? '/courriers/entrants/nouveau'
