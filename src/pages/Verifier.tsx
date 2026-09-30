@@ -48,7 +48,7 @@ export function Verifier(): React.JSX.Element {
     <div className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-sm dark:bg-slate-900">
         <div className="mb-6 flex items-center gap-3">
-          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-10 w-10 rounded" />}
+          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-10 w-10 object-contain" />}
           <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">{t('verification.titre')}</h1>
         </div>
 

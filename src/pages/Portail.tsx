@@ -15,7 +15,7 @@ export function Portail(): React.JSX.Element {
     >
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-sm dark:bg-slate-900">
         <div className="mb-6 flex items-center gap-3">
-          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-10 w-10 rounded" />}
+          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-10 w-10 object-contain" />}
           <div>
             <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">{parametres?.nomOrganisation}</h1>
             <p className="text-sm text-slate-500">{t('portail.titre')}</p>

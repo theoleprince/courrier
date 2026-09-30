@@ -36,6 +36,7 @@ const schema = z.object({
   dateLimiteReponse: z.string().optional(),
   emailReponse: z.union([z.literal(''), z.string().trim().email()]).optional(),
   motsCles: z.string().optional(),
+  destination: z.enum(['PARAPHEUR', 'DIRECT']),
 });
 type Formulaire = z.infer<typeof schema>;
 
@@ -68,6 +69,7 @@ export function EntrantNouveau(): React.JSX.Element {
       confidentialite: 'INTERNE',
       modeDepot: 'GUICHET',
       reponseAttendue: false,
+      destination: 'PARAPHEUR',
     },
   });
 
@@ -110,6 +112,7 @@ export function EntrantNouveau(): React.JSX.Element {
         },
         fichier,
         { personneId: acteur.personne.id, posteId: acteur.poste.id },
+        { auParapheur: valeurs.destination === 'PARAPHEUR' },
       );
       setResultat(courrier);
       toastSucces(t('courrier.courrierEnregistre', { numero: courrier.numero }));
@@ -261,6 +264,28 @@ export function EntrantNouveau(): React.JSX.Element {
           <input className="champ" placeholder="facture, urgent, …" {...register('motsCles')} />
         </label>
 
+        <fieldset className="md:col-span-2">
+          <legend className="mb-1 text-sm font-medium text-slate-600 dark:text-slate-300">{t('courrier.destination')}</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {(['PARAPHEUR', 'DIRECT'] as const).map((destination) => (
+              <label
+                key={destination}
+                className="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-200 p-3 has-[:checked]:border-[var(--couleur-primaire)] has-[:checked]:bg-[var(--primaire-doux)] dark:border-slate-700"
+              >
+                <input type="radio" value={destination} className="mt-1" {...register('destination')} />
+                <span>
+                  <span className="block text-sm font-medium text-slate-800 dark:text-slate-100">
+                    {t(destination === 'PARAPHEUR' ? 'courrier.auParapheur' : 'courrier.transmettreDirectement')}
+                  </span>
+                  <span className="block text-xs text-slate-500 dark:text-slate-400">
+                    {t(destination === 'PARAPHEUR' ? 'courrier.auParapheurAide' : 'courrier.transmettreDirectementAide')}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
         <div className="md:col-span-2">
           <Button type="submit" variante="primaire" disabled={enCours}>
             {t('courrier.enregistrer')}
@@ -276,12 +301,16 @@ export function EntrantNouveau(): React.JSX.Element {
               <p className="my-2 text-2xl font-bold tracking-widest text-[var(--couleur-primaire)]">{resultat.codeSuivi}</p>
               <p className="text-sm text-slate-500">{resultat.numero}</p>
             </div>
+            {resultat.parapheurPosteId && <p className="text-sm text-slate-600 dark:text-slate-300">{t('courrier.misAuParapheur')}</p>}
             <div className="flex flex-wrap gap-2">
               <Button variante="primaire" onClick={imprimerRecepisse}>
                 {t('courrier.enregistrerEtImprimer')}
               </Button>
               <Button variante="secondaire" onClick={nouveauFormulaire}>
                 {t('courrier.enregistrerUnAutre')}
+              </Button>
+              <Button variante="secondaire" onClick={() => navigate('/parapheur')}>
+                {t('parapheur.voirParapheur')}
               </Button>
               <Button variante="discret" onClick={() => navigate(`/courriers/${resultat.id}`)}>
                 {t('suivi.voirDetailComplet')}

@@ -20,6 +20,7 @@ import {
   ajouterAnnexe,
   soumettreSortant,
   suggererImputation,
+  transmettreParapheur,
   type SuggestionImputation,
 } from '@/services/workflow';
 import { messageErreur } from '@/services/traduireErreur';
@@ -131,6 +132,18 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
       await validerEtape(circuit.id, { personneId: acteur.personne.id, posteId: acteur.poste.id }, { commentaire: commentaire || undefined });
       toastSucces(t('commun.confirmer'));
       setCommentaire('');
+    } catch (e) {
+      gererErreur(e);
+    } finally {
+      setEnCours(false);
+    }
+  }
+
+  async function surTransmettreSeul() {
+    setEnCours(true);
+    try {
+      await transmettreParapheur([courrier.id], { personneId: acteur.personne.id, posteId: acteur.poste.id });
+      toastSucces(t('parapheur.transmis', { count: 1 }));
     } catch (e) {
       gererErreur(e);
     } finally {
@@ -372,6 +385,25 @@ export function PanneauActions({ courrier, circuit, acteur }: Props): React.JSX.
       className="champ mb-2"
     />
   );
+
+  // Enregistré mais gardé au parapheur : pas encore de circuit, seul le détenteur peut le transmettre.
+  if (courrier.sens === 'ENTRANT' && courrier.parapheurPosteId === acteur.poste.id) {
+    return (
+      <div className={CADRE_TACHE}>
+        <p className={ETIQUETTE_TACHE}>{t('courrier.aFaire')}</p>
+        <h3 className="font-medium text-slate-800 dark:text-slate-100">{t('parapheur.dansParapheur')}</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t('parapheur.dansParapheurAide')}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button variante="primaire" onClick={() => navigate('/parapheur')}>
+            {t('parapheur.voirParapheur')}
+          </Button>
+          <Button variante="secondaire" disabled={enCours} onClick={surTransmettreSeul}>
+            {t('parapheur.transmettreSeul')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (assigneAMoi && etape) {
     if (etape.type === 'IMPUTATION') {

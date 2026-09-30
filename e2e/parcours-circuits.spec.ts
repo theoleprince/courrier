@@ -80,6 +80,7 @@ async function enregistrerFacture(page: Page, objet: string): Promise<string> {
   await page.getByPlaceholder('Correspondant').fill('Bureautique');
   await page.getByRole('button', { name: 'Bureautique Plus', exact: true }).click();
   await page.getByLabel('Type').selectOption('FACTURE');
+  await page.getByLabel('Transmettre directement').check();
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
   await page.getByRole('button', { name: 'Voir le détail complet' }).click();
   await expect(page).toHaveURL(/\/courriers\/[\w-]+$/);
@@ -90,7 +91,7 @@ async function enregistrerFacture(page: Page, objet: string): Promise<string> {
 async function amenerFactureAuVisa(page: Page, url: string) {
   await changerUtilisateur(page, 'Aïcha Bello');
   await page.goto(url);
-  await choisirEntite(page, 'Service comptabilité');
+  await choisirEntite(page, 'Unité comptabilité');
   await page.getByRole('button', { name: 'Imputer', exact: true }).click();
   await expect(page.getByText('En cours de traitement par')).toBeVisible();
 
@@ -196,8 +197,8 @@ test('sortant : visa, rejet du directeur, nouvelle version, resoumission, signat
   await page.goto(url);
   await viserOuValider(page, 'Valider');
 
-  // Paul (DG) signe depuis la fiche.
-  await changerUtilisateur(page, 'Paul Mbarga');
+  // Samuel Eto’o (Président) signe depuis la fiche.
+  await changerUtilisateur(page, 'Samuel Eto’o Fils');
   await page.goto(url);
   await page.getByRole('main').getByRole('button', { name: 'Signer', exact: true }).first().click();
   await tracerEtConfirmer(page);
@@ -226,7 +227,7 @@ test('circuit adapté en direct : étape ajoutée, courriers en cours inchangés
   await changerUtilisateur(page, 'Admin POC');
   await ouvrirCircuit(page, 'Facture fournisseur');
   expect(await nombreEtapes(page)).toBe(3);
-  await ajouterEtapePoste(page, 'Validation du DG', 'Validation', /Directeur général/);
+  await ajouterEtapePoste(page, 'Validation du DG', 'Validation', /Président de la FECAFOOT/);
   await expect(page.getByText('Modifications non enregistrées')).toBeVisible();
   await enregistrerCircuit(page);
   await page.reload();
@@ -251,7 +252,7 @@ test('circuit adapté en direct : étape ajoutée, courriers en cours inchangés
   await viserOuValider(page, 'Viser');
   await expect(page.getByText(/Traité le/)).toHaveCount(0);
 
-  await changerUtilisateur(page, 'Paul Mbarga');
+  await changerUtilisateur(page, 'Samuel Eto’o Fils');
   await page.goto('/corbeille');
   await expect(page.getByText('Facture B — après modification')).toBeVisible();
 
@@ -266,7 +267,7 @@ test('circuit adapté en direct : étape ajoutée, courriers en cours inchangés
   await changerUtilisateur(page, 'Samuel Tchoupo');
   await page.goto(urlB);
   await viserOuValider(page, 'Viser');
-  await changerUtilisateur(page, 'Paul Mbarga');
+  await changerUtilisateur(page, 'Samuel Eto’o Fils');
   await page.goto(urlB);
   await viserOuValider(page, 'Valider');
   await expect(page.getByText(/Traité le/).first()).toBeVisible();
@@ -302,7 +303,7 @@ test('éditeur de circuits : ordre modifiable et garde-fous à l’enregistremen
 
   // Sortant : supprimer la signature est refusé.
   await ouvrirCircuit(page, 'Sortant standard');
-  const indexSignature = (await champsNom(page).evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value))).indexOf('Signature du DG');
+  const indexSignature = (await champsNom(page).evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value))).indexOf('Signature du Président');
   expect(indexSignature).toBeGreaterThanOrEqual(0);
   await carteEtape(page, indexSignature + 1).getByTitle('Supprimer l’étape').click();
   await boutonEnregistrer(page).click();
@@ -323,7 +324,7 @@ test('circuit désactivé : la facture suit le circuit « Entrant standard »', 
 
   await changerUtilisateur(page, 'Aïcha Bello');
   await page.goto(url);
-  await choisirEntite(page, 'Service comptabilité');
+  await choisirEntite(page, 'Unité comptabilité');
   await page.getByRole('button', { name: 'Imputer', exact: true }).click();
 
   // Étapes du circuit standard (pas de « Contrôle comptable » ni de « Visa du DAF »).
@@ -334,7 +335,7 @@ test('circuit désactivé : la facture suit le circuit « Entrant standard »', 
 });
 
 test('tâche confiée : la signature est bloquée jusqu’au compte rendu', async ({ page }) => {
-  await connecter(page, 'Paul Mbarga');
+  await connecter(page, 'Samuel Eto’o Fils');
   await page.goto('/parapheur');
   await page.getByRole('button', { name: 'Ouvrir', exact: true }).first().click();
   await expect(page).toHaveURL(/\/courriers\/[\w-]+$/);
@@ -360,7 +361,7 @@ test('tâche confiée : la signature est bloquée jusqu’au compte rendu', asyn
   await page.getByPlaceholder('Votre compte rendu').fill('Pièces vérifiées, conforme.');
   await page.getByRole('button', { name: 'Rendre compte' }).click();
 
-  await changerUtilisateur(page, 'Paul Mbarga');
+  await changerUtilisateur(page, 'Samuel Eto’o Fils');
   await page.goto(url);
   await expect(page.getByText('Compte rendu reçu')).toBeVisible();
   await page.getByRole('main').getByRole('button', { name: 'Signer', exact: true }).first().click();
@@ -409,7 +410,7 @@ test('circuit sortant adapté : visa du DAF inséré avant la signature, puis re
   await viserOuValider(page, 'Viser');
 
   // Le DG rejette au parapheur : le sortant revient au rédacteur.
-  await changerUtilisateur(page, 'Paul Mbarga');
+  await changerUtilisateur(page, 'Samuel Eto’o Fils');
   await page.goto(url);
   await rejeter(page, 'Revoir le montant plafond');
   await changerUtilisateur(page, 'Rodrigue Essomba');
@@ -444,7 +445,7 @@ test('changer la cible d’une étape : le visa de la facture passe au Secrétai
 test('règles de l’éditeur : pas de signature dans un circuit entrant', async ({ page }) => {
   await connecter(page, 'Admin POC');
   await ouvrirCircuit(page, 'Facture fournisseur');
-  await ajouterEtapePoste(page, 'Signature du DG', 'Signature', /Directeur général/);
+  await ajouterEtapePoste(page, 'Signature du DG', 'Signature', /Président de la FECAFOOT/);
   await boutonEnregistrer(page).click();
   await expect(page.getByText(/Un circuit entrant ne peut pas contenir d’étape Signature/)).toBeVisible();
 });
@@ -469,7 +470,7 @@ test('plus aucun circuit entrant actif : message clair à l’enregistrement', a
 });
 
 test('tâche confiée : le DG reprend la main et peut signer sans attendre', async ({ page }) => {
-  await connecter(page, 'Paul Mbarga');
+  await connecter(page, 'Samuel Eto’o Fils');
   await page.goto('/parapheur');
   await page.getByRole('button', { name: 'Ouvrir', exact: true }).first().click();
   const url = page.url();
@@ -492,7 +493,7 @@ test('tâche confiée : le DG reprend la main et peut signer sans attendre', asy
   await expect(page.getByText('Préparer une synthèse')).toHaveCount(0);
 
   // Le DG signe sans attendre de compte rendu.
-  await changerUtilisateur(page, 'Paul Mbarga');
+  await changerUtilisateur(page, 'Samuel Eto’o Fils');
   await page.goto(url);
   await page.getByRole('main').getByRole('button', { name: 'Signer', exact: true }).first().click();
   await tracerEtConfirmer(page);
@@ -516,7 +517,7 @@ test('tâche confiée sur un entrant à l’agent du bureau d’ordre : il voit 
   await page.getByRole('button', { name: /Confier à/ }).click();
   const modale = page.getByRole('dialog');
   const select = modale.locator('select').first();
-  await select.selectOption((await select.locator('option', { hasText: 'Agent du bureau d’ordre' }).getAttribute('value'))!);
+  await select.selectOption((await select.locator('option', { hasText: 'Assistant courrier et liaisons' }).getAttribute('value'))!);
   await modale.locator('textarea').fill('Vérifier le bon de commande correspondant');
   await modale.getByRole('button', { name: /Confier à/ }).click();
 
@@ -533,7 +534,7 @@ test('tâche confiée sur un entrant à l’agent du bureau d’ordre : il voit 
   await changerUtilisateur(page, 'Aïcha Bello');
   await page.goto(url);
   await expect(page.getByText('Bon de commande BC-2026-0342 retrouvé et joint.')).toBeVisible();
-  await choisirEntite(page, 'Service comptabilité');
+  await choisirEntite(page, 'Unité comptabilité');
   await page.getByRole('button', { name: 'Imputer', exact: true }).click();
   await expect(page.getByText('En cours de traitement par')).toBeVisible();
 });

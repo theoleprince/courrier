@@ -5,12 +5,12 @@ import { test, expect } from '@playwright/test';
  * verifierEcheances() (section 11.1) et fait apparaître de nouvelles
  * notifications de retard ; revenir au présent puis rejouer le même saut ne
  * doit pas dupliquer les notifications (dédoublonnage par `cle`, section
- * 11.2). Paul Mbarga (DG) a des sortants en attente de sa signature dont
+ * 11.2). Samuel Eto’o Fils (DG) a des sortants en attente de sa signature dont
  * l'échéance est proche (2 jours) : une semaine suffit à les rendre en retard.
  */
 test('scénario E : avancer l’horloge crée des notifications sans les dupliquer', async ({ page }) => {
   await page.goto('/connexion');
-  await page.getByRole('button', { name: 'Paul Mbarga', exact: true }).click();
+  await page.getByRole('button', { name: 'Samuel Eto’o Fils', exact: true }).click();
   await expect(page).toHaveURL('/');
 
   const badge = page.locator('[data-testid="badge-notifications"]');

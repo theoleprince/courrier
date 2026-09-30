@@ -125,6 +125,11 @@ export interface CourrierEntrant extends CourrierBase {
   dateLimiteReponse?: ISODate;
   /** Adresse à laquelle envoyer la réponse (par défaut celle du correspondant). */
   emailReponse?: string;
+  /**
+   * Poste dont le parapheur contient ce courrier : enregistré mais pas encore
+   * transmis, son circuit n'est pas démarré. Absent une fois transmis.
+   */
+  parapheurPosteId?: ID;
 }
 
 export interface CourrierSortant extends CourrierBase {
@@ -309,6 +314,7 @@ export type ActionHistorique =
   | 'ENREGISTREMENT'
   | 'CREATION'
   | 'CIRCUIT_DEMARRE'
+  | 'TRANSMISSION'
   | 'IMPUTATION'
   | 'TRAITEMENT'
   | 'VISA'

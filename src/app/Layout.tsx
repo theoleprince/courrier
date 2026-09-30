@@ -174,7 +174,7 @@ export function Layout(): React.JSX.Element {
         </button>
         <div className="flex shrink-0 items-center gap-2.5 md:w-52">
           {parametres?.logoPng ? (
-            <img src={parametres.logoPng} alt="" className="h-9 w-9 rounded-xl shadow-sm" />
+            <img src={parametres.logoPng} alt="" className="h-9 w-9 object-contain" />
           ) : (
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--couleur-primaire)] text-white shadow-sm">
               <Mail size={18} />

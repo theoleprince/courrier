@@ -14,12 +14,12 @@
   },
   "nav": {
     "tableauDeBord": "Tableau de bord",
-    "corbeille": "Ma corbeille",
+    "corbeille": "Mon panier",
     "parapheur": "Parapheur",
     "information": "Pour information",
     "recherche": "Recherche",
-    "registreEntrant": "Registre entrant",
-    "registreSortant": "Registre sortant",
+    "registreEntrant": "Courrier entrant",
+    "registreSortant": "Courrier sortant",
     "aExpedier": "À expédier",
     "reponsesAttendues": "Réponses attendues",
     "correspondants": "Correspondants",
@@ -28,6 +28,7 @@
   "connexion": {
     "titre": "Qui êtes-vous ?",
     "sousTitre": "Choisissez votre nom dans l'organigramme pour vous connecter.",
+    "sousTitreIdentifiants": "Connectez-vous avec votre identifiant et votre mot de passe.",
     "choisirPoste": "Ce compte occupe plusieurs postes. Sur quel poste souhaitez-vous vous connecter ?",
     "interim": "(intérim)",
     "seConnecter": "Se connecter",
@@ -140,7 +141,7 @@
     "selectionRequise": "Sélectionnez au moins un courrier pour générer un bordereau."
   },
   "corbeille": {
-    "titre": "Ma corbeille",
+    "titre": "Mon panier",
     "vide": "Aucune tâche en attente.",
     "echeance": "Échéance",
     "priorite": "Priorité",
@@ -148,12 +149,27 @@
   },
   "parapheur": {
     "titre": "Parapheur",
-    "vide": "Aucun courrier en attente de signature.",
+    "vide": "Aucun courrier dans le parapheur.",
     "signer": "Signer",
     "signerSelection": "Signer la sélection",
     "visasObtenus": "Visas obtenus",
     "redacteur": "Rédacteur",
-    "ouvrir": "Ouvrir"
+    "ouvrir": "Ouvrir",
+    "aTransmettre": "À transmettre",
+    "aTransmettreAide": "Courriers enregistrés, pas encore transmis. Enregistrez-les au fil de l’arrivée puis transmettez le parapheur en une fois.",
+    "aSigner": "À signer",
+    "ajouterCourrier": "Enregistrer un courrier",
+    "toutSelectionner": "Tout sélectionner",
+    "objet": "Objet",
+    "transmettre_one": "Transmettre le parapheur ({{count}} courrier)",
+    "transmettre_other": "Transmettre le parapheur ({{count}} courriers)",
+    "transmis_one": "{{count}} courrier transmis",
+    "transmis_other": "{{count}} courriers transmis",
+    "imprimerBordereau": "Imprimer le bordereau de transmission",
+    "voirParapheur": "Voir le parapheur",
+    "dansParapheur": "Dans le parapheur",
+    "dansParapheurAide": "Enregistré, pas encore transmis : il partira avec le reste du parapheur.",
+    "transmettreSeul": "Transmettre ce courrier seul"
   },
   "information": {
     "titre": "Pour information",
@@ -199,7 +215,7 @@
     "correspondant": "Correspondant",
     "nouveauCorrespondant": "Nouveau correspondant",
     "modeDepot": "Mode de dépôt",
-    "deposant": "Déposant",
+    "deposant": "Usager",
     "dateCourrier": "Date du courrier",
     "referenceExpediteur": "Référence expéditeur",
     "reponseAttendue": "Réponse attendue",
@@ -270,7 +286,13 @@
     "resoumettreAide": "Corrigez selon le motif du rejet, déposez la nouvelle version si besoin, puis resoumettez : le circuit repart du début. Les versions précédentes restent consultables.",
     "brouillonASoumettre": "Brouillon à soumettre",
     "brouillonAide": "Relisez le brouillon (et déposez une nouvelle version si besoin), puis soumettez-le : il part dans le circuit de validation et de signature.",
-    "emailEchec": "Courrier {{numero}} expédié, mais l’e-mail n’a pas pu partir ({{detail}}). Envoyez-le autrement ou réessayez plus tard."
+    "emailEchec": "Courrier {{numero}} expédié, mais l’e-mail n’a pas pu partir ({{detail}}). Envoyez-le autrement ou réessayez plus tard.",
+    "destination": "Après l’enregistrement",
+    "auParapheur": "Mettre dans mon parapheur",
+    "auParapheurAide": "Le courrier attend avec les autres ; vous transmettez le parapheur quand vous le décidez.",
+    "transmettreDirectement": "Transmettre directement",
+    "transmettreDirectementAide": "Le circuit démarre tout de suite (courrier urgent, par exemple).",
+    "misAuParapheur": "Le courrier est dans votre parapheur, en attente de transmission."
   },
   "statutEntrant": {
     "ENREGISTRE": "Enregistré",
@@ -356,7 +378,8 @@
     "avisObligatoire": "Indiquez un avis favorable ou défavorable.",
     "versionCorrigeeObligatoire": "Déposez la version corrigée du document.",
     "projetReponseManquant": "Rédigez d’abord le projet de réponse.",
-    "projetReponseInvalide": "Ce projet ne répond pas au courrier de la tâche."
+    "projetReponseInvalide": "Ce projet ne répond pas au courrier de la tâche.",
+    "pasAuParapheur": "Ce courrier n’est plus dans votre parapheur."
   },
   "verdict": {
     "titre": "Verdict final",

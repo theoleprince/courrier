@@ -39,7 +39,7 @@ test('cachet téléversé puis apposé avec une signature importée', async ({ p
 
   // 2) Le DG signe le premier courrier du parapheur avec une signature importée et le cachet.
   await page.getByRole('button', { name: /Changer d'utilisateur/ }).click();
-  await page.getByRole('button', { name: 'Paul Mbarga' }).click();
+  await page.getByRole('button', { name: 'Samuel Eto’o Fils' }).click();
   await page.goto('/parapheur');
   await page.locator('main input[type=checkbox]').first().check();
   await page.getByRole('button', { name: /^Signer/ }).click();

@@ -9,21 +9,23 @@ Durée : 15 à 20 minutes. Chaque étape indique **avec qui se connecter** 👤 
 Connexion : `/connexion` → clic sur le nom dans l'organigramme, **ou** identifiant + mot de passe `123456789`.
 En cours de démo : barre démo (en bas) → **« Changer d'utilisateur »** → clic sur le nom.
 
+Organigramme de démo : **FECAFOOT** (Fédération Camerounaise de Football), repris de l'organigramme officiel publié sur fecafoot-officiel.com. Le Président est le président réel (Samuel Eto’o Fils) ; les autres personnes sont fictives.
+
 | 👤 Personne | Poste | Rôle dans la démo |
 |---|---|---|
-| **Paul Mbarga** | Directeur général | Tableau de bord, parapheur, signature en lot |
+| **Samuel Eto’o Fils** | Président de la FECAFOOT | Tableau de bord, parapheur, signature en lot |
 | **Aïcha Bello** | Secrétaire générale | Imputation des courriers entrants |
 | **Admin POC** | Administrateur fonctionnel | Personnalisation, circuits, journal d'audit |
-| **Mireille Ondoa** | Chargée d'accueil | Recherche, fiche de suivi, réponse à l'usager |
-| **Carine Ngo Bassong** | Agent du bureau d'ordre | Enregistrement des entrants, expédition des sortants |
-| **Ernest Fouda** | Chef du bureau d'ordre | (optionnel) Registre, bordereaux |
+| **Mireille Ondoa** | Chargée d'accueil (Secrétariat général) | Recherche, fiche de suivi, réponse à l'usager |
+| **Carine Ngo Bassong** | Assistante courrier et liaisons (bureau d'ordre) | Enregistrement des entrants, expédition des sortants |
+| **Ernest Fouda** | Chargé traduction, documentation et archives (chef du bureau d'ordre) | (optionnel) Registre, bordereaux |
 | **Samuel Tchoupo** | Directeur administratif et financier (DAF) | Visa, rejet, rédaction de réponse |
-| **Grâce Eyenga** | Chef comptabilité (+ intérim chef RH) | Traitement des factures |
-| **Hervé Kamga** | Directeur technique | Rejet d'un sortant (cas bonus) |
-| **Josiane Atangana** | Chef maintenance | Visa d'un sortant (cas bonus) |
-| **Rodrigue Essomba** | Technicien | Rédaction d'un sortant (cas bonus) |
+| **Grâce Eyenga** | Chargée de la comptabilité (+ intérim ressources humaines) | Traitement des factures |
+| **Hervé Kamga** | Chef du département des compétitions | Rejet d'un sortant (cas bonus) |
+| **Josiane Atangana** | Chargée des licences | Visa d'un sortant (cas bonus) |
+| **Rodrigue Essomba** | Assistant licences | Rédaction d'un sortant (cas bonus) |
 
-Personnes non utilisées dans le script : Idriss Moussa (comptable), Brenda Nkeng (chef RH).
+Personnes non utilisées dans le script : Idriss Moussa (assistant comptable), Brenda Nkeng (ressources humaines), Nadège Owona (assistante de direction), Richard Nana (directeur de cabinet), Estelle Abada (contrôle de gestion), Luc Mvondo (DTN), Martin Ekani (sélections nationales), Béatrice Ngono (arbitrage), Solange Mengue (juridique), Yannick Tchana (communication), Clarisse Mballa (marketing et RSE), Franck Nguele (système d'information).
 
 ---
 
@@ -34,7 +36,7 @@ Personnes non utilisées dans le script : Idriss Moussa (comptable), Brenda Nken
 | 1.1 | — | Lancer l'appli accessible au téléphone : `npm run dev -- --host`, noter l'IP locale (ex. `http://192.168.1.20:5173`). Téléphone sur le même Wi‑Fi. |
 | 1.2 | **Admin POC** | `/admin/personnalisation` : logo, nom, adresse et couleurs du prospect. |
 | 1.3 | **Admin POC** | `/admin/organigramme` : renommer 2–3 entités avec les noms réels du prospect. |
-| 1.4 | **Paul Mbarga** | `/parapheur` : signer un courrier, télécharger le PDF signé. Faire une **copie modifiée** (ouvrir dans Edge → ajouter une annotation → enregistrer sous `signe_modifie.pdf`). Garder les deux fichiers sur le bureau. |
+| 1.4 | **Samuel Eto’o Fils** | `/parapheur` : signer un courrier, télécharger le PDF signé. Faire une **copie modifiée** (ouvrir dans Edge → ajouter une annotation → enregistrer sous `signe_modifie.pdf`). Garder les deux fichiers sur le bureau. |
 | 1.5 | — | Barre démo → **« Réinitialiser la démo »** (juste avant la présentation, après l'étape 1.4). |
 | 1.6 | — | Tester l'imprimante et l'appareil photo du téléphone. Imprimer ce guide. |
 
@@ -48,7 +50,7 @@ Fil rouge — 5 promesses : **Rien ne se perd · Chacun sait où en est un dossi
 
 | # | 👤 Se connecter avec | Faire quoi |
 |---|---|---|
-| 1 | **Paul Mbarga** | Rester sur le tableau de bord `/`. Montrer que l'appli est aux couleurs du prospect. |
+| 1 | **Samuel Eto’o Fils** | Rester sur le tableau de bord `/`. Montrer que l'appli est aux couleurs du prospect. |
 
 > 🎤 « Aujourd'hui, combien de temps faut-il pour savoir où se trouve un courrier ? »
 
@@ -88,7 +90,7 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 
 | # | 👤 Se connecter avec | Faire quoi |
 |---|---|---|
-| 1 | **Aïcha Bello** | `/corbeille` → ouvrir la facture → montrer la **suggestion d'imputation** → choisir **Service comptabilité** → **Imputer**. Utiliser **« Diffuser pour information »** vers le DAF. |
+| 1 | **Aïcha Bello** | `/corbeille` → ouvrir la facture → montrer la **suggestion d'imputation** → choisir **Unité comptabilité** → **Imputer**. Utiliser **« Diffuser pour information »** vers le DAF. |
 | 2 | **Grâce Eyenga** | En passant : montrer la **bascule de poste** dans l'en-tête (elle assure l'intérim du chef RH). Ouvrir la facture → **« Marquer comme traité »**. |
 | 3 | **Samuel Tchoupo** | Ouvrir la facture → **Rejeter** → tenter de valider **sans motif** (refusé) → saisir « Pièce justificative manquante » → **Rejeter**. Le dossier retourne chez Grâce. |
 | 4 | **Grâce Eyenga** | Ouvrir la facture → voir le motif du rejet → **« Marquer comme traité »**. |
@@ -107,8 +109,8 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 | 2 | **Aïcha Bello** | Ouvrir la lettre → imputer à la **Direction administrative et financière** → **Imputer**. |
 | 3 | **Samuel Tchoupo** | Ouvrir la lettre → **Rédiger** → modèle **« Réponse favorable »** : objet, numéro et date se remplissent seuls, papier à en-tête → **Soumettre au circuit**. Visa et validation **sautés automatiquement** (Samuel est déjà directeur) → direction parapheur du DG. |
 | 4 | **Samuel Tchoupo** | Revenir sur la lettre de la banque → **« Marquer comme traité »** → statut « en attente de réponse ». |
-| 5 | **Paul Mbarga** | `/parapheur` → **cocher 3 courriers** (dont la réponse à la banque) → **Signer** → tracer la signature **une seule fois** → les 3 sont signés. |
-| 6 | **Paul Mbarga** | Ouvrir un PDF signé → montrer le **QR de vérification**. |
+| 5 | **Samuel Eto’o Fils** | `/parapheur` → **cocher 3 courriers** (dont la réponse à la banque) → **Signer** → tracer la signature **une seule fois** → les 3 sont signés. |
+| 6 | **Samuel Eto’o Fils** | Ouvrir un PDF signé → montrer le **QR de vérification**. |
 | 7 | **Carine Ngo Bassong** | `/expeditions` → **Expédier** la réponse → numéro **DEP-…** ; l'entrant de la banque passe **Clôturé**. |
 
 > 🎤 « Le DG signe depuis n'importe où, en quelques secondes, et en lot. »
@@ -119,11 +121,11 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 
 | # | 👤 Se connecter avec | Faire quoi |
 |---|---|---|
-| 1 | **Paul Mbarga** | Tableau de bord `/` : délais moyens, retards, **goulot sur la « Validation du directeur » de la Direction technique**. Noter le chiffre du badge de notifications. |
-| 2 | **Paul Mbarga** | Barre démo → **« +1 semaine »** → le badge de notifications augmente, escalades vers les supérieurs, tableau de bord mis à jour. |
-| 3 | **Paul Mbarga** | Barre démo → **« Revenir au présent »**, puis **« +1 semaine »** à nouveau → **aucune notification en double**. |
-| 4 | **Paul Mbarga** | `/reponses-attendues` → montrer un courrier dont la réponse est hors délai. |
-| 5 | **Paul Mbarga** | Barre démo → **« Revenir au présent »** (important pour la suite). |
+| 1 | **Samuel Eto’o Fils** | Tableau de bord `/` : délais moyens, retards, **goulot sur la « Validation du directeur » de la Direction technique**. Noter le chiffre du badge de notifications. |
+| 2 | **Samuel Eto’o Fils** | Barre démo → **« +1 semaine »** → le badge de notifications augmente, escalades vers les supérieurs, tableau de bord mis à jour. |
+| 3 | **Samuel Eto’o Fils** | Barre démo → **« Revenir au présent »**, puis **« +1 semaine »** à nouveau → **aucune notification en double**. |
+| 4 | **Samuel Eto’o Fils** | `/reponses-attendues` → montrer un courrier dont la réponse est hors délai. |
+| 5 | **Samuel Eto’o Fils** | Barre démo → **« Revenir au présent »** (important pour la suite). |
 
 > 🎤 « Les retards deviennent visibles et remontent tout seuls. »
 
@@ -146,8 +148,8 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 
 | # | 👤 Se connecter avec | Faire quoi |
 |---|---|---|
-| 1 | **Paul Mbarga** | Couper le Wi‑Fi → bandeau « hors ligne » → continuer à naviguer (ouvrir un courrier, le tableau de bord). Rétablir le Wi‑Fi. |
-| 2 | **Paul Mbarga** | Sélecteur de langue dans l'en-tête → **EN** → toute l'interface en anglais. Revenir en FR. |
+| 1 | **Samuel Eto’o Fils** | Couper le Wi‑Fi → bandeau « hors ligne » → continuer à naviguer (ouvrir un courrier, le tableau de bord). Rétablir le Wi‑Fi. |
+| 2 | **Samuel Eto’o Fils** | Sélecteur de langue dans l'en-tête → **EN** → toute l'interface en anglais. Revenir en FR. |
 | 3 | **Admin POC** | `/admin/circuits` → ajouter une étape à un circuit en direct → enregistrer. Seuls les nouveaux courriers seront concernés. |
 | 4 | — | Présenter la feuille de route (section 5) puis questions. |
 
@@ -164,7 +166,7 @@ On reprend la facture créée au cas 2 (ouvrir son URL après chaque changement 
 | 3 | **Hervé Kamga** | Ouvrir le courrier → **Rejeter** avec motif. |
 | 4 | **Rodrigue Essomba** | Ouvrir le courrier → **Nouvelle version** (déposer la v2) → **Resoumettre**. |
 | 5 | **Josiane Atangana** → **Hervé Kamga** | Viser, puis Valider. |
-| 6 | **Paul Mbarga** | `/parapheur` → Signer. |
+| 6 | **Samuel Eto’o Fils** | `/parapheur` → Signer. |
 | 7 | **Carine Ngo Bassong** | `/expeditions` → Expédier. Montrer que **v1 et v2 restent consultables** sur la fiche. |
 
 ### Autres démonstrations rapides

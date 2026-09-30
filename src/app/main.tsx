@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/index.css';
 import '@/i18n';
-import { seedOrganisation } from '@/db/seed';
+import { migrerLogoOfficiel, seedOrganisation } from '@/db/seed';
 import { seedCourriers } from '@/db/seedCourriers';
 import { db } from '@/db/db';
 import { initHorloge } from '@/services/horloge';
@@ -23,6 +23,7 @@ async function initialiserDonnees(): Promise<void> {
     await Promise.all(db.tables.map((table) => table.clear()));
   }
   await seedOrganisation();
+  await migrerLogoOfficiel();
   await initHorloge();
   await seedCourriers();
 }

@@ -14,12 +14,12 @@
   },
   "nav": {
     "tableauDeBord": "Dashboard",
-    "corbeille": "My inbox",
+    "corbeille": "My basket",
     "parapheur": "Signature desk",
     "information": "For information",
     "recherche": "Search",
-    "registreEntrant": "Incoming register",
-    "registreSortant": "Outgoing register",
+    "registreEntrant": "Incoming mail",
+    "registreSortant": "Outgoing mail",
     "aExpedier": "To dispatch",
     "reponsesAttendues": "Awaited replies",
     "correspondants": "Correspondents",
@@ -28,6 +28,7 @@
   "connexion": {
     "titre": "Who are you?",
     "sousTitre": "Choose your name in the org chart to sign in.",
+    "sousTitreIdentifiants": "Sign in with your username and password.",
     "choisirPoste": "This account holds several positions. Which one do you want to sign in as?",
     "interim": "(acting)",
     "seConnecter": "Sign in",
@@ -140,7 +141,7 @@
     "selectionRequise": "Select at least one mail item to generate a transmission slip."
   },
   "corbeille": {
-    "titre": "My inbox",
+    "titre": "My basket",
     "vide": "No pending task.",
     "echeance": "Due date",
     "priorite": "Priority",
@@ -148,12 +149,27 @@
   },
   "parapheur": {
     "titre": "Signature desk",
-    "vide": "No mail awaiting signature.",
+    "vide": "Nothing in the signature desk.",
     "signer": "Sign",
     "signerSelection": "Sign selection",
     "visasObtenus": "Approvals obtained",
     "redacteur": "Drafter",
-    "ouvrir": "Open"
+    "ouvrir": "Open",
+    "aTransmettre": "To forward",
+    "aTransmettreAide": "Registered mail not yet forwarded. Register items as they arrive, then forward the whole batch at once.",
+    "aSigner": "To sign",
+    "ajouterCourrier": "Register mail",
+    "toutSelectionner": "Select all",
+    "objet": "Subject",
+    "transmettre_one": "Forward batch ({{count}} item)",
+    "transmettre_other": "Forward batch ({{count}} items)",
+    "transmis_one": "{{count}} item forwarded",
+    "transmis_other": "{{count}} items forwarded",
+    "imprimerBordereau": "Print transmission slip",
+    "voirParapheur": "Open signature desk",
+    "dansParapheur": "In the batch",
+    "dansParapheurAide": "Registered, not yet forwarded: it will leave with the rest of the batch.",
+    "transmettreSeul": "Forward this item alone"
   },
   "information": {
     "titre": "For information",
@@ -270,7 +286,13 @@
     "resoumettreAide": "Fix according to the rejection reason, upload the new version if needed, then resubmit: the workflow restarts from the beginning. Previous versions remain available.",
     "brouillonASoumettre": "Draft to submit",
     "brouillonAide": "Review the draft (and upload a new version if needed), then submit it: it goes through the approval and signature workflow.",
-    "emailEchec": "Letter {{numero}} dispatched, but the email could not be sent ({{detail}}). Send it another way or try again later."
+    "emailEchec": "Letter {{numero}} dispatched, but the email could not be sent ({{detail}}). Send it another way or try again later.",
+    "destination": "After registering",
+    "auParapheur": "Put in my batch",
+    "auParapheurAide": "The item waits with the others; you forward the batch when you decide.",
+    "transmettreDirectement": "Forward right away",
+    "transmettreDirectementAide": "The workflow starts immediately (urgent mail, for instance).",
+    "misAuParapheur": "The item is in your batch, waiting to be forwarded."
   },
   "statutEntrant": {
     "ENREGISTRE": "Registered",
@@ -356,7 +378,8 @@
     "avisObligatoire": "Give a favourable or unfavourable opinion.",
     "versionCorrigeeObligatoire": "Upload the corrected version of the document.",
     "projetReponseManquant": "Draft the reply first.",
-    "projetReponseInvalide": "This draft does not reply to the task’s letter."
+    "projetReponseInvalide": "This draft does not reply to the task’s letter.",
+    "pasAuParapheur": "This item is no longer in your batch."
   },
   "verdict": {
     "titre": "Final outcome",

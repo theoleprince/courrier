@@ -63,6 +63,22 @@ export class GestionCourrierDB extends Dexie {
     this.version(2).stores({
       tachesConfiees: 'id, courrierId, circuitId, posteDestinataireId, statut, [posteDestinataireId+statut]',
     });
+    // v4 : parapheur du bureau d'ordre (courriers enregistrés, pas encore transmis).
+    // Une v3 de développement avait fait du parapheur une étape de circuit : on la retire.
+    this.version(4)
+      .stores({
+        courriers:
+          'id, sens, numero, &codeSuivi, statut, [sens+statut], entiteTraitanteId, correspondantId, reponseAId, creeLe, parapheurPosteId',
+      })
+      .upgrade((tx) =>
+        tx
+          .table<ModeleCircuit, string>('modelesCircuit')
+          .toCollection()
+          .modify((modele) => {
+            const etapes = modele.etapes.filter((e) => (e.type as string) !== 'PARAPHEUR');
+            if (etapes.length !== modele.etapes.length) modele.etapes = etapes.map((e, i) => ({ ...e, ordre: i + 1 }));
+          }),
+      );
   }
 }
 

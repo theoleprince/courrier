@@ -280,11 +280,21 @@ async function completerEmailCorrespondant(correspondantId: ID, email: string | 
   if (correspondant && !correspondant.email) await db.correspondants.update(correspondantId, { email });
 }
 
+export interface OptionsEnregistrement {
+  /** Forcer un modèle de circuit (sinon choisi selon le type). */
+  modeleId?: ID;
+  /**
+   * Garder le courrier dans le parapheur de l'acteur au lieu de démarrer son
+   * circuit : il sera transmis plus tard, avec d'autres (transmettreParapheur).
+   */
+  auParapheur?: boolean;
+}
+
 export async function enregistrerEntrant(
   data: DonneesEntrant,
   fichier: FichierEntree | undefined,
   acteur: Acteur,
-  modeleId?: ID,
+  { modeleId, auParapheur = false }: OptionsEnregistrement = {},
 ): Promise<CourrierEntrant> {
   const empreinteSha256 = fichier ? await sha256(fichier.blob) : undefined;
 
@@ -319,7 +329,10 @@ export async function enregistrerEntrant(
       reponseAttendue: data.reponseAttendue,
       dateLimiteReponse: data.dateLimiteReponse,
       emailReponse: data.emailReponse || undefined,
+      parapheurPosteId: auParapheur ? acteur.posteId : undefined,
     };
+    // Circuit vérifié dès l'enregistrement, même au parapheur : l'erreur apparaît au guichet, pas à la transmission.
+    await choisirModele('ENTRANT', data.type, modeleId);
     await completerEmailCorrespondant(data.correspondantId, data.emailReponse);
     await db.courriers.add(courrier);
 
@@ -345,11 +358,39 @@ export async function enregistrerEntrant(
       action: 'ENREGISTREMENT',
       acteurId: acteur.personneId,
       posteId: acteur.posteId,
-      details: { numero, codeSuivi },
+      details: { numero, codeSuivi, ...(auParapheur ? { auParapheur: true } : {}) },
     });
 
-    await demarrerCircuit(courrier, modeleId);
+    if (!auParapheur) await demarrerCircuit(courrier, modeleId);
     return courrier;
+  });
+}
+
+/**
+ * Transmet le parapheur : les courriers choisis quittent le parapheur de
+ * l'acteur et leur circuit démarre (en général vers l'imputation). Tout ou
+ * rien : un lot transmis correspond à un bordereau.
+ */
+export async function transmettreParapheur(courrierIds: ID[], acteur: Acteur): Promise<CourrierEntrant[]> {
+  if (courrierIds.length === 0) return [];
+  return db.transaction('rw', db.tables, async () => {
+    const transmis: CourrierEntrant[] = [];
+    for (const courrierId of courrierIds) {
+      const courrier = await db.courriers.get(courrierId);
+      if (!courrier || courrier.sens !== 'ENTRANT') throw new ErreurWorkflow('erreurs.courrierIntrouvable');
+      if (courrier.parapheurPosteId !== acteur.posteId) throw new ErreurWorkflow('erreurs.pasAuParapheur');
+      delete courrier.parapheurPosteId;
+      await tracer({
+        courrierId,
+        action: 'TRANSMISSION',
+        acteurId: acteur.personneId,
+        posteId: acteur.posteId,
+        commentaire: `Parapheur de ${courrierIds.length} courrier(s)`,
+      });
+      await demarrerCircuit(courrier);
+      transmis.push(courrier);
+    }
+    return transmis;
   });
 }
 

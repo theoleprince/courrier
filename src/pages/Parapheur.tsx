@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/db';
 import { useActeur } from '@/hooks/useActeur';
-import { parapheur, objetAffiche } from '@/services/requetes';
+import { parapheur, parapheurATransmettre, objetAffiche } from '@/services/requetes';
 import { signer, signerEnLot } from '@/services/workflow';
 import { messageErreur } from '@/services/traduireErreur';
 import { toastErreur, toastSucces } from '@/store/toasts';
@@ -14,6 +14,7 @@ import { useParametres } from '@/hooks/useParametres';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { origineApp } from '@/services/urls';
+import { ParapheurATransmettre } from '@/components/courrier/ParapheurATransmettre';
 
 export function Parapheur(): React.JSX.Element {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ export function Parapheur(): React.JSX.Element {
   const acteur = useActeur();
   const parametres = useParametres();
   const taches = useLiveQuery(() => (acteur ? parapheur(acteur.poste.id) : []), [acteur?.poste.id]) ?? [];
+  const aTransmettre = useLiveQuery(() => (acteur ? parapheurATransmettre(acteur.poste.id) : []), [acteur?.poste.id]) ?? [];
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const [ouvrirSignature, setOuvrirSignature] = useState(false);
   const [enCours, setEnCours] = useState(false);
@@ -68,8 +70,14 @@ export function Parapheur(): React.JSX.Element {
     <div>
       <h1 className="mb-4 text-xl font-semibold text-slate-800 dark:text-slate-100">{t('parapheur.titre')}</h1>
 
+      {acteur && aTransmettre.length > 0 && <ParapheurATransmettre courriers={aTransmettre} acteur={acteur} />}
+
+      {aTransmettre.length > 0 && taches.length > 0 && (
+        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">{t('parapheur.aSigner')}</h2>
+      )}
+
       {taches.length === 0 ? (
-        <p className="py-8 text-center text-sm text-slate-400">{t('parapheur.vide')}</p>
+        aTransmettre.length === 0 && <p className="py-8 text-center text-sm text-slate-400">{t('parapheur.vide')}</p>
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-2">

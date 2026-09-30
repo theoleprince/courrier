@@ -46,13 +46,13 @@ Deux façons, à choisir selon le rendu voulu :
 
 | 👤 Personne | Poste | Séquences |
 |---|---|---|
-| **Carine Ngo Bassong** | Agent du bureau d'ordre | 1, 2, 3 (enregistrement, expédition) |
+| **Carine Ngo Bassong** | Assistante courrier et liaisons | 1, 2, 3 (enregistrement, expédition) |
 | **Aïcha Bello** | Secrétaire générale | 1, 2 (imputation) |
-| **Grâce Eyenga** | Chef du service comptabilité | 1 (traitement de la facture) |
+| **Grâce Eyenga** | Chargé de la comptabilité | 1 (traitement de la facture) |
 | **Samuel Tchoupo** | Directeur administratif et financier | 1, 2 (visa, rédaction de la réponse) |
-| **Paul Mbarga** | Directeur général | 0, 2, 3, 5 (tableau de bord, parapheur) |
+| **Samuel Eto’o Fils** | Président de la FECAFOOT | 0, 2, 3, 5 (tableau de bord, parapheur) |
 | **Rodrigue Essomba** | Technicien | 3 (rédaction d'un sortant) |
-| **Josiane Atangana** | Chef du service maintenance | 3 (visa) |
+| **Josiane Atangana** | Chargée des licences | 3 (visa) |
 | **Hervé Kamga** | Directeur technique | 3 (validation) |
 | **Admin POC** | Administrateur fonctionnel | 4 (configuration) |
 
@@ -67,7 +67,7 @@ Mot de passe de tous les comptes, si besoin : `123456789`.
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
 | 0.1 | — | Page de connexion : l'organigramme du client. |
-| 0.2 | **Paul Mbarga** | Clic sur son nom → tableau de bord. Survoler les indicateurs (reçus, en cours, en retard) puis le graphique des retards. |
+| 0.2 | **Samuel Eto’o Fils** | Clic sur son nom → tableau de bord. Survoler les indicateurs (reçus, en cours, en retard) puis le graphique des retards. |
 
 > 🎤 « Chaque jour, votre organisation reçoit et envoie des dizaines de courriers. Où sont-ils ? Qui doit les traiter ? Sont-ils en retard ? Voici comment la solution répond à ces trois questions, du guichet jusqu'à la signature du Directeur général. »
 
@@ -80,24 +80,25 @@ Circuit appliqué automatiquement : **Imputation (SG) → Contrôle comptable �
 
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
-| 1.1 | **Carine** (bureau d'ordre) | Menu **Registre entrant** → **« Enregistrer un courrier »**. Glisser `facture-bureautique-plus.pdf` dans la zone Document. Objet « Facture fournitures de bureau », Correspondant **Bureautique Plus**, Type **Facture** → **Enregistrer**. |
+| 1.1 | **Carine** (bureau d'ordre) | Menu **Courrier entrant** → **« Enregistrer un courrier »**. Glisser `facture-bureautique-plus.pdf` dans la zone Document. Objet « Facture fournitures de bureau », Correspondant **Bureautique Plus**, Type **Facture** → **Enregistrer**. |
 | 1.2 | **Carine** | Fenêtre de confirmation : **code de suivi** en grand et **numéro ARR-…** → **« Enregistrer et imprimer le récépissé »** : le PDF du récépissé s'ouvre avec son **QR code**. Fermer, puis **« Voir le détail complet »**. |
-| 1.3 | **Carine** | Revenir au **Registre entrant** : le courrier est en tête de liste, statut « Reçu, en cours d'orientation ». |
+| 1.3 | **Carine** | Revenir au **Courrier entrant** : le courrier est en tête de liste, statut « Reçu, en cours d'orientation ». |
+| 1.3 bis | **Carine** | À l'enregistrement, « Mettre dans mon parapheur » était coché (par défaut ; « Transmettre directement » pour un urgent). Menu **Parapheur** → section **« À transmettre »** : la facture attend avec les autres courriers du jour. Tout est coché → **« Transmettre le parapheur »** : les circuits démarrent et le bordereau de transmission s'ouvre, à faire émarger par le secrétariat. |
 
-> 🎤 « Dès son arrivée, le courrier est numérisé, numéroté et horodaté. Le déposant repart avec un récépissé : son code de suivi et un QR code lui permettent de suivre son dossier en ligne. »
+> 🎤 « Dès son arrivée, le courrier est numérisé, numéroté et horodaté. L’usager repart avec un récépissé : son code de suivi et un QR code lui permettent de suivre son dossier en ligne. »
 
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
-| 1.4 | **Aïcha** (SG) | **Ma corbeille** : la facture est arrivée, avec son échéance. L'ouvrir : aperçu du document à gauche, actions à droite. |
-| 1.5 | **Aïcha** | Cliquer **« Suggestions »** → l'appli propose le **Service comptabilité** avec sa justification. Le choisir. |
+| 1.4 | **Aïcha** (SG) | **Mon panier** : la facture est arrivée, avec son échéance. L'ouvrir : aperçu du document à gauche, actions à droite. |
+| 1.5 | **Aïcha** | Cliquer **« Suggestions »** → l'appli propose le **Unité comptabilité** avec sa justification. Le choisir. |
 | 1.6 | **Aïcha** | **« Diffuser pour information »** → choisir **Directeur administratif et financier** → valider. Puis **Imputer**. |
 
 > 🎤 « La Secrétaire générale oriente le courrier en un clic. L'application lui suggère le bon service d'après l'historique. Elle peut aussi mettre un directeur en copie pour information. »
 
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
-| 1.7 | **Grâce** (chef comptabilité) | **Ma corbeille** → ouvrir la facture → saisir un commentaire « Montant conforme au bon de commande » → **« Marquer comme traité »**. |
-| 1.8 | **Samuel** (DAF) | **Ma corbeille** → ouvrir la facture → **Viser** → tracer son paraphe dans la fenêtre → valider. |
+| 1.7 | **Grâce** (chef comptabilité) | **Mon panier** → ouvrir la facture → saisir un commentaire « Montant conforme au bon de commande » → **« Marquer comme traité »**. |
+| 1.8 | **Samuel** (DAF) | **Mon panier** → ouvrir la facture → **Viser** → tracer son paraphe dans la fenêtre → valider. |
 | 1.9 | **Samuel** | Le document affiché porte désormais le cachet **« LU ET APPROUVÉ »** avec nom, poste et date, **sur chaque page**. Le statut passe **« Traité le … »**. |
 | 1.10 | **Samuel** | Onglet **Parcours** : la frise montre chaque étape, qui l'a faite et quand. Puis menu **Pour information** : la facture y figure (diffusion de l'étape 1.6). |
 
@@ -139,7 +140,7 @@ Circuit appliqué automatiquement : **Imputation (SG) → Contrôle comptable �
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
 | 2.10 | **Carine** | Menu **À expédier** → ouvrir la réponse → Mode d'envoi **E-mail** : l'adresse de la banque est déjà là → **Expédier**. Numéro **DEP-…** attribué. |
-| 2.11 | **Carine** | Rouvrir la lettre de la banque (registre entrant) : statut **Clôturé**, la réponse est liée au dossier. |
+| 2.11 | **Carine** | Rouvrir la lettre de la banque (courrier entrant) : statut **Clôturé**, la réponse est liée au dossier. |
 
 > 🎤 « À l'expédition, le courrier reçoit son numéro de départ. Le courrier d'origine se clôture automatiquement : la boucle est bouclée, sans relance manuelle. »
 
@@ -152,7 +153,7 @@ Circuit appliqué : **Visa du chef de service → Validation du directeur → Si
 
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
-| 3.1 | **Rodrigue** (technicien) | Menu **Registre sortant** → **« Rédiger un courrier »**. Correspondant **Transports Nkolbisson SARL**, objet « Planning d'intervention sur le groupe électrogène ». Choisir un modèle (ou déposer un document) → **« Aperçu de la lettre »** → **« Soumettre au circuit »**. |
+| 3.1 | **Rodrigue** (technicien) | Menu **Courrier sortant** → **« Rédiger un courrier »**. Correspondant **Transports Nkolbisson SARL**, objet « Planning d'intervention sur le groupe électrogène ». Choisir un modèle (ou déposer un document) → **« Aperçu de la lettre »** → **« Soumettre au circuit »**. |
 
 > 🎤 « Un agent rédige un courrier. Il n'a pas à savoir à qui l'envoyer pour validation : le circuit s'en charge. »
 
@@ -162,7 +163,7 @@ Circuit appliqué : **Visa du chef de service → Validation du directeur → Si
 | 3.3 | **Hervé** (directeur technique) | Corbeille → ouvrir → **Valider**. |
 | 3.4 | **Paul** (DG) | **Parapheur** → signer ce courrier. Sur le PDF signé : le visa de Josiane **et** la signature du DG. |
 | 3.5 | **Carine** | **À expédier** → Mode d'envoi **Poste**, cocher **Accusé de réception** → **Expédier**. |
-| 3.6 | **Carine** | **Registre sortant** : le courrier apparaît avec son numéro **DEP-…** et le statut « Expédié le … ». Montrer **Imprimer le registre** / **Exporter en CSV**. |
+| 3.6 | **Carine** | **Courrier sortant** : le courrier apparaît avec son numéro **DEP-…** et le statut « Expédié le … ». Montrer **Imprimer le registre** / **Exporter en CSV**. |
 
 > 🎤 « Visa du chef de service, validation du directeur, signature, expédition : chaque étape est tracée et datée. Les visas restent visibles sur la version signée. Les registres de départ et d'arrivée sont tenus automatiquement. »
 
@@ -220,7 +221,7 @@ Circuit appliqué : **Visa du chef de service → Validation du directeur → Si
 
 | # | 👤 Connecté | À l'écran |
 |---|---|---|
-| 5.1 | **Paul Mbarga** | Retour au **tableau de bord** : indicateurs à jour avec les courriers traités pendant la vidéo. Terminer sur le logo du client. |
+| 5.1 | **Samuel Eto’o Fils** | Retour au **tableau de bord** : indicateurs à jour avec les courriers traités pendant la vidéo. Terminer sur le logo du client. |
 
 > 🎤 « Un courrier enregistré en quelques secondes, un circuit qui dit à chacun quoi faire, une signature qui ne bloque plus, et une traçabilité complète. La gestion du courrier, enfin sous contrôle. »
 

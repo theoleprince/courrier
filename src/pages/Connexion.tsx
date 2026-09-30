@@ -40,9 +40,15 @@ export function Connexion(): React.JSX.Element {
     setPostesChoix(options);
   }
 
-  if (!entites || !postes || !personnes) {
-    return <div className="flex h-screen items-center justify-center">{t('commun.chargement')}</div>;
+  if (!entites || !postes || !personnes || !parametres) {
+    return (
+      <div className="flex h-screen items-center justify-center">{t('commun.chargement')}</div>
+    );
   }
+
+  // Hors démonstration (production), seule la connexion par identifiant est proposée.
+  const modeDemo = parametres.modeDemo;
+  const modeActif: ModeConnexion = modeDemo ? mode : 'identifiants';
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
@@ -52,18 +58,24 @@ export function Connexion(): React.JSX.Element {
       />
       <div className="anim-apparition relative w-full max-w-2xl rounded-2xl border border-[var(--bordure)] bg-[var(--surface)]/90 p-8 shadow-[var(--ombre-flottante)] backdrop-blur sm:p-10">
         <div className="mb-6 flex items-center gap-3">
-          {parametres?.logoPng && <img src={parametres.logoPng} alt="" className="h-12 w-12 rounded-xl shadow-sm" />}
+          {parametres?.logoPng && (
+            <img src={parametres.logoPng} alt="" className="h-12 w-12 object-contain" />
+          )}
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
               {parametres?.nomOrganisation ?? t('app.titre')}
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{t('connexion.sousTitre')}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {t(modeActif === 'arbre' ? 'connexion.sousTitre' : 'connexion.sousTitreIdentifiants')}
+            </p>
           </div>
         </div>
 
         {personneChoisie ? (
           <div>
-            <p className="mb-3 text-sm text-slate-700 dark:text-slate-300">{t('connexion.choisirPoste')}</p>
+            <p className="mb-3 text-sm text-slate-700 dark:text-slate-300">
+              {t('connexion.choisirPoste')}
+            </p>
             <div className="space-y-2">
               {postesChoix.map((poste) => (
                 <button
@@ -85,32 +97,34 @@ export function Connexion(): React.JSX.Element {
           </div>
         ) : (
           <>
-            <div className="mb-4 flex gap-1 rounded-md bg-slate-100 p-1 dark:bg-slate-800">
-              <button
-                type="button"
-                onClick={() => setMode('arbre')}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium ${
-                  mode === 'arbre'
-                    ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-700 dark:text-slate-100'
-                    : 'text-slate-500 dark:text-slate-400'
-                }`}
-              >
-                <Network size={14} /> {t('connexion.modeArbre')}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('identifiants')}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium ${
-                  mode === 'identifiants'
-                    ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-700 dark:text-slate-100'
-                    : 'text-slate-500 dark:text-slate-400'
-                }`}
-              >
-                <KeyRound size={14} /> {t('connexion.modeIdentifiants')}
-              </button>
-            </div>
+            {modeDemo && (
+              <div className="mb-4 flex gap-1 rounded-md bg-slate-100 p-1 dark:bg-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setMode('arbre')}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium ${
+                    mode === 'arbre'
+                      ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+                      : 'text-slate-500 dark:text-slate-400'
+                  }`}
+                >
+                  <Network size={14} /> {t('connexion.modeArbre')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('identifiants')}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium ${
+                    mode === 'identifiants'
+                      ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+                      : 'text-slate-500 dark:text-slate-400'
+                  }`}
+                >
+                  <KeyRound size={14} /> {t('connexion.modeIdentifiants')}
+                </button>
+              </div>
+            )}
 
-            {mode === 'arbre' ? (
+            {modeActif === 'arbre' ? (
               <>
                 <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-slate-400">
                   {t('connexion.titre')}
@@ -123,7 +137,7 @@ export function Connexion(): React.JSX.Element {
                 />
               </>
             ) : (
-              <FormulaireIdentifiants onAuthentifie={choisirPersonne} />
+              <FormulaireIdentifiants onAuthentifie={choisirPersonne} modeDemo={modeDemo} />
             )}
           </>
         )}
@@ -132,7 +146,13 @@ export function Connexion(): React.JSX.Element {
   );
 }
 
-function FormulaireIdentifiants({ onAuthentifie }: { onAuthentifie: (personne: Personne) => void }): React.JSX.Element {
+function FormulaireIdentifiants({
+  onAuthentifie,
+  modeDemo,
+}: {
+  onAuthentifie: (personne: Personne) => void;
+  modeDemo: boolean;
+}): React.JSX.Element {
   const { t } = useTranslation();
   const [identifiant, setIdentifiant] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
@@ -155,17 +175,21 @@ function FormulaireIdentifiants({ onAuthentifie }: { onAuthentifie: (personne: P
   return (
     <form onSubmit={soumettre} className="space-y-3">
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('connexion.identifiant')}</span>
+        <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">
+          {t('connexion.identifiant')}
+        </span>
         <input
           autoFocus
           value={identifiant}
           onChange={(e) => setIdentifiant(e.target.value)}
-          placeholder="prenom.nom@sanaga-industries.cm"
+          placeholder="prenom.nom@fecafoot.demo"
           className="champ"
         />
       </label>
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">{t('connexion.motDePasse')}</span>
+        <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-300">
+          {t('connexion.motDePasse')}
+        </span>
         <input
           type="password"
           value={motDePasse}
@@ -174,10 +198,19 @@ function FormulaireIdentifiants({ onAuthentifie }: { onAuthentifie: (personne: P
         />
       </label>
       {erreur && <p className="text-sm text-red-500">{t('connexion.identifiantsInvalides')}</p>}
-      <Button type="submit" variante="primaire" disabled={enCours || !identifiant || !motDePasse} className="w-full justify-center">
+      <Button
+        type="submit"
+        variante="primaire"
+        disabled={enCours || !identifiant || !motDePasse}
+        className="w-full justify-center"
+      >
         {t('connexion.seConnecter')}
       </Button>
-      <p className="text-center text-xs text-slate-400">{t('connexion.motDePasseDefaut', { motDePasse: '123456789' })}</p>
+      {modeDemo && (
+        <p className="text-center text-xs text-slate-400">
+          {t('connexion.motDePasseDefaut', { motDePasse: '123456789' })}
+        </p>
+      )}
     </form>
   );
 }

@@ -51,6 +51,7 @@ test('scénario A : circulation avec rejet puis clôture', async ({ page }) => {
   await page.getByPlaceholder('Correspondant').fill('Bureautique');
   await page.getByRole('button', { name: 'Bureautique Plus', exact: true }).click();
   await page.getByLabel('Type').selectOption('FACTURE');
+  await page.getByLabel('Transmettre directement').check();
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
 
   await expect(page.getByRole('heading', { name: /enregistré/ })).toBeVisible();

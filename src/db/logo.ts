@@ -27,3 +27,21 @@ export function genererLogoMonogramme(sigle: string, couleur: string): string {
 
   return canvas.toDataURL('image/png');
 }
+
+/** Charge le logo officiel livré dans `public/logo.png` sous forme de data URL (undefined si indisponible). */
+export async function chargerLogoOfficiel(): Promise<string | undefined> {
+  try {
+    const reponse = await fetch(`${import.meta.env.BASE_URL}logo.png`);
+    if (!reponse.ok) return undefined;
+    const blob = await reponse.blob();
+    if (blob.type !== 'image/png') return undefined;
+    return await new Promise<string>((resolve, reject) => {
+      const lecteur = new FileReader();
+      lecteur.onload = () => resolve(lecteur.result as string);
+      lecteur.onerror = () => reject(lecteur.error);
+      lecteur.readAsDataURL(blob);
+    });
+  } catch {
+    return undefined;
+  }
+}

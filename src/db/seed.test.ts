@@ -16,10 +16,10 @@ describe('seedOrganisation()', () => {
       db.parametres.get('global'),
     ]);
 
-    expect(entites.length).toBe(9);
-    expect(postes.length).toBe(14);
-    expect(personnes.length).toBe(14);
-    expect(parametres?.nomOrganisation).toBe('Groupe Sanaga Industries');
+    expect(entites.length).toBe(26);
+    expect(postes.length).toBe(35);
+    expect(personnes.length).toBe(35);
+    expect(parametres?.nomOrganisation).toBe('Fédération Camerounaise de Football');
     expect(parametres?.delaiEscaladeJours).toBe(2);
     expect(parametres?.modeDemo).toBe(true);
   });
@@ -50,16 +50,16 @@ describe('seedOrganisation()', () => {
     expect(grace).toBeDefined();
 
     const posteTitulaire = await db.postes.get(grace!.posteId!);
-    expect(posteTitulaire?.libelle).toBe('Chef du service comptabilité');
+    expect(posteTitulaire?.libelle).toBe('Chargé de la comptabilité');
 
     const posteInterim = await db.postes.get(grace!.interimPosteIds[0]);
-    expect(posteInterim?.libelle).toBe('Chef du service RH');
+    expect(posteInterim?.libelle).toBe('Chargé des ressources humaines');
   });
 
   it('est idempotent : un second appel ne duplique rien', async () => {
     await seedOrganisation();
     await seedOrganisation();
     expect(await estDejaInitialisee()).toBe(true);
-    expect((await db.entites.toArray()).length).toBe(9);
+    expect((await db.entites.toArray()).length).toBe(26);
   });
 });

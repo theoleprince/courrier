@@ -118,7 +118,7 @@ export function Personnalisation(): React.JSX.Element {
           <Champ label={t('admin.personnalisation.logo')}>
             <div className="flex items-center gap-3">
               {parametres.logoPng && (
-                <img src={parametres.logoPng} alt="" className="h-12 w-12 rounded" />
+                <img src={parametres.logoPng} alt="" className="h-12 w-12 object-contain" />
               )}
               <input
                 type="file"

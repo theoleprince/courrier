@@ -90,18 +90,20 @@ export async function seedCourriers(): Promise<void> {
   const carine = await acteurDe('Carine Ngo Bassong');
   const idriss = await acteurDe('Idriss Moussa');
   const samuel = await acteurDe('Samuel Tchoupo');
-  const paul = await acteurDe('Paul Mbarga');
+  const president = await acteurDe('Samuel Eto’o Fils');
 
-  const cpt = await entiteDe('Service comptabilité');
-  const rh = await entiteDe('Service ressources humaines');
-  const mnt = await entiteDe('Service maintenance');
+  const cpt = await entiteDe('Unité comptabilité');
+  const rh = await entiteDe('Unité ressources humaines');
+  const licences = await entiteDe('Unité licences');
   const daf = await entiteDe('Direction administrative et financière');
 
   const banque = await correspondantDe('Banque Atlantique Centrale');
   const transports = await correspondantDe('Transports Nkolbisson SARL');
   const cabinetEkambi = await correspondantDe('Cabinet Ekambi & Associés');
   const bureautique = await correspondantDe('Bureautique Plus');
-  const mairie = await correspondantDe('Mairie d’arrondissement');
+  const minsep = await correspondantDe('Ministère des Sports et de l’Éducation physique');
+  const canon = await correspondantDe('Canon Sportif de Yaoundé');
+  const ligueCentre = await correspondantDe('Ligue régionale de football du Centre');
   const abena = await correspondantDe('Jean-Claude Abena');
   const hamadou = await correspondantDe('Fadimatou Hamadou');
   const assurances = await correspondantDe('Société d’Assurances du Littoral');
@@ -144,7 +146,7 @@ export async function seedCourriers(): Promise<void> {
     await avancerCircuit(sortant.circuitInstanceId!);
     await avancerHorloge(1);
     if (sortant.circuitInstanceId) {
-      await signer(sortant.circuitInstanceId, paul, { imagePngDataUrl: IMAGE_SIGNATURE_SEED, origineUrl: 'https://poc.local' });
+      await signer(sortant.circuitInstanceId, president, { imagePngDataUrl: IMAGE_SIGNATURE_SEED, origineUrl: 'https://poc.local' });
     }
     await avancerHorloge(1);
     await expedier(sortant.id, carine, { modeEnvoi: 'EMAIL', accuseReception: true, emailDestinataire: EMAIL_BANQUE });
@@ -154,25 +156,29 @@ export async function seedCourriers(): Promise<void> {
   // 3) Demande RH clôturée
   {
     const c = await enregistrerEntrant(
-      { objet: 'Demande de stage — suivi', type: 'DEMANDE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: mairie, modeDepot: 'POSTE', reponseAttendue: false },
-      await scanDe('Demande de stage — suivi'),
+      { objet: 'Demande de stage — analyste vidéo', type: 'DEMANDE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: hamadou, modeDepot: 'POSTE', reponseAttendue: false },
+      await scanDe('Demande de stage — analyste vidéo'),
       carine,
     );
     await avancerCircuit(c.circuitInstanceId!, rh);
   }
   await avancerHorloge(5);
 
-  // 4) Goulot sur la Direction technique : deux dossiers bloqués en « Validation du directeur »
-  for (const objet of ['Rapport d’incident — panne groupe électrogène', 'Demande de rénovation atelier']) {
+  // 4) Goulot sur la Département des compétitions : deux dossiers bloqués en « Validation du directeur »
+  for (const [objet, correspondantId] of [
+    ['Réserves sur le match Canon – Union Sportive de Douala', canon],
+    ['Demande d’homologation du stade municipal', ligueCentre],
+  ] as const) {
     const c = await enregistrerEntrant(
-      { objet, type: 'NOTE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: transports, modeDepot: 'GUICHET', reponseAttendue: false },
+      { objet, type: 'NOTE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId, modeDepot: 'GUICHET', reponseAttendue: false },
       await scanDe(objet),
       carine,
     );
-    // Entité traitante = Service maintenance (sous la Direction technique) : le
-    // "Traitement" est fait par le chef de service, la "Validation du directeur"
-    // par le directeur technique ; postes distincts, donc pas de saut automatique.
-    await avancerCircuit(c.circuitInstanceId!, mnt, ['VALIDATION']);
+    // Entité traitante = Unité licences (sous la Direction des
+    // compétitions) : le "Traitement" est fait par le chef de service, la
+    // "Validation du directeur" par le chef du département des compétitions ; postes
+    // distincts, donc pas de saut automatique.
+    await avancerCircuit(c.circuitInstanceId!, licences, ['VALIDATION']);
   }
   await avancerHorloge(18);
 
@@ -192,7 +198,7 @@ export async function seedCourriers(): Promise<void> {
   // 6) Deux confidentiels, imputés puis laissés en cours
   for (const [objet, correspondantId] of [
     ['Dossier disciplinaire — confidentiel', hamadou],
-    ['Négociation contractuelle — confidentiel', cabinetEkambi],
+    ['Négociation du contrat équipementier — confidentiel', cabinetEkambi],
   ] as const) {
     const c = await enregistrerEntrant(
       { objet, type: 'AUTRE', priorite: 'NORMALE', confidentialite: 'CONFIDENTIEL', correspondantId, modeDepot: 'GUICHET', reponseAttendue: false },
@@ -203,10 +209,10 @@ export async function seedCourriers(): Promise<void> {
   }
   await avancerHorloge(2);
 
-  // 7) Trois sortants en attente de signature du DG (pour la signature en lot)
-  for (const objet of ['Note de service — congés annuels', 'Courrier de félicitations', 'Transmission de dossier technique']) {
+  // 7) Trois sortants en attente de signature du Président (pour la signature en lot)
+  for (const objet of ['Note de service — congés annuels', 'Félicitations aux Lionnes indomptables', 'Transmission de la liste des joueurs convoqués']) {
     const sortant = await creerSortant(
-      { objet, type: 'NOTE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: mairie },
+      { objet, type: 'NOTE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: minsep },
       { blob: await pdfPlaceholder(objet), nom: 'note.pdf', mime: 'application/pdf' },
       samuel,
     );
@@ -223,7 +229,7 @@ export async function seedCourriers(): Promise<void> {
     );
     if (sortant.circuitInstanceId) {
       await avancerCircuit(sortant.circuitInstanceId);
-      await signer(sortant.circuitInstanceId, paul, { imagePngDataUrl: IMAGE_SIGNATURE_SEED, origineUrl: 'https://poc.local' });
+      await signer(sortant.circuitInstanceId, president, { imagePngDataUrl: IMAGE_SIGNATURE_SEED, origineUrl: 'https://poc.local' });
     }
   }
 
@@ -268,13 +274,27 @@ export async function seedCourriers(): Promise<void> {
     );
   }
   {
-    // Réponse à la Banque Atlantique Centrale, en attente de la signature du DG.
+    // Réponse à la Banque Atlantique Centrale, en attente de la signature du Président.
     const sortant = await creerSortant(
       { objet: 'Réponse — demande de virement', type: 'LETTRE', priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId: banque },
       { blob: await pdfPlaceholder('Réponse — demande de virement'), nom: 'reponse-banque-scene.pdf', mime: 'application/pdf' },
       samuel,
     );
     if (sortant.circuitInstanceId) await avancerCircuit(sortant.circuitInstanceId);
+  }
+
+  // 11) Parapheur du bureau d'ordre en cours de constitution : enregistrés ce matin, pas encore transmis.
+  for (const [objet, type, correspondantId] of [
+    ['Demande d’affiliation d’un nouveau club', 'DEMANDE', ligueCentre],
+    ['Facture de transport de la sélection', 'FACTURE', bureautique],
+    ['Lettre de remerciements', 'LETTRE', canon],
+  ] as const) {
+    await enregistrerEntrant(
+      { objet, type, priorite: 'NORMALE', confidentialite: 'INTERNE', correspondantId, modeDepot: 'GUICHET', reponseAttendue: false },
+      await scanDe(objet),
+      carine,
+      { auParapheur: true },
+    );
   }
 
   await verifierEcheances();

@@ -213,7 +213,7 @@ export interface FicheSuiviPublique {
 
 /**
  * Portail usager (section 9.4) : accès sans connexion, protégé par les 3
- * premières lettres du nom du correspondant ou du déposant.
+ * premières lettres du nom du correspondant ou de l’usager.
  */
 export async function rechercherSuiviPublic(
   codeSuivi: string,

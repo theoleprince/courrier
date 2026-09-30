@@ -48,7 +48,8 @@ async function dessinerEnTete(
   if (parametres.logoPng) {
     try {
       const logo = await pdf.embedPng(dataUrlEnBytes(parametres.logoPng));
-      page.drawImage(logo, { x: 40, y: height - 76, width: 40, height: 40 });
+      const dims = logo.scaleToFit(40, 40);
+      page.drawImage(logo, { x: 40 + (40 - dims.width) / 2, y: height - 76, width: dims.width, height: dims.height });
     } catch {
       // logo non embarquable (format inattendu) : on continue sans logo
     }

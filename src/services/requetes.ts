@@ -73,7 +73,7 @@ async function tachesDuPoste(posteId: ID): Promise<TacheCorbeille[]> {
   return resultats;
 }
 
-/** Ma corbeille : tâches en cours hors signature (celles-ci vont au parapheur). */
+/** Mon panier : tâches en cours hors signature (celles-ci vont au parapheur). */
 export async function corbeille(posteId: ID): Promise<TacheCorbeille[]> {
   return (await tachesDuPoste(posteId)).filter((t) => t.etape.type !== 'SIGNATURE');
 }
@@ -81,6 +81,12 @@ export async function corbeille(posteId: ID): Promise<TacheCorbeille[]> {
 /** Parapheur : courriers en attente de la signature de ce poste. */
 export async function parapheur(posteId: ID): Promise<TacheCorbeille[]> {
   return (await tachesDuPoste(posteId)).filter((t) => t.etape.type === 'SIGNATURE');
+}
+
+/** Parapheur en constitution : courriers enregistrés par ce poste, pas encore transmis (circuit non démarré). */
+export async function parapheurATransmettre(posteId: ID): Promise<CourrierEntrant[]> {
+  const courriers = (await db.courriers.where('parapheurPosteId').equals(posteId).toArray()) as CourrierEntrant[];
+  return courriers.sort((a, b) => a.creeLe.localeCompare(b.creeLe));
 }
 
 export interface ElementDiffusion {

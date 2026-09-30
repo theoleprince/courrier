@@ -15,7 +15,7 @@ test('l’entité traitante peut rédiger une réponse oubliée', async ({ page 
   await page.goto('/connexion');
   // Grâce a deux postes (chef comptabilité + intérim RH) : la connexion demande lequel.
   await page.getByRole('button', { name: 'Grâce Eyenga' }).first().click();
-  await page.getByRole('button', { name: 'Chef du service comptabilité' }).click();
+  await page.getByRole('button', { name: 'Chargé de la comptabilité' }).click();
   await expect(page).toHaveURL('/');
 
   await ouvrirDemandeReductionTarifaire(page);

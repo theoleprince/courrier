@@ -96,6 +96,7 @@ test('projet de réponse : l’assistante le rédige, la SG le retrouve et le so
   await page.getByRole('button', { name: 'Correspondant' }).click();
   await page.getByPlaceholder('Correspondant').fill('Banque');
   await page.getByRole('button', { name: 'Banque Atlantique Centrale', exact: true }).click();
+  await page.getByLabel('Transmettre directement').check();
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
   await page.getByRole('button', { name: 'Voir le détail complet' }).click();
   const url = page.url();
